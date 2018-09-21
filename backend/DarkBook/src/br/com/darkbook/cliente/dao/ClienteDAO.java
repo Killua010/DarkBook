@@ -1,6 +1,10 @@
 package br.com.darkbook.cliente.dao;
 
+import java.sql.Date;
+import java.sql.SQLException;
+
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.conexao.Conexao;
@@ -15,27 +19,27 @@ public class ClienteDAO {
     }
     
     public void adiciona(Cliente cliente) {
-        String sql = "insert into contatos " +
-                "(nome,email,endereco,dataNascimento)" +
-                " values (?,?,?,?)";
+        String sql = "insert into cliente " +
+                "(cli_nome, cli_sobrenome, cli_dataNascimento, cli_cpf, cli_genero)" +
+                " values (?,?,?,?,?)";
 
-//        try {
-//            // prepared statement para inserção
-//            PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
-//
-//            // seta os valores
-//            stmt.setString(1,contato.getNome());
-//            stmt.setString(2,contato.getEmail());
-//            stmt.setString(3,contato.getEndereco());
-//            stmt.setDate(4, new Date(
-//                    contato.getDataNascimento().getTimeInMillis()));
-//
-//            // executa
-//            stmt.execute();
-//            stmt.close();
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            // prepared statement para inserção
+            PreparedStatement stmt = (PreparedStatement) conexao.prepareStatement(sql);
+
+            // seta os valores
+            stmt.setString(1,cliente.getUsuario().getNome());
+            stmt.setString(2,cliente.getUsuario().getSobrenome());
+            stmt.setDate(3,Date.valueOf(cliente.getUsuario().getDataNascimento()));
+            stmt.setString(4, cliente.getCpf());
+            stmt.setString(5, cliente.getUsuario().getGenero().toString());
+
+            // executa
+            stmt.execute();
+            stmt.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 //    
 //    public List<Contato> getLista() {

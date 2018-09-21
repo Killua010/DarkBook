@@ -1,0 +1,8 @@
+CREATE TABLE cliente(
+	cli_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT,
+    cli_nome VARCHAR(30) NOT NULL,
+    cli_sobrenome VARCHAR(70) NOT NULL,
+    cli_dataNascimento DATE NOT NULL,
+    cli_cpf CHAR(11) NOT NULL,
+    cli_genero VARCHAR(30) NOT NULL
+)

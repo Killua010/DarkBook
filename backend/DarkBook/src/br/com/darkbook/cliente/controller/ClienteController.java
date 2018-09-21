@@ -73,6 +73,7 @@ public class ClienteController extends HttpServlet {
         cliente.setUsuario(usuario);
         
 		ClienteDAO cliDao = new ClienteDAO();
+		cliDao.adiciona(cliente);
         System.out.println("fim");
         
         
