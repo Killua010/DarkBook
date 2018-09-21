@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.darkbook.cliente.Cliente;
+import br.com.darkbook.cliente.dao.ClienteDAO;
 import br.com.darkbook.usuario.Genero;
 import br.com.darkbook.usuario.Usuario;
 
@@ -45,6 +46,7 @@ public class ClienteController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+				
 		Map<String,String> json = new HashMap<String,String>();
 		BufferedReader reader = request.getReader();
 		String linha;
@@ -70,9 +72,10 @@ public class ClienteController extends HttpServlet {
         cliente.setCpf(json.get("cpf"));
         cliente.setUsuario(usuario);
         
+		ClienteDAO cliDao = new ClienteDAO();
+        System.out.println("fim");
         
         
-		
 		//doGet(request, response);
 	}
 

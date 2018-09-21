@@ -1,40 +1,34 @@
-//package br.com.darkbook.cliente.dao;
-//
-//import java.sql.Date;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.util.ArrayList;
-//import java.util.Calendar;
-//import java.util.List;
-//
-//import com.mysql.jdbc.Connection;
-//import com.mysql.jdbc.PreparedStatement;
-//
-//import br.com.darkbook.conexao.Conexao;
-//
-//public class ClienteDao {
-//	// a conexão com o banco de dados
-//    private Conexao conexao;
-//
-//    public ClienteDao() {
-//        this.conexao = (Connection) new Conexao().getConnection();
-//    }
-//    
-//    public void adiciona(Cliente cliente) {
-//        String sql = "insert into contatos " +
-//                "(nome,email,endereco,dataNascimento)" +
-//                " values (?,?,?,?)";
-//
+package br.com.darkbook.cliente.dao;
+
+import com.mysql.jdbc.Connection;
+
+import br.com.darkbook.cliente.Cliente;
+import br.com.darkbook.conexao.Conexao;
+
+
+public class ClienteDAO {
+	 // a conexão com o banco de dados
+    private Connection conexao;
+
+    public ClienteDAO() {
+        this.conexao = (Connection) new Conexao().getConexao();
+    }
+    
+    public void adiciona(Cliente cliente) {
+        String sql = "insert into contatos " +
+                "(nome,email,endereco,dataNascimento)" +
+                " values (?,?,?,?)";
+
 //        try {
 //            // prepared statement para inserção
 //            PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
 //
 //            // seta os valores
-//            stmt.setString(1,conexao.getNome());
-//            stmt.setString(2,conexao.getEmail());
-//            stmt.setString(3,conexao.getEndereco());
+//            stmt.setString(1,contato.getNome());
+//            stmt.setString(2,contato.getEmail());
+//            stmt.setString(3,contato.getEndereco());
 //            stmt.setDate(4, new Date(
-//            		conexao.getDataNascimento().getTimeInMillis()));
+//                    contato.getDataNascimento().getTimeInMillis()));
 //
 //            // executa
 //            stmt.execute();
@@ -42,7 +36,7 @@
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
-//    }
+    }
 //    
 //    public List<Contato> getLista() {
 //        try {
@@ -72,7 +66,7 @@
 //            return contatos;
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
-////        }
+//        }
 //    }
-//
-//}
+
+}
