@@ -1,10 +1,8 @@
 package br.com.darkbook.cliente.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -13,53 +11,49 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import br.com.darkbook.JSONUtil;
 import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.cliente.dao.ClienteDAO;
 import br.com.darkbook.usuario.Genero;
 import br.com.darkbook.usuario.Usuario;
 
-/**
- * Servlet implementation class ClienteController
- */
-@WebServlet("/cliente")
+@WebServlet("/cliente/*")
 public class ClienteController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public ClienteController() {
         super();
-        // TODO Auto-generated constructor stub
+
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+    private String[] tratarURL(String caminho, HttpServletResponse response) throws IOException {
+    	String[] parametros = caminho.split("/");
+    	
+    	if(0 == parametros.length)
+    		return parametros;
+    	else if(parametros.length > 2 || !parametros[1].matches("^[0-9]{1,5}$")) {
+    		response.setStatus(404);
+    		return null;
+    	}
+    	
+    	return parametros;	
+    }
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-        response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			
+		String[] respostas = tratarURL(request.getPathInfo(), response);
 		
-				
-		Map<String,String> json = new HashMap<String,String>();
-		BufferedReader reader = request.getReader();
-		String linha;
+		if(null == respostas || respostas.length > 0) {
+			response.setStatus(404);
+			return;
+		}		
 		
-        while( (linha = reader.readLine()) != null ){
-	        if(linha.trim().compareTo("{") != 0
-	        		&& linha.trim().compareTo("}") != 0){
-	        	linha = linha.replace(',', ' ');
-	        	
-	        	String[] jsons = linha.split(":");
-	        	json.put(jsons[0].replaceAll("\"", "").trim().toString(), jsons[1].replaceAll("\"", "").trim().toString());
-	        }
-		}
+		// pega a requisição e converte o objeto JSON em um map de atributos
+		Map<String,String> json = JSONUtil.ParseString(request.getReader());		
         
         Usuario usuario = new Usuario();
         usuario.setNome(json.get("nome"));
@@ -76,8 +70,6 @@ public class ClienteController extends HttpServlet {
 		cliDao.adiciona(cliente);
         System.out.println("fim");
         
-        
-		//doGet(request, response);
 	}
 
 }
