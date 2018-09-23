@@ -11,14 +11,13 @@ public class JSONUtil {
 		Map<String,String> jsonMap = new HashMap<String,String>();
 		
 		String linha;
-		
         try {
 			while( (linha = json.readLine()) != null ){
 			    if(linha.trim().compareTo("{") != 0
 			    		&& linha.trim().compareTo("}") != 0){
 			    	
 			    	linha = linha.replace(',', ' ');
-			    	
+			    	System.out.println(linha);
 			    	String[] jsons = linha.split(":");
 			    	jsonMap.put(jsons[0].replaceAll("\"", "").trim().toString(), jsons[1].replaceAll("\"", "").trim().toString());
 			    }// ./if
