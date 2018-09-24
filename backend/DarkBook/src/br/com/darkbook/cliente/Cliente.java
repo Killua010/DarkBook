@@ -1,12 +1,22 @@
 package br.com.darkbook.cliente;
 
+import java.util.List;
+
 import br.com.darkbook.usuario.Usuario;
 
 public class Cliente{
+	private List<CartaoCredito> cartoes;
 	private String cpf;
 	private Usuario usuario;
 	
-	
+	public List<CartaoCredito> getCartoes() {
+		return cartoes;
+	}
+
+	public void setCartoes(List<CartaoCredito> cartoes) {
+		this.cartoes = cartoes;
+	}
+
 	public Usuario getUsuario() {
 		return usuario;
 	}
