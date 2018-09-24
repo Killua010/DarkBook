@@ -13,7 +13,7 @@ CREATE TABLE tipo_logradouro(
 );
 
 CREATE TABLE tipo_residencia(
-	tpr_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    tpr_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tpr_nome VARCHAR(30) NOT NULL
 );
 
@@ -24,9 +24,73 @@ CREATE TABLE cidade(
 );
 
 CREATE TABLE estado(
-   	est_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    est_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     est_nome VARCHAR(100) NOT NULL,
     est_sigla CHAR(2) NOT NULL
+);
+
+CREATE TABLE endereco(
+    end_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT,
+    end_logradouro VARCHAR(100) NOT NULL,
+    end_numero INT NOT NULL,
+    end_bairro VARCHAR(100) NOT NULL,
+    end_cep CHAR(8) NOT NULL,
+    end_observacao VARCHAR(100),
+    end_nome_composto VARCHAR(80),
+    end_favorido BOOLEAN,
+    end_tpl_id BIGINT(2) NOT NULL,
+    end_tpr_id BIGINT(2) NOT NULL,
+    end_cid_id BIGINT(5) NOT NULL
+);
+
+CREATE TABLE cliente_endereco(
+    cle_cli_id BIGINT(5) NOT NULL,
+    cle_end_id BIGINT(5) NOT NULL
+);
+
+CREATE TABLE tipo_telefone(
+    tpt_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    tpl_tipo VARCHAR(50) NOT NULL
+);
+    
+CREATE TABLE telefone(
+    tel_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    tel_ddd VARCHAR(10) NOT NULL,
+    tel_numero VARCHAR(20) NOT NULL,
+    tel_tpt_id BIGINT(2) NOT NULL
+);
+
+CREATE TABLE contato(
+    con_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    con_email VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE contato_telefone(
+    cot_tel_id BIGINT(5) NOT NULL,
+    cot_con_id BIGINT(5) NOT NULL
+);
+
+CREATE TABLE cliente_contato(
+    clc_cli_id BIGINT(5) NOT NULL,
+    clc_con_id BIGINT(5) NOT NULL
+);
+
+CREATE TABLE bandeira(
+   ban_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+   ban_tipo VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE cartao_credito(
+    cat_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    cat_numero VARCHAR(40) NOT NULL,
+    cat_codigo_seguranca CHAR(3) NOT NULL,
+    car_preferencial BOOLEAN
+);
+
+
+CREATE TABLE cliente_cartao_credito (
+    ccc_cli_id BIGINT(5) NOT NULL,
+    ccc_cat_id BIGINT(5) NOT NULL
 );
 
 INSERT INTO tipo_residencia(tpr_nome) VALUES ("CASA");
