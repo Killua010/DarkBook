@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import br.com.darkbook.entidade.Entidade;
 
-public class Pessoa extends Entidade{
+public class Pessoa{
 	protected String nome;
 	protected String sobrenome;
 	protected LocalDate dataNascimento;

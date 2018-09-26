@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import br.com.darkbook.JSONUtil;
 import br.com.darkbook.cliente.Cliente;
+import br.com.darkbook.cliente.ViewHelperClienteJson;
 import br.com.darkbook.cliente.dao.ClienteDAO;
 import br.com.darkbook.command.BuscarCommand;
 import br.com.darkbook.command.BuscarPorIdCommand;
@@ -60,8 +61,9 @@ public class ClienteController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			ViewHelperClienteJson vhCli = new ViewHelperClienteJson();
 			ICommand comando = comandosPost.get(tratarURL(request.getPathInfo(), response));
-			comando.executar(request, response);
+			comando.executar(vhCli.getEntidade(request));
 		}catch (Exception e) {
 			response.setStatus(404);
 		}       
