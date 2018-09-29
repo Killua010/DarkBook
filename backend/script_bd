@@ -5,29 +5,35 @@ CREATE TABLE cliente(
     cli_dataNascimento DATE NOT NULL,
     cli_cpf CHAR(11) NOT NULL,
     cli_genero VARCHAR(30) NOT NULL
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_logradouro(
     tpl_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tpl_nome VARCHAR(30) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_residencia(
     tpr_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tpr_nome VARCHAR(30) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 CREATE TABLE cidade(
     cid_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     cid_nome VARCHAR(100) NOT NULL,
     cid_est_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE estado(
     est_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     est_nome VARCHAR(100) NOT NULL,
-    est_sigla CHAR(2) NOT NULL
-);
+    est_sigla CHAR(2) NOT NULL,
+    est_pai_id BIGINT(5) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE pais(
+    pai_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    pai_pais VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE endereco(
     end_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT,
@@ -41,58 +47,83 @@ CREATE TABLE endereco(
     end_tpl_id BIGINT(2) NOT NULL,
     end_tpr_id BIGINT(2) NOT NULL,
     end_cid_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE cliente_endereco(
     cle_cli_id BIGINT(5) NOT NULL,
     cle_end_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_telefone(
     tpt_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    tpl_tipo VARCHAR(50) NOT NULL
-);
+    tpt_tipo VARCHAR(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     
 CREATE TABLE telefone(
     tel_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tel_ddd VARCHAR(10) NOT NULL,
     tel_numero VARCHAR(20) NOT NULL,
     tel_tpt_id BIGINT(2) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE contato(
     con_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     con_email VARCHAR(255) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE contato_telefone(
     cot_tel_id BIGINT(5) NOT NULL,
     cot_con_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE cliente_contato(
     clc_cli_id BIGINT(5) NOT NULL,
     clc_con_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE bandeira(
    ban_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
    ban_tipo VARCHAR(80) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE cartao_credito(
     cat_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     cat_numero VARCHAR(40) NOT NULL,
+    cat_nome_impresso VARCHAR(80) NOT NULL,
     cat_codigo_seguranca CHAR(3) NOT NULL,
-    car_preferencial BOOLEAN
-);
+    cat_preferencial BOOLEAN,
+    cat_ban_id BIGINT(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE cliente_cartao_credito (
     ccc_cli_id BIGINT(5) NOT NULL,
     ccc_cat_id BIGINT(5) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `cidade` ADD CONSTRAINT `fk_cid_est` FOREIGN KEY ( `cid_est_id` ) REFERENCES `estado` ( `est_id` ) ;
+
+ALTER TABLE `estado` ADD CONSTRAINT `fk_est_pai` FOREIGN KEY ( `est_pai_id` ) REFERENCES `pais` ( `pai_id` ) ;
+
+ALTER TABLE `endereco` ADD CONSTRAINT `fk_end_tpl` FOREIGN KEY ( `end_tpl_id` ) REFERENCES `tipo_logradouro` ( `tpl_id` ) ;
+
+ALTER TABLE `endereco` ADD CONSTRAINT `key_end_tpr` FOREIGN KEY ( `end_tpr_id` ) REFERENCES `tipo_residencia` ( `tpr_id` ) ;
+
+ALTER TABLE `endereco` ADD CONSTRAINT `fk_end_cid` FOREIGN KEY ( `end_cid_id` ) REFERENCES `cidade` ( `cid_id` ) ;
+
+ALTER TABLE `cliente_endereco` ADD CONSTRAINT `fk_cle_cli` FOREIGN KEY ( `cle_cli_id` ) REFERENCES `cliente` ( `cli_id` ) ;
+
+ALTER TABLE `cliente_endereco` ADD CONSTRAINT `fk_cle_end` FOREIGN KEY ( `cle_end_id` ) REFERENCES `endereco` ( `end_id` ) ;
+
+ALTER TABLE `telefone` ADD CONSTRAINT `fk_tel_tpt` FOREIGN KEY ( `tel_tpt_id` ) REFERENCES `tipo_telefone` ( `tpt_id` ) ;
+
+ALTER TABLE `contato_telefone` ADD CONSTRAINT `fk_cot_tel` FOREIGN KEY ( `cot_tel_id` ) REFERENCES `contato` ( `con_id` ) ;
+
+ALTER TABLE `cartao_credito` ADD CONSTRAINT `fk_cat_ban` FOREIGN KEY ( `cat_ban_id` ) REFERENCES `bandeira` ( `ban_id` ) ;
+
+ALTER TABLE `cliente_cartao_credito` ADD CONSTRAINT `fk_ccc_cli` FOREIGN KEY ( `ccc_cli_id` ) REFERENCES `cliente` ( `cli_id` ) ;
+
+ALTER TABLE `cliente_cartao_credito` ADD CONSTRAINT `fk_ccc_cat` FOREIGN KEY ( `ccc_cat_id` ) REFERENCES `cartao_credito` ( `cat_id` ) ;
 INSERT INTO tipo_residencia(tpr_nome) VALUES ("CASA");
 
 INSERT INTO tipo_residencia(tpr_nome) VALUES ("APARTAMENTO");
@@ -105,35 +136,46 @@ INSERT INTO tipo_logradouro (tpl_nome) VALUES ("RUA");
 
 INSERT INTO tipo_logradouro (tpl_nome) VALUES ("ESTRADA");
 
+INSERT INTO tipo_telefone (TPT_TIPO) VALUES ("FIXO");
 
-INSERT INTO estado(est_id, est_nome, est_sigla) VALUES
-  (1, 'Acre', 'AC'),
-  (2, 'Alagoas', 'AL'),
-  (3, 'Amapá', 'AP'),
-  (4, 'Amazonas', 'AM'),
-  (5, 'Bahia', 'BA'),
-  (6, 'Ceará', 'CE'),
-  (7, 'Distrito Federal', 'DF'),
-  (8, 'Espírito Santo', 'ES'),
-  (9, 'Goiás', 'GO'),
-  (10, 'Maranhão', 'MA'),
-  (11, 'Mato Grosso', 'MT'),
-  (12, 'Mato Grosso do Sul', 'MS'),
-  (13, 'Minhas Gerais', 'MG'),
-  (14, 'Pará', 'PA'),
-  (15, 'Paraíba', 'PB'),
-  (16, 'Paraná', 'PN'),
-  (17, 'Pernambuco', 'PE'),
-  (18, 'Piauí', 'PI'),
-  (19, 'Rio de Janeiro', 'RJ'),
-  (20, 'Rio Grande do Norte', 'RN'),
-  (21, 'Rio Grande do Sul', 'RS'),
-  (22, 'Rondônia', 'RO'),
-  (23, 'Rorâima', 'RR'),
-  (24, 'Santa Catarina', 'SC'),
-  (25, 'São Paulo', 'SP'),
-  (26, 'Sergipe', 'SE'),
-  (27, 'Tocantins', 'TO');
+INSERT INTO tipo_telefone (TPT_TIPO) VALUES ("MOVEL");
+
+INSERT INTO pais (pai_pais) VALUES ("Brasil");
+
+INSERT INTO bandeira (ban_tipo) VALUES ("VISA");
+
+INSERT INTO bandeira (ban_tipo) VALUES ("MASTER");
+
+INSERT INTO bandeira (ban_tipo) VALUES ("ELO");
+
+INSERT INTO estado(est_id, est_nome, est_sigla, est_pai_id) VALUES
+  (1, 'Acre', 'AC', 1),
+  (2, 'Alagoas', 'AL', 1),
+  (3, 'Amapá', 'AP', 1),
+  (4, 'Amazonas', 'AM', 1),
+  (5, 'Bahia', 'BA', 1),
+  (6, 'Ceará', 'CE', 1),
+  (7, 'Distrito Federal', 'DF', 1),
+  (8, 'Espírito Santo', 'ES', 1),
+  (9, 'Goiás', 'GO', 1),
+  (10, 'Maranhão', 'MA', 1),
+  (11, 'Mato Grosso', 'MT', 1),
+  (12, 'Mato Grosso do Sul', 'MS', 1),
+  (13, 'Minhas Gerais', 'MG', 1),
+  (14, 'Pará', 'PA', 1),
+  (15, 'Paraíba', 'PB', 1),
+  (16, 'Paraná', 'PN', 1),
+  (17, 'Pernambuco', 'PE', 1),
+  (18, 'Piauí', 'PI', 1),
+  (19, 'Rio de Janeiro', 'RJ', 1),
+  (20, 'Rio Grande do Norte', 'RN', 1),
+  (21, 'Rio Grande do Sul', 'RS', 1),
+  (22, 'Rondônia', 'RO', 1),
+  (23, 'Rorâima', 'RR', 1),
+  (24, 'Santa Catarina', 'SC', 1),
+  (25, 'São Paulo', 'SP', 1),
+  (26, 'Sergipe', 'SE', 1),
+  (27, 'Tocantins', 'TO', 1);
 
 INSERT INTO cidade (cid_id, cid_nome, cid_est_id) VALUES
 (1,'Afonso Cláudio', 8),
