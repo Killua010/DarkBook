@@ -27,98 +27,53 @@ public class ClienteDAO {
         this.conexao = (Connection) new Conexao().getConexao();
     }
     
-    public void adiciona(Entidade entidade) {
+    public void adiciona(Entidade entidade) throws SQLException {
     	Cliente cliente = (Cliente) entidade;
+        PreparedStatement comandosSQL = null;
         try {
-            // prepared statement para inserção
-            PreparedStatement tabelaCliente = (PreparedStatement) conexao.prepareStatement(""
+            /* COMANDOS SQL */
+        	
+        	// Cliente
+            String tabelaCliente = ""
             		+ "insert into cliente ("
             			+ "cli_nome, "
             			+ "cli_sobrenome, "
             			+ "cli_dataNascimento, "
             			+ "cli_cpf, cli_genero)" 
-            		+ " values (?,?,?,?,?);");
-
-            // seta os valores
-            tabelaCliente.setString(1,cliente.getUsuario().getNome());
-            tabelaCliente.setString(2,cliente.getUsuario().getSobrenome());
-            tabelaCliente.setDate(3,Date.valueOf(cliente.getUsuario().getDataNascimento()));
-            tabelaCliente.setString(4, cliente.getCpf());
-            tabelaCliente.setString(5, cliente.getUsuario().getGenero().toString());
-
-            // executa
-            tabelaCliente.execute();
+            		+ " values (?,?,?,?,?);";
             
-            Long idCliente = null;
-            
-            ResultSet teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-        	while(teste.next()) {
-        		idCliente = teste.getLong(1);
-        	}
-            
-            PreparedStatement tabelaTelefone = (PreparedStatement) conexao.prepareStatement(""
+            // Telefone
+            String tabelaTelefone = ""
             		+ "INSERT INTO telefone ("
             			+ "tel_ddd, "
             			+ "tel_numero, "
             			+ "tel_tpt_id) "
             		+ "	VALUES ("
             			+ "?, ?, "
-            			+ "(SELECT tpt_id FROM tipo_telefone WHERE ? = tipo_telefone.tpt_tipo));");
-           
-            PreparedStatement tabelaContato = (PreparedStatement) conexao.prepareStatement(""
+            			+ "(SELECT tpt_id FROM tipo_telefone WHERE ? = tipo_telefone.tpt_tipo));";
+            
+            // Contato
+            String tabelaContato = ""
             		+ "INSERT INTO contato ("
             			+ "con_email) "
-            		+ "VALUES (?);");
+            		+ "VALUES (?);";
             
-            PreparedStatement tabelaTelefoneContato = (PreparedStatement) conexao.prepareStatement(""
+            // Ligação (Telefone - Contato)
+            String tabelaTelefoneContato = ""
             		+ "INSERT INTO contato_telefone ("
             			+ "cot_tel_id,"
             			+ " cot_con_id) "
-            		+ "VALUES (?, ?);");
-            List<Long> idsTelefone = new ArrayList<>();
-            Long idContato = null;
+            		+ "VALUES (?, ?);";
             
-            for(Contato con : cliente.getUsuario().getContatos()) {
-            	tabelaContato.setString(1, con.getEmail());
-            	tabelaContato.execute();
-            	teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-            	while(teste.next()) {
-            		idContato = teste.getLong(1);
-            	}
-            	
-            	for(Telefone tel : con.getTelefones()) {
-            		tabelaTelefone.setString(1, tel.getDdd());
-            		tabelaTelefone.setString(2, tel.getNumero());
-            		tabelaTelefone.setString(3, tel.getTipoTelefone().toString());
-            		tabelaTelefone.execute();
-            		teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-            		while(teste.next()) {
-            			idsTelefone.add(teste.getLong(1));
-                	}
-            	}
-            	for(Long id : idsTelefone) {
-            		tabelaTelefoneContato.setLong(1, idContato);
-            		tabelaTelefoneContato.setLong(2, id);
-            		tabelaTelefoneContato.execute();
-            	}
-            }// contatos
-            
-            PreparedStatement tabelaClienteContato = (PreparedStatement) conexao.prepareStatement(""
+            // Ligação (Cliente - Contato)
+            String tabelaClienteContato = ""
             		+ "INSERT INTO cliente_contato ("
             			+ "clc_cli_id, "
             			+ "clc_con_id) "
-            		+ "VALUES (?, ?);");
-            tabelaClienteContato.setLong(1, idCliente);
-            tabelaClienteContato.setLong(2, idContato);
-            tabelaClienteContato.execute();
+            		+ "VALUES (?, ?);";
             
-            PreparedStatement tabelaEnderecoCliente = (PreparedStatement) conexao.prepareStatement("INSERT INTO cliente_endereco("
-            		+ "cle_cli_id,"
-            		+ "cle_end_id)"
-            		+ "VALUES( ?, ?)");
-            Long idEndereco = null;
-            
-            PreparedStatement tabelaEndereco = (PreparedStatement) conexao.prepareStatement(""
+            // Endereço Cobrança
+            String tabelaEndereco = ""
             		+ "INSERT INTO endereco ("
             			+ "end_logradouro, "
             			+ "end_numero,"
@@ -132,71 +87,37 @@ public class ClienteDAO {
             			+ "(?, ?, ?, ?, ?,"
             			+ "(SELECT tpl_id FROM tipo_logradouro WHERE tipo_logradouro.tpl_nome = ?),"
             			+ "(SELECT tpr_id FROM tipo_residencia WHERE tipo_residencia.tpr_nome = ?),"
-            			+ "(SELECT cid_id FROM cidade WHERE cid_nome = ? and cid_est_id = (SELECT est_id FROM estado WHERE est_sigla = ?)));");
+            			+ "(SELECT cid_id FROM cidade WHERE cid_nome = ? and cid_est_id = (SELECT est_id FROM estado WHERE est_sigla = ?)));";
             
-            for(Endereco end : cliente.getEnderecos()) {
-            	tabelaEndereco.setString(1, end.getLogradouro());
-            	tabelaEndereco.setInt(2, end.getNumero());
-            	tabelaEndereco.setString(3, end.getBairro());
-            	tabelaEndereco.setString(4, end.getCep());
-            	tabelaEndereco.setString(5, end.getObservacao());
-            	tabelaEndereco.setString(6, end.getTipoLogradouro().name());
-            	tabelaEndereco.setString(7, end.getTipoResidencia().name());
-            	tabelaEndereco.setString(8, end.getCidade().getCidade());
-            	tabelaEndereco.setString(9, end.getCidade().getEstado().getEstado());
-            	tabelaEndereco.execute();
-            	teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-        		while(teste.next()) {
-        			idEndereco = teste.getLong(1);
-            	}
-        		tabelaEnderecoCliente.setLong(1, idCliente);
-        		tabelaEnderecoCliente.setLong(2, idEndereco);
-        		tabelaEnderecoCliente.execute();
-            }
+            // Entereço Entrega
+            String tabelaEnderecoEntrega = ""
+                	+ "INSERT INTO endereco ("
+            			+ "end_logradouro, "
+            			+ "end_numero,"
+            			+ "end_bairro,"
+            			+ "end_cep,"
+            			+ "end_observacao,"
+            			+ "end_tpl_id,"
+            			+ "end_tpr_id,"
+            			+ "end_cid_id, "
+            			+ "end_nome_composto, "
+            			+ "end_favorido)"
+            		+ "VALUES "
+            			+ "(?, ?, ?, ?, ?,"
+            			+ "(SELECT tpl_id FROM tipo_logradouro WHERE tipo_logradouro.tpl_nome = ?),"
+            			+ "(SELECT tpr_id FROM tipo_residencia WHERE tipo_residencia.tpr_nome = ?),"
+            			+ "(SELECT cid_id FROM cidade WHERE cid_nome = ? and cid_est_id = (SELECT est_id FROM estado WHERE est_sigla = ?)),"
+            			+ "?, ?);";
             
-            PreparedStatement tabelaEnderecoEntrega = (PreparedStatement) conexao.prepareStatement(""
-            	+ "INSERT INTO endereco ("
-        			+ "end_logradouro, "
-        			+ "end_numero,"
-        			+ "end_bairro,"
-        			+ "end_cep,"
-        			+ "end_observacao,"
-        			+ "end_tpl_id,"
-        			+ "end_tpr_id,"
-        			+ "end_cid_id, "
-        			+ "end_nome_composto, "
-        			+ "end_favorido)"
-        		+ "VALUES "
-        			+ "(?, ?, ?, ?, ?,"
-        			+ "(SELECT tpl_id FROM tipo_logradouro WHERE tipo_logradouro.tpl_nome = ?),"
-        			+ "(SELECT tpr_id FROM tipo_residencia WHERE tipo_residencia.tpr_nome = ?),"
-        			+ "(SELECT cid_id FROM cidade WHERE cid_nome = ? and cid_est_id = (SELECT est_id FROM estado WHERE est_sigla = ?)),"
-        			+ "?, ?);");
-            for(EnderecoEntrega end : cliente.getEnderecoEntregas()) {
-            	tabelaEnderecoEntrega.setString(1, end.getLogradouro());
-            	tabelaEnderecoEntrega.setInt(2, end.getNumero());
-            	tabelaEnderecoEntrega.setString(3, end.getBairro());
-            	tabelaEnderecoEntrega.setString(4, end.getCep());
-            	tabelaEnderecoEntrega.setString(5, end.getObservacao());
-            	tabelaEnderecoEntrega.setString(6, end.getTipoLogradouro().name());
-            	tabelaEnderecoEntrega.setString(7, end.getTipoResidencia().name());
-            	tabelaEnderecoEntrega.setString(8, end.getCidade().getCidade());
-            	tabelaEnderecoEntrega.setString(9, end.getCidade().getEstado().getEstado());
-            	tabelaEnderecoEntrega.setString(10, end.getNomeComposto());
-            	tabelaEnderecoEntrega.setBoolean(11, end.isFavorito());
-            	tabelaEnderecoEntrega.execute();
-            	teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-        		while(teste.next()) {
-        			idEndereco = teste.getLong(1);
-            	}
-        		tabelaEnderecoCliente.setLong(1, idCliente);
-        		tabelaEnderecoCliente.setLong(2, idEndereco);
-        		tabelaEnderecoCliente.execute();
-            }
+            // Ligação (Endeços - Cliente)
+            String tabelaEnderecoCliente = ""
+            		+ "INSERT INTO cliente_endereco("
+            			+ "cle_cli_id,"
+            			+ "cle_end_id)"
+            		+ "VALUES( ?, ?)";
             
-            List<Long> idsCartao = new ArrayList<>();
-            
-            PreparedStatement tabelaCartao = (PreparedStatement) conexao.prepareStatement(""
+            // Tabela Cartão
+            String tabelaCartao = ""
             		+ "INSERT INTO cartao_credito ("
             			+ "cat_numero, "
             			+ "cat_nome_impresso, "
@@ -205,70 +126,160 @@ public class ClienteDAO {
             			+ "cat_ban_id)"
             		+ "VALUES "
             			+ "(?, ?, ?, ?, "
-            			+ "(SELECT ban_id FROM bandeira WHERE ban_tipo = ?));");
-            for(CartaoCredito car : cliente.getCartoes()) {
-            	tabelaCartao.setString(1, car.getNumero());
-            	tabelaCartao.setString(2, car.getNomeImpresso());
-            	tabelaCartao.setString(3, car.getCodSeguranca());
-            	tabelaCartao.setBoolean(4, car.isPreferencial());
-            	tabelaCartao.setString(5, car.getBandeira().name());
-            	tabelaCartao.execute();
-            	
-            	teste = conexao.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
-            	while(teste.next()) {
-            		idsCartao.add(teste.getLong(1));
-            	}
-            }
-            PreparedStatement tabelaClienteCartao = (PreparedStatement) conexao.prepareStatement(""
+            			+ "(SELECT ban_id FROM bandeira WHERE ban_tipo = ?));";
+            
+            // Ligação (Cliente - Cartao)
+            String tabelaClienteCartao = ""
             		+ "INSERT INTO cliente_cartao_credito ("
             			+ "ccc_cli_id, "
             			+ "ccc_cat_id) "
             		+ "VALUES "
-            			+ "(?, ?);");
+            			+ "(?, ?);";
             
+            String ComandoUltimoID = "SELECT LAST_INSERT_ID()";
+            
+            /* IDs */
+            Long idCliente = null;
+            List<Long> idsTelefone = new ArrayList<>();
+            Long idContato = null;
+            Long idEndereco = null;
+            List<Long> idsCartao = new ArrayList<>();
+            ResultSet ultimoID = null;
+            
+            /* DADOS E EXECUÇÃO DOS COMANDOS SQL */
+            
+            // cliente
+            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+            comandosSQL.setString(1,cliente.getUsuario().getNome());
+            comandosSQL.setString(2,cliente.getUsuario().getSobrenome());
+            comandosSQL.setDate(3,Date.valueOf(cliente.getUsuario().getDataNascimento()));
+            comandosSQL.setString(4, cliente.getCpf());
+            comandosSQL.setString(5, cliente.getUsuario().getGenero().toString());
+            comandosSQL.execute();
+            
+            ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+        	while(ultimoID.next()) 
+        		idCliente = ultimoID.getLong(1);
+            
+        	// contatos
+            for(Contato con : cliente.getUsuario().getContatos()) {
+            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
+            	comandosSQL.setString(1, con.getEmail());
+            	comandosSQL.execute();
+            	
+            	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+            	while(ultimoID.next()) 
+            		idContato = ultimoID.getLong(1);
+            	
+            	// telefones
+            	for(Telefone tel : con.getTelefones()) {
+            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefone);
+            		comandosSQL.setString(1, tel.getDdd());
+            		comandosSQL.setString(2, tel.getNumero());
+            		comandosSQL.setString(3, tel.getTipoTelefone().toString());
+            		comandosSQL.execute();
+            		
+            		ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+                	while(ultimoID.next()) 
+            			idsTelefone.add(ultimoID.getLong(1));
+            	}
+            	
+            	// telefone - contato
+            	for(Long id : idsTelefone) {
+            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefoneContato);
+            		comandosSQL.setLong(1, idContato);
+            		comandosSQL.setLong(2, id);
+            		comandosSQL.execute();
+            	}
+            	
+            	//cliente - contato
+                comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteContato);
+                comandosSQL.setLong(1, idCliente);
+                comandosSQL.setLong(2, idContato);
+                comandosSQL.execute();
+            	
+            }// contatos
+            
+            // endereco cobrança
+            for(Endereco end : cliente.getEnderecos()) {
+            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEndereco);
+            	comandosSQL.setString(1, end.getLogradouro());
+            	comandosSQL.setInt(2, end.getNumero());
+            	comandosSQL.setString(3, end.getBairro());
+            	comandosSQL.setString(4, end.getCep());
+            	comandosSQL.setString(5, end.getObservacao());
+            	comandosSQL.setString(6, end.getTipoLogradouro().name());
+            	comandosSQL.setString(7, end.getTipoResidencia().name());
+            	comandosSQL.setString(8, end.getCidade().getCidade());
+            	comandosSQL.setString(9, end.getCidade().getEstado().getEstado());
+            	comandosSQL.execute();
+            	
+            	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+            	while(ultimoID.next()) 
+        			idEndereco = ultimoID.getLong(1);
+            	
+        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+        		comandosSQL.setLong(1, idCliente);
+        		comandosSQL.setLong(2, idEndereco);
+        		comandosSQL.execute();
+            }
+            
+            // endereco entrega
+            for(EnderecoEntrega end : cliente.getEnderecoEntregas()) {
+            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoEntrega);
+            	comandosSQL.setString(1, end.getLogradouro());
+            	comandosSQL.setInt(2, end.getNumero());
+            	comandosSQL.setString(3, end.getBairro());
+            	comandosSQL.setString(4, end.getCep());
+            	comandosSQL.setString(5, end.getObservacao());
+            	comandosSQL.setString(6, end.getTipoLogradouro().name());
+            	comandosSQL.setString(7, end.getTipoResidencia().name());
+            	comandosSQL.setString(8, end.getCidade().getCidade());
+            	comandosSQL.setString(9, end.getCidade().getEstado().getEstado());
+            	comandosSQL.setString(10, end.getNomeComposto());
+            	comandosSQL.setBoolean(11, end.isFavorito());
+            	comandosSQL.execute();
+            	
+            	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+            	while(ultimoID.next()) 
+        			idEndereco = ultimoID.getLong(1);
+            	
+        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+        		comandosSQL.setLong(1, idCliente);
+        		comandosSQL.setLong(2, idEndereco);
+        		comandosSQL.execute();
+            }
+            
+            // cartao
+            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartao);
+            for(CartaoCredito car : cliente.getCartoes()) {
+            	comandosSQL.setString(1, car.getNumero());
+            	comandosSQL.setString(2, car.getNomeImpresso());
+            	comandosSQL.setString(3, car.getCodSeguranca());
+            	comandosSQL.setBoolean(4, car.isPreferencial());
+            	comandosSQL.setString(5, car.getBandeira().name());
+            	comandosSQL.execute();
+            	
+            	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+            	while(ultimoID.next()) 
+            		idsCartao.add(ultimoID.getLong(1));
+            }
+            
+            // cartao - cliente
+            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteCartao);
             for(Long id : idsCartao) {
-            	tabelaClienteCartao.setLong(1, idCliente);
-            	tabelaClienteCartao.setLong(2, id);
-            	tabelaClienteCartao.execute();
-            }            
+            	comandosSQL.setLong(1, idCliente);
+            	comandosSQL.setLong(2, id);
+            	comandosSQL.execute();
+            }
             
-            tabelaCliente.close();
         } catch (SQLException e) {
-        	e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        	e.printStackTrace();		// printa a pilha de erros
+            throw new RuntimeException(e);	// lança uma exceção
+        } finally {
+        	comandosSQL.close();
+        	conexao.close();
+		}
     }
-    
-//    
-//    public List<Contato> getLista() {
-//        try {
-//            List<Contato> contatos = new ArrayList<Contato>();
-//            PreparedStatement stmt = (PreparedStatement) this.connection.
-//                    prepareStatement("select * from contatos");
-//            ResultSet rs = stmt.executeQuery();
-//
-//            while (rs.next()) {
-//                // criando o objeto Contato
-//                Contato contato = new Contato();
-//                contato.setId(rs.getLong("id"));
-//                contato.setNome(rs.getString("nome"));
-//                contato.setEmail(rs.getString("email"));
-//                contato.setEndereco(rs.getString("endereco"));
-//
-//                // montando a data através do Calendar
-//                Calendar data = Calendar.getInstance();
-//                data.setTime(rs.getDate("dataNascimento"));
-//                contato.setDataNascimento(data);
-//
-//                // adicionando o objeto à lista
-//                contatos.add(contato);
-//            }
-//            rs.close();
-//            stmt.close();
-//            return contatos;
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
+   
 }

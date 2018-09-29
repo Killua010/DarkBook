@@ -1,6 +1,7 @@
 package br.com.darkbook.command;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,5 +13,5 @@ import br.com.darkbook.entidade.Entidade;
 
 public interface ICommand {
 
-	public void executar(Entidade entidade);
+	public void executar(Entidade entidade) throws SQLException;
 }
