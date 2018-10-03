@@ -1,6 +1,7 @@
 package br.com.darkbook.cliente.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -56,17 +57,43 @@ public class ClienteController extends HttpServlet {
     }
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ViewHelperClienteJson vhCli = new ViewHelperClienteJson();
+		ICommand comando = null;
 		try {
-			ViewHelperClienteJson vhCli = new ViewHelperClienteJson();
-			ICommand comando = comandosPost.get(tratarURL(request.getPathInfo(), response));
-			comando.executar(vhCli.getEntidade(request));
+			String caminho = tratarURL(request.getPathInfo(), response);
+			comando = comandosGet.get(caminho);
+			
+			try {	
+				if(!caminho.equals("/")) 
+					System.out.println();
+				
+				else
+					comando.executar(vhCli.postEntidade(request, response));
+				
+			} catch (SQLException e) {
+				response.setStatus(500);
+				e.printStackTrace();
+			}
 		}catch (Exception e) {
 			response.setStatus(404);
 		}       
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ViewHelperClienteJson vhCli = new ViewHelperClienteJson();
+		ICommand comando = null;
+		
+		try {
+			comando = comandosPost.get(tratarURL(request.getPathInfo(), response));
+			try {
+				comando.executar(vhCli.getEntidade(request));
+			} catch (SQLException e) {
+				response.setStatus(500);
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
+			response.setStatus(404);
+		}
 	}
 
 }

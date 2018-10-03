@@ -4,7 +4,8 @@ CREATE TABLE cliente(
     cli_sobrenome VARCHAR(70) NOT NULL,
     cli_dataNascimento DATE NOT NULL,
     cli_cpf CHAR(11) NOT NULL,
-    cli_genero VARCHAR(30) NOT NULL
+    cli_genero VARCHAR(30) NOT NULL,
+    cli_senha VARCHAR(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_logradouro(

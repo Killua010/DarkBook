@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
@@ -120,6 +121,10 @@ public class ViewHelperClienteJson {
     	
     	return cliente;
     	
+    }
+    
+    public Entidade postEntidade(HttpServletRequest request, HttpServletResponse response) {
+    	return new Cliente();	
     }
 
 }

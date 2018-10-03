@@ -17,6 +17,8 @@ import br.com.darkbook.contato.Telefone;
 import br.com.darkbook.endereco.Endereco;
 import br.com.darkbook.endereco.EnderecoEntrega;
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.usuario.Genero;
+import br.com.darkbook.usuario.Usuario;
 
 
 public class ClienteDAO {
@@ -26,6 +28,45 @@ public class ClienteDAO {
     public ClienteDAO() {
         this.conexao = (Connection) new Conexao().getConexao();
     }
+    
+    public List<Entidade> buscar(Entidade entidade) throws SQLException {
+    	List<Cliente> cliList = new ArrayList<>();
+        PreparedStatement comandosSQL = null;
+        try {
+        	String tabelaCliente = "SELECT * FROM cliente";
+        	
+        	ResultSet resultados;
+        	
+        	resultados = (ResultSet) this.conexao.prepareStatement(tabelaCliente).executeQuery();
+        	while(resultados.next()) {
+        		Cliente c = new Cliente();
+        		c.setCpf(resultados.getString("cli_cpf"));
+        		c.setId(resultados.getLong("cli_id"));
+        		c.setUsuario(new Usuario());
+        		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
+        		c.getUsuario().setNome(resultados.getString("cli_nome"));
+        		c.getUsuario().setSenha(resultados.getString("cli_senha"));
+        		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
+        		cliList.add(c);
+        	}
+        	
+        	for(Cliente c : cliList) {
+        		System.out.println(c.getUsuario().getNome() + " " + c.getUsuario().getSobrenome());
+        		System.out.println(c.getCpf());
+        	}
+        	
+        	
+        }catch (SQLException e) {
+        	e.printStackTrace();		// printa a pilha de erros
+            throw new RuntimeException(e);	// lança uma exceção
+        } finally {
+        	comandosSQL.close();
+        	conexao.close();
+		}
+    	return null;
+    }
+    
+    
     
     public void adiciona(Entidade entidade) throws SQLException {
     	Cliente cliente = (Cliente) entidade;
@@ -39,8 +80,10 @@ public class ClienteDAO {
             			+ "cli_nome, "
             			+ "cli_sobrenome, "
             			+ "cli_dataNascimento, "
-            			+ "cli_cpf, cli_genero)" 
-            		+ " values (?,?,?,?,?);";
+            			+ "cli_cpf,"
+            			+ "cli_genero,"
+            			+ "cli_senha)" 
+            		+ " values (?,?,?,?,?, ?);";
             
             // Telefone
             String tabelaTelefone = ""
@@ -155,6 +198,7 @@ public class ClienteDAO {
             comandosSQL.setDate(3,Date.valueOf(cliente.getUsuario().getDataNascimento()));
             comandosSQL.setString(4, cliente.getCpf());
             comandosSQL.setString(5, cliente.getUsuario().getGenero().toString());
+            comandosSQL.setString(6, cliente.getUsuario().getSenha());
             comandosSQL.execute();
             
             ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
