@@ -67,8 +67,9 @@ public class ClienteController extends HttpServlet {
 				if(!caminho.equals("/")) 
 					System.out.println();
 				
-				else
+				else {
 					comando.executar(vhCli.postEntidade(request, response));
+				}
 				
 			} catch (SQLException e) {
 				response.setStatus(500);

@@ -14,8 +14,13 @@ import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.conexao.Conexao;
 import br.com.darkbook.contato.Contato;
 import br.com.darkbook.contato.Telefone;
+import br.com.darkbook.endereco.Cidade;
 import br.com.darkbook.endereco.Endereco;
 import br.com.darkbook.endereco.EnderecoEntrega;
+import br.com.darkbook.endereco.Estado;
+import br.com.darkbook.endereco.Pais;
+import br.com.darkbook.endereco.TipoLogradouro;
+import br.com.darkbook.endereco.TipoResidencia;
 import br.com.darkbook.entidade.Entidade;
 import br.com.darkbook.usuario.Genero;
 import br.com.darkbook.usuario.Usuario;
@@ -34,6 +39,10 @@ public class ClienteDAO {
         PreparedStatement comandosSQL = null;
         try {
         	String tabelaCliente = "SELECT * FROM cliente";
+        	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
+        			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
+        			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
+        			+ "tpr_id = end_tpr_id;";
         	
         	ResultSet resultados;
         	
@@ -51,8 +60,41 @@ public class ClienteDAO {
         	}
         	
         	for(Cliente c : cliList) {
-        		System.out.println(c.getUsuario().getNome() + " " + c.getUsuario().getSobrenome());
-        		System.out.println(c.getCpf());
+        		c.setEnderecoEntregas(new ArrayList<>());
+        		c.setEnderecos(new ArrayList<>());
+        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
+        		comandosSQL.setLong(1, c.getId());
+        		
+        		resultados = comandosSQL.executeQuery();
+            	while(resultados.next()) {
+            		Endereco endereco;
+            		if(null != resultados.getString("end_nome_composto")) {
+            			endereco = new EnderecoEntrega();
+            			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
+            			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
+            		} else {
+            			endereco = new Endereco();
+            		}
+            		endereco.setBairro(resultados.getString("end_bairro"));
+            		endereco.setCep(resultados.getString("end_cep"));
+            		endereco.setCidade(new Cidade());
+            		endereco.getCidade().setEstado(new Estado());
+            		endereco.getCidade().getEstado().setPais(new Pais());
+            		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
+            		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
+            		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
+            		endereco.setLogradouro(resultados.getString("end_logradouro"));
+            		endereco.setNumero(resultados.getShort("end_numero"));
+            		endereco.setObservacao(resultados.getString("end_observacao"));
+            		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
+            		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
+            		System.out.println("entrou");
+            		if(null != resultados.getString("end_nome_composto")) {
+            			c.getEnderecoEntregas().add((EnderecoEntrega) endereco);
+            		} else {
+            			c.getEnderecos().add(endereco);
+            		}
+            	}
         	}
         	
         	
