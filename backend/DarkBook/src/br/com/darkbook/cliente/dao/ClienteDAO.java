@@ -9,11 +9,13 @@ import java.util.List;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
+import br.com.darkbook.cliente.Bandeira;
 import br.com.darkbook.cliente.CartaoCredito;
 import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.conexao.Conexao;
 import br.com.darkbook.contato.Contato;
 import br.com.darkbook.contato.Telefone;
+import br.com.darkbook.contato.TipoTelefone;
 import br.com.darkbook.endereco.Cidade;
 import br.com.darkbook.endereco.Endereco;
 import br.com.darkbook.endereco.EnderecoEntrega;
@@ -39,10 +41,19 @@ public class ClienteDAO {
         PreparedStatement comandosSQL = null;
         try {
         	String tabelaCliente = "SELECT * FROM cliente";
+        	
         	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
         			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
         			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
         			+ "tpr_id = end_tpr_id;";
+        	
+        	String tabelaTelefones = "SELECT * FROM contato_telefone JOIN telefone ON cot_tel_id = tel_id AND cot_con_id = ? "
+        			+ "JOIN tipo_telefone ON tel_tpt_id = tpt_id";
+        	
+        	String tabelaContato = "SELECT * FROM cliente_contato JOIN contato ON clc_cli_id = ? AND con_id = clc_con_id;";
+        	
+        	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
+        			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
         	
         	ResultSet resultados;
         	
@@ -75,6 +86,7 @@ public class ClienteDAO {
             		} else {
             			endereco = new Endereco();
             		}
+            		
             		endereco.setBairro(resultados.getString("end_bairro"));
             		endereco.setCep(resultados.getString("end_cep"));
             		endereco.setCidade(new Cidade());
@@ -88,12 +100,56 @@ public class ClienteDAO {
             		endereco.setObservacao(resultados.getString("end_observacao"));
             		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
             		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
-            		System.out.println("entrou");
+ 
             		if(null != resultados.getString("end_nome_composto")) {
             			c.getEnderecoEntregas().add((EnderecoEntrega) endereco);
             		} else {
             			c.getEnderecos().add(endereco);
             		}
+            	} // ./enderecos
+            	
+            	c.getUsuario().setContatos(new ArrayList<>());
+            	
+            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
+        		comandosSQL.setLong(1, c.getId());
+        		
+        		resultados = comandosSQL.executeQuery();
+            	while(resultados.next()) {
+            		Contato con = new Contato();
+            		con.setEmail(resultados.getString("con_email"));
+            		con.setTelefones(new ArrayList<>());
+            		
+            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefones);
+            		comandosSQL.setLong(1, resultados.getLong("con_id"));
+            		
+            		ResultSet resultados2 = comandosSQL.executeQuery();
+                	while(resultados2.next()) {
+                		Telefone tel = new Telefone();
+                		tel.setDdd(resultados2.getString("tel_ddd"));
+                		tel.setNumero(resultados2.getString("tel_numero"));
+                		tel.setTipoTelefone(TipoTelefone.valueOf(resultados2.getString("tpt_tipo")));
+                		con.getTelefones().add(tel);
+                	}
+                	c.getUsuario().getContatos().add(con);
+            	}// ./contatos
+            	
+            	
+            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartoes);
+        		comandosSQL.setLong(1, c.getId());
+        		
+        		c.setCartoes(new ArrayList<>());
+        		
+        		resultados = comandosSQL.executeQuery();
+            	while(resultados.next()) {
+            		CartaoCredito cart = new CartaoCredito();
+            		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
+            		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
+            		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
+            		cart.setNumero(resultados.getString("cat_numero"));
+            		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
+            		c.getCartoes().add(cart);
+            	}// ./cartoes
+            		
             	}
         	}
         	
