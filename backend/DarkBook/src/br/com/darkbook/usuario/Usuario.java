@@ -1,7 +1,5 @@
 package br.com.darkbook.usuario;
 
-import java.util.List;
-
 import br.com.darkbook.contato.Contato;
 
 public class Usuario extends Pessoa{

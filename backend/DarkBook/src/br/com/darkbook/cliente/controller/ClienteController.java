@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import br.com.darkbook.JSONUtil;
@@ -29,6 +31,7 @@ import br.com.darkbook.endereco.Estado;
 import br.com.darkbook.endereco.Pais;
 import br.com.darkbook.endereco.TipoLogradouro;
 import br.com.darkbook.endereco.TipoResidencia;
+import br.com.darkbook.entidade.Entidade;
 import br.com.darkbook.usuario.Genero;
 import br.com.darkbook.usuario.Usuario;
 
@@ -46,55 +49,102 @@ public class ClienteController extends HttpServlet {
 
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		ViewHelperClienteJson vhCli = new ViewHelperClienteJson();
-//		ICommand comando = null;
-//		try {
-//			String caminho = tratarURL(request.getPathInfo());
-//			comando = comandosGet.get(caminho);
-//			
-//			try {	
-//				if(!caminho.equals("/")) {
-//					
-//				} else {
-//					comando.executar(vhCli.getEntidade(request));
-//				}
-//				
-//			} catch (SQLException e) {
-//				response.setStatus(500);
-//				e.printStackTrace();
-//			}
-//		}catch (Exception e) {
-//			response.setStatus(404);
-//		}     
-		/*********************************/
-//		JSONObject clientes = new JSONObject();
-//    	for(Entidade ent : entidade) {
-//    		Cliente cli = (Cliente) ent;
-//    		JSONObject dadosPessoais = new JSONObject();
-//    		dadosPessoais.put("cpf", cli.getCpf());
-//    		dadosPessoais.put("nome", cli.getUsuario().getNome());
-//    		dadosPessoais.put("sobrenome", cli.getUsuario().getSobrenome());
-//    		dadosPessoais.put("dataNascimento", cli.getUsuario().getDataNascimento());
-//    		dadosPessoais.put("genero", cli.getUsuario().getGenero());
-//    		dadosPessoais.put("senha", cli.getUsuario().getSenha());
-//    		JSONArray contatos = new JSONArray();
-//    		for(Contato c : cli.getUsuario().getContatos()) {
-//    			JSONObject contato = new JSONObject();
-//    			contato.put("email", c.getEmail());
-//    			JSONArray telefones = new JSONArray();
-//    			for(Telefone t : c.getTelefones()) {
-//    				JSONObject telefone = new JSONObject();
-//    				telefone.put("ddd", t.getDdd());
-//    				telefone.put("tipoTelefone", t.getTipoTelefone());
-//    				telefone.put("telefone", t.getNumero());
-//    				telefones.put(telefone);
-//    			}
-//    			contato.put("telefones", telefones);
-//    			contatos.put(contato);
-//    		}
-//    		dadosPessoais.put("contatos", contatos);
-//    		clientes.put("dadosPessoais", dadosPessoais);
-//    	}
+		String id = request.getParameter("id");
+		ClienteDAO cliDao;
+		if(null != id) {
+			Cliente cli = new Cliente();
+			cli.setId(Long.parseLong(id));
+			try {
+				cliDao = new ClienteDAO();
+				cliDao.consultar(cli);
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			List<Entidade> clientesList = null;
+			try {
+				cliDao = new ClienteDAO();
+				clientesList = cliDao.consultar(new Cliente());
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			}
+			
+			JSONObject clientes = new JSONObject();
+	    	for(Entidade ent : clientesList) {
+	    		Cliente cli = (Cliente) ent;
+	    		JSONObject dadosPessoais = new JSONObject();
+	    		dadosPessoais.put("cpf", cli.getCpf());
+	    		dadosPessoais.put("nome", cli.getUsuario().getNome());
+	    		dadosPessoais.put("sobrenome", cli.getUsuario().getSobrenome());
+	    		dadosPessoais.put("dataNascimento", cli.getUsuario().getDataNascimento());
+	    		dadosPessoais.put("genero", cli.getUsuario().getGenero());
+	    		dadosPessoais.put("senha", cli.getUsuario().getSenha());
+	    		dadosPessoais.put("email",  cli.getUsuario().getContato().getEmail());
+	    		dadosPessoais.put("ddd", cli.getUsuario().getContato().getDdd());
+	    		dadosPessoais.put("tipoTelefone", cli.getUsuario().getContato().getTipoTelefone());
+	    		dadosPessoais.put("telefone", cli.getUsuario().getContato().getNumero());
+	    		
+	    		JSONArray enderecosEntrega = new JSONArray();
+	    		for(EnderecoEntrega endereco : cli.getEnderecoEntregas()) {
+	    			JSONObject enderecoJson = new JSONObject();
+	    			enderecoJson.put("tipoResidencia", endereco.getTipoResidencia());
+	    			enderecoJson.put("tipoLogradouro", endereco.getTipoLogradouro());
+	    			enderecoJson.put("pais", endereco.getCidade().getEstado().getPais().getPais());
+	    			enderecoJson.put("estado", endereco.getCidade().getEstado().getEstado());
+	    			enderecoJson.put("cidade", endereco.getCidade().getCidade());
+	    			enderecoJson.put("logradouro", endereco.getLogradouro());
+	    			enderecoJson.put("numero", endereco.getNumero());
+	    			enderecoJson.put("bairro", endereco.getBairro());
+	    			enderecoJson.put("cep", endereco.getCep());
+	    			enderecoJson.put("observacao", endereco.getObservacao());
+	    			enderecoJson.put("nomeComposto", endereco.getNomeComposto());
+	    			enderecoJson.put("favorito", endereco.isFavorito());
+	    			enderecosEntrega.put(enderecoJson);
+	    		}
+	    		
+	    		dadosPessoais.put("enderecosEntrega", enderecosEntrega);
+	    		
+	    		JSONArray enderecosCobranca = new JSONArray();
+	    		for(Endereco endereco : cli.getEnderecos()) {
+	    			JSONObject enderecoJson = new JSONObject();
+	    			enderecoJson.put("tipoResidencia", endereco.getTipoResidencia());
+	    			enderecoJson.put("tipoLogradouro", endereco.getTipoLogradouro());
+	    			enderecoJson.put("pais", endereco.getCidade().getEstado().getPais().getPais());
+	    			enderecoJson.put("estado", endereco.getCidade().getEstado().getEstado());
+	    			enderecoJson.put("cidade", endereco.getCidade().getCidade());
+	    			enderecoJson.put("logradouro", endereco.getLogradouro());
+	    			enderecoJson.put("numero", endereco.getNumero());
+	    			enderecoJson.put("bairro", endereco.getBairro());
+	    			enderecoJson.put("cep", endereco.getCep());
+	    			enderecoJson.put("observacao", endereco.getObservacao());
+	    			enderecosCobranca.put(enderecoJson);
+	    		}
+	    		
+	    		dadosPessoais.put("enderecosCobranca", enderecosCobranca);
+	    		
+	    		JSONArray cartoes = new JSONArray();
+	    		for(CartaoCredito cartao : cli.getCartoes()) {
+	    			JSONObject cartaoJson = new JSONObject();
+	    			cartaoJson.put("bandeira", cartao.getBandeira());
+	    			cartaoJson.put("numero", cartao.getNumero());
+	    			cartaoJson.put("nomeImpresso", cartao.getNomeImpresso());
+	    			cartaoJson.put("codSeguranca", cartao.getCodSeguranca());
+	    			cartaoJson.put("preferencial", cartao.isPreferencial());
+	    			cartoes.put(cartaoJson);
+	    		}
+	    		
+	    		dadosPessoais.put("cartoes", cartoes);
+	    		
+	    		clientes.put("dadosPessoais", dadosPessoais);
+	    		
+	    		response.setContentType("application/json");
+	    	    response.setCharacterEncoding("UTF-8");
+	    	    
+	    	    response.getWriter().write(clientes.toString());
+	    		
+	    	}
+		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -233,7 +283,7 @@ public class ClienteController extends HttpServlet {
 			cliDao.adiciona(cliente);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			response.setStatus(500); // Erro 400 (Bad Request): parametros errados ou inexistentes
+			response.setStatus(500); // Erro 500 (Bad Request): parametros errados ou inexistentes
     		response.setHeader("Erros", e.getMessage());	// adiciona no header as mensagens de erros
     		return;
 		}
@@ -243,21 +293,23 @@ public class ClienteController extends HttpServlet {
 	
 	public boolean validarExistencia(Cliente cli) {
 		ClienteDAO cliDao;
-		Cliente cliente = null;
+		List<Entidade> clientes = null;
 		
 		try {
 			
 			cliDao = new ClienteDAO();
-			cliente = (Cliente) cliDao.consultar(cli);
+			clientes = cliDao.consultar(cli);
 			
 		} catch (ClassNotFoundException | SQLException e1) {
 
 			e1.printStackTrace();
 		}
-		
-		if(null == cliente.getId()) {
-			return true;
+		for(Entidade cliente : clientes) {
+			if(null == cliente.getId()) {
+				return true;
+			}
 		}
+		
 		return false;
 	}
 
