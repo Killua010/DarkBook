@@ -5,11 +5,54 @@ public class Endereco {
 	private TipoLogradouro tipoLogradouro;
 	private TipoResidencia tipoResidencia;
 	private String logradouro;
-	private int numero;
+	private Integer numero;
 	private String bairro;
 	private String cep;
 	private String observacao;
 	
+	public String validarEndereco() {
+		String erro = "";
+		
+		if(null == bairro || bairro.isEmpty()) {
+			erro += "O dado do bairro do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(null == cep || cep.isEmpty()) {
+			erro += "O dado do cep do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(cep.length() != 8) {
+			erro += "O dado do cep do endereço de cobrança teve ter 8 caracteres\n";
+		}
+		
+		if(null == cidade) {
+			erro += "O dado da cidade do endereço de cobrança é obrigatorio\n";
+			erro += "O dado do estado do endereço de cobrança é obrigatorio\n";
+			erro += "O dado do pais do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(null == logradouro || logradouro.isEmpty()) {
+			erro += "O dado do logradouro do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(null == numero) {
+			erro += "O dado do numero do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(null == tipoLogradouro) {
+			erro += "O dado do tipo de logradouro do cobrança de entrega é obrigatorio\n";
+		}
+		
+		if(null == tipoResidencia){
+			erro += "O dado do tipo de residencia do cobrança de entrega é obrigatorio\n";
+		}
+		
+		return erro;
+	}
+	
+	/*
+	 * Métodos GETs e SETs
+	 */
 	public Cidade getCidade() {
 		return cidade;
 	}
@@ -34,7 +77,7 @@ public class Endereco {
 	public void setLogradouro(String logradouro) {
 		this.logradouro = logradouro;
 	}
-	public int getNumero() {
+	public Integer getNumero() {
 		return numero;
 	}
 	public void setNumero(int numero) {

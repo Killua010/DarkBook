@@ -9,160 +9,159 @@ import java.util.List;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
-import br.com.darkbook.cliente.Bandeira;
 import br.com.darkbook.cliente.CartaoCredito;
 import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.conexao.Conexao;
 import br.com.darkbook.contato.Contato;
-import br.com.darkbook.contato.Telefone;
-import br.com.darkbook.contato.TipoTelefone;
-import br.com.darkbook.endereco.Cidade;
 import br.com.darkbook.endereco.Endereco;
 import br.com.darkbook.endereco.EnderecoEntrega;
-import br.com.darkbook.endereco.Estado;
-import br.com.darkbook.endereco.Pais;
-import br.com.darkbook.endereco.TipoLogradouro;
-import br.com.darkbook.endereco.TipoResidencia;
 import br.com.darkbook.entidade.Entidade;
-import br.com.darkbook.usuario.Genero;
-import br.com.darkbook.usuario.Usuario;
 
 
 public class ClienteDAO {
 	 // a conexão com o banco de dados
     private Connection conexao;
 
-    public ClienteDAO() {
-        this.conexao = (Connection) new Conexao().getConexao();
+    public ClienteDAO() throws ClassNotFoundException, SQLException {
+        this.conexao = (Connection) Conexao.getConexao();
     }
     
-    public List<Entidade> buscar(Entidade entidade) throws SQLException {
-    	List<Cliente> cliList = new ArrayList<>();
-        PreparedStatement comandosSQL = null;
-        try {
-        	String tabelaCliente = "SELECT * FROM cliente";
-        	
-        	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
-        			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
-        			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-        			+ "tpr_id = end_tpr_id;";
-        	
-        	String tabelaTelefones = "SELECT * FROM contato_telefone JOIN telefone ON cot_tel_id = tel_id AND cot_con_id = ? "
-        			+ "JOIN tipo_telefone ON tel_tpt_id = tpt_id";
-        	
-        	String tabelaContato = "SELECT * FROM cliente_contato JOIN contato ON clc_cli_id = ? AND con_id = clc_con_id;";
-        	
-        	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
-        			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
-        	
-        	ResultSet resultados;
-        	
-        	resultados = (ResultSet) this.conexao.prepareStatement(tabelaCliente).executeQuery();
-        	while(resultados.next()) {
-        		Cliente c = new Cliente();
-        		c.setCpf(resultados.getString("cli_cpf"));
-        		c.setId(resultados.getLong("cli_id"));
-        		c.setUsuario(new Usuario());
-        		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
-        		c.getUsuario().setNome(resultados.getString("cli_nome"));
-        		c.getUsuario().setSenha(resultados.getString("cli_senha"));
-        		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
-        		cliList.add(c);
-        	}
-        	
-        	for(Cliente c : cliList) {
-        		c.setEnderecoEntregas(new ArrayList<>());
-        		c.setEnderecos(new ArrayList<>());
-        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
-        		comandosSQL.setLong(1, c.getId());
-        		
-        		resultados = comandosSQL.executeQuery();
-            	while(resultados.next()) {
-            		Endereco endereco;
-            		if(null != resultados.getString("end_nome_composto")) {
-            			endereco = new EnderecoEntrega();
-            			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
-            			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
-            		} else {
-            			endereco = new Endereco();
-            		}
-            		
-            		endereco.setBairro(resultados.getString("end_bairro"));
-            		endereco.setCep(resultados.getString("end_cep"));
-            		endereco.setCidade(new Cidade());
-            		endereco.getCidade().setEstado(new Estado());
-            		endereco.getCidade().getEstado().setPais(new Pais());
-            		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
-            		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
-            		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
-            		endereco.setLogradouro(resultados.getString("end_logradouro"));
-            		endereco.setNumero(resultados.getShort("end_numero"));
-            		endereco.setObservacao(resultados.getString("end_observacao"));
-            		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
-            		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
- 
-            		if(null != resultados.getString("end_nome_composto")) {
-            			c.getEnderecoEntregas().add((EnderecoEntrega) endereco);
-            		} else {
-            			c.getEnderecos().add(endereco);
-            		}
-            	} // ./enderecos
-            	
-            	c.getUsuario().setContatos(new ArrayList<>());
-            	
-            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
-        		comandosSQL.setLong(1, c.getId());
-        		
-        		resultados = comandosSQL.executeQuery();
-            	while(resultados.next()) {
-            		Contato con = new Contato();
-            		con.setEmail(resultados.getString("con_email"));
-            		con.setTelefones(new ArrayList<>());
-            		
-            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefones);
-            		comandosSQL.setLong(1, resultados.getLong("con_id"));
-            		
-            		ResultSet resultados2 = comandosSQL.executeQuery();
-                	while(resultados2.next()) {
-                		Telefone tel = new Telefone();
-                		tel.setDdd(resultados2.getString("tel_ddd"));
-                		tel.setNumero(resultados2.getString("tel_numero"));
-                		tel.setTipoTelefone(TipoTelefone.valueOf(resultados2.getString("tpt_tipo")));
-                		con.getTelefones().add(tel);
-                	}
-                	c.getUsuario().getContatos().add(con);
-            	}// ./contatos
-            	
-            	
-            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartoes);
-        		comandosSQL.setLong(1, c.getId());
-        		
-        		c.setCartoes(new ArrayList<>());
-        		
-        		resultados = comandosSQL.executeQuery();
-            	while(resultados.next()) {
-            		CartaoCredito cart = new CartaoCredito();
-            		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
-            		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
-            		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
-            		cart.setNumero(resultados.getString("cat_numero"));
-            		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
-            		c.getCartoes().add(cart);
-            	}// ./cartoes
-            		
-            	}
-        	}
-        	
-        	
-        }catch (SQLException e) {
-        	e.printStackTrace();		// printa a pilha de erros
-            throw new RuntimeException(e);	// lança uma exceção
-        } finally {
-        	comandosSQL.close();
-        	conexao.close();
-		}
-    	return null;
+    public Entidade consultar(Entidade entidade) throws SQLException {
+    	Cliente cli = (Cliente) entidade;
+    	ResultSet resultados;
+    	PreparedStatement preparo;
+    	if(null == cli.getId()) {
+    		
+    		String tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
+    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+    		preparo.setString(1, cli.getCpf());
+    		resultados = preparo.executeQuery();
+    		
+    		if(!resultados.next()) {
+    			return cli;
+    		} else {
+    			System.out.println("tem id");
+    		}
+    	}
+    	
+    	
+    	return cli;
     }
+    
+//    public List<Entidade> buscar(Entidade entidade) throws SQLException {
+//    	List<Entidade> cliList = new ArrayList<>();
+//        PreparedStatement comandosSQL = null;
+//        try {
+//        	String tabelaCliente = "SELECT * FROM cliente";
+//        	
+//        	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
+//        			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
+//        			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
+//        			+ "tpr_id = end_tpr_id;";
+//        	
+//        	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
+//        	
+//        	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
+//        			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
+//        	
+//        	ResultSet resultados;
+//        	
+//        	resultados = (ResultSet) this.conexao.prepareStatement(tabelaCliente).executeQuery();
+//        	while(resultados.next()) {
+//        		Cliente c = new Cliente();
+//        		c.setCpf(resultados.getString("cli_cpf"));
+//        		c.setId(resultados.getLong("cli_id"));
+//        		c.setUsuario(new Usuario());
+//        		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
+//        		c.getUsuario().setNome(resultados.getString("cli_nome"));
+//        		c.getUsuario().setSenha(resultados.getString("cli_senha"));
+//        		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
+//        		cliList.add(c);
+//        	}
+//        	
+//        	for(Entidade c : cliList) {
+//        		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
+//        		((Cliente) c).setEnderecos(new ArrayList<>());
+//        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
+//        		comandosSQL.setLong(1, c.getId());
+//        		
+//        		resultados = comandosSQL.executeQuery();
+//            	while(resultados.next()) {
+//            		Endereco endereco;
+//            		if(null != resultados.getString("end_nome_composto")) {
+//            			endereco = new EnderecoEntrega();
+//            			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
+//            			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
+//            		} else {
+//            			endereco = new Endereco();
+//            		}
+//            		
+//            		endereco.setBairro(resultados.getString("end_bairro"));
+//            		endereco.setCep(resultados.getString("end_cep"));
+//            		endereco.setCidade(new Cidade());
+//            		endereco.getCidade().setEstado(new Estado());
+//            		endereco.getCidade().getEstado().setPais(new Pais());
+//            		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
+//            		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
+//            		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
+//            		endereco.setLogradouro(resultados.getString("end_logradouro"));
+//            		endereco.setNumero(resultados.getShort("end_numero"));
+//            		endereco.setObservacao(resultados.getString("end_observacao"));
+//            		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
+//            		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
+// 
+//            		if(null != resultados.getString("end_nome_composto")) {
+//            			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) endereco);
+//            		} else {
+//            			((Cliente) c).getEnderecos().add(endereco);
+//            		}
+//            	} // ./enderecos
+//            	
+//            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
+//        		comandosSQL.setLong(1, c.getId());
+//        		
+//        		resultados = comandosSQL.executeQuery();
+//            	while(resultados.next()) {
+//            		Contato con = new Contato();
+//            		con.setEmail(resultados.getString("con_email"));
+//            		con.setDdd(resultados.getString("con_ddd"));
+//            		con.setNumero(resultados.getString("con_numero"));
+//            		con.setTipoTelefone(TipoTelefone.valueOf(resultados.getString("tpt_tipo")));
+//            		
+//            		((Cliente) c).getUsuario().setContato(con);
+//            	}// ./contatos
+//            	
+//            	
+//            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartoes);
+//        		comandosSQL.setLong(1, c.getId());
+//        		
+//        		((Cliente) c).setCartoes(new ArrayList<>());
+//        		
+//        		resultados = comandosSQL.executeQuery();
+//            	while(resultados.next()) {
+//            		CartaoCredito cart = new CartaoCredito();
+//            		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
+//            		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
+//            		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
+//            		cart.setNumero(resultados.getString("cat_numero"));
+//            		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
+//            		((Cliente) c).getCartoes().add(cart);
+//            	}// ./cartoes
+//            	
+//            	
+//            	
+//        	}
+//        	
+//        	
+//        }catch (SQLException e) {
+//        	e.printStackTrace();		// printa a pilha de erros
+//            throw new RuntimeException(e);	// lança uma exceção
+//        } finally {
+//        	comandosSQL.close();
+//        	conexao.close();
+//		}
+//    	return cliList;
+//    }
     
     
     
@@ -180,31 +179,20 @@ public class ClienteDAO {
             			+ "cli_dataNascimento, "
             			+ "cli_cpf,"
             			+ "cli_genero,"
-            			+ "cli_senha)" 
-            		+ " values (?,?,?,?,?, ?);";
-            
-            // Telefone
-            String tabelaTelefone = ""
-            		+ "INSERT INTO telefone ("
-            			+ "tel_ddd, "
-            			+ "tel_numero, "
-            			+ "tel_tpt_id) "
-            		+ "	VALUES ("
-            			+ "?, ?, "
-            			+ "(SELECT tpt_id FROM tipo_telefone WHERE ? = tipo_telefone.tpt_tipo));";
+            			+ "cli_senha,"
+            			+ "cli_con_id)" 
+            		+ " values (?,?,?,?,?,?,?);";
             
             // Contato
             String tabelaContato = ""
             		+ "INSERT INTO contato ("
+            			+ "con_ddd, "
+            			+ "con_numero, "
+            			+ "con_tpt_id, "
             			+ "con_email) "
-            		+ "VALUES (?);";
-            
-            // Ligação (Telefone - Contato)
-            String tabelaTelefoneContato = ""
-            		+ "INSERT INTO contato_telefone ("
-            			+ "cot_tel_id,"
-            			+ " cot_con_id) "
-            		+ "VALUES (?, ?);";
+            		+ "VALUES (?,?,"
+            		+ "(SELECT tpt_id FROM tipo_telefone WHERE tpt_tipo = ?),"
+            		+ "?);";
             
             // Ligação (Cliente - Contato)
             String tabelaClienteContato = ""
@@ -281,13 +269,28 @@ public class ClienteDAO {
             
             /* IDs */
             Long idCliente = null;
-            List<Long> idsTelefone = new ArrayList<>();
             Long idContato = null;
             Long idEndereco = null;
             List<Long> idsCartao = new ArrayList<>();
             ResultSet ultimoID = null;
             
             /* DADOS E EXECUÇÃO DOS COMANDOS SQL */
+            
+            Contato con = cliente.getUsuario().getContato();
+        	
+        	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
+            	
+        	comandosSQL.setString(1, con.getDdd());
+    		comandosSQL.setString(2, con.getNumero());
+    		System.out.println(con.getTipoTelefone().toString());
+    		comandosSQL.setString(3, con.getTipoTelefone().toString());
+    		comandosSQL.setString(4, con.getEmail());
+        	
+        	comandosSQL.execute();
+        	
+        	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
+        	while(ultimoID.next()) 
+        		idContato = ultimoID.getLong(1);
             
             // cliente
             comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
@@ -297,50 +300,12 @@ public class ClienteDAO {
             comandosSQL.setString(4, cliente.getCpf());
             comandosSQL.setString(5, cliente.getUsuario().getGenero().toString());
             comandosSQL.setString(6, cliente.getUsuario().getSenha());
-            comandosSQL.execute();
+            comandosSQL.setLong(7, idContato);
+            comandosSQL.execute();//
             
             ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
         	while(ultimoID.next()) 
         		idCliente = ultimoID.getLong(1);
-            
-        	// contatos
-            for(Contato con : cliente.getUsuario().getContatos()) {
-            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
-            	comandosSQL.setString(1, con.getEmail());
-            	comandosSQL.execute();
-            	
-            	ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
-            	while(ultimoID.next()) 
-            		idContato = ultimoID.getLong(1);
-            	
-            	// telefones
-            	for(Telefone tel : con.getTelefones()) {
-            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefone);
-            		comandosSQL.setString(1, tel.getDdd());
-            		comandosSQL.setString(2, tel.getNumero());
-            		comandosSQL.setString(3, tel.getTipoTelefone().toString());
-            		comandosSQL.execute();
-            		
-            		ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
-                	while(ultimoID.next()) 
-            			idsTelefone.add(ultimoID.getLong(1));
-            	}
-            	
-            	// telefone - contato
-            	for(Long id : idsTelefone) {
-            		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaTelefoneContato);
-            		comandosSQL.setLong(1, idContato);
-            		comandosSQL.setLong(2, id);
-            		comandosSQL.execute();
-            	}
-            	
-            	//cliente - contato
-                comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteContato);
-                comandosSQL.setLong(1, idCliente);
-                comandosSQL.setLong(2, idContato);
-                comandosSQL.execute();
-            	
-            }// contatos
             
             // endereco cobrança
             for(Endereco end : cliente.getEnderecos()) {

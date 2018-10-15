@@ -6,14 +6,14 @@ import br.com.darkbook.contato.Contato;
 
 public class Usuario extends Pessoa{
 	private String senha;
-	private List<Contato> contatos;
+	private Contato contato;
 
-	public List<Contato> getContatos() {
-		return contatos;
+	public Contato getContato() {
+		return contato;
 	}
 
-	public void setContatos(List<Contato> contatos) {
-		this.contatos = contatos;
+	public void setContato(Contato contato) {
+		this.contato = contato;
 	}
 
 	public String getSenha() {

@@ -2,8 +2,25 @@ package br.com.darkbook.endereco;
 
 public class EnderecoEntrega extends Endereco{
 	private String nomeComposto;
-	private boolean favorito;
+	private Boolean favorito;
 	
+	public String validarEndereco() {
+		String erro = super.validarEndereco();
+		
+		if(null == nomeComposto || nomeComposto.isEmpty()) {
+			erro += "O dado do nome composto do endereço de entrega é obrigatorio\n";
+		}
+		
+		if(null == favorito) {
+			erro += "O dado de favoritoo do endereço de entrega é obrigatorio\n";
+		}
+		
+		return erro;
+	}
+	
+	/*
+	 * Métodos GETs e SETs
+	 */
 	public String getNomeComposto() {
 		return nomeComposto;
 	}

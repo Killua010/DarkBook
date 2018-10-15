@@ -5,7 +5,8 @@ CREATE TABLE cliente(
     cli_dataNascimento DATE NOT NULL,
     cli_cpf CHAR(11) NOT NULL,
     cli_genero VARCHAR(30) NOT NULL,
-    cli_senha VARCHAR(40) NOT NULL
+    cli_senha VARCHAR(40) NOT NULL,
+    cli_con_id BIGINT(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_logradouro(
@@ -59,27 +60,13 @@ CREATE TABLE tipo_telefone(
     tpt_id BIGINT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tpt_tipo VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    
-CREATE TABLE telefone(
-    tel_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    tel_ddd VARCHAR(10) NOT NULL,
-    tel_numero VARCHAR(20) NOT NULL,
-    tel_tpt_id BIGINT(2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE contato(
     con_id BIGINT(5) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    con_email VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE contato_telefone(
-    cot_tel_id BIGINT(5) NOT NULL,
-    cot_con_id BIGINT(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE cliente_contato(
-    clc_cli_id BIGINT(5) NOT NULL,
-    clc_con_id BIGINT(5) NOT NULL
+    con_email VARCHAR(255) NOT NULL,
+    con_ddd VARCHAR(10) NOT NULL,
+    con_numero VARCHAR(20) NOT NULL,
+    con_tpt_id BIGINT(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE bandeira(
@@ -116,9 +103,9 @@ ALTER TABLE `cliente_endereco` ADD CONSTRAINT `fk_cle_cli` FOREIGN KEY ( `cle_cl
 
 ALTER TABLE `cliente_endereco` ADD CONSTRAINT `fk_cle_end` FOREIGN KEY ( `cle_end_id` ) REFERENCES `endereco` ( `end_id` ) ;
 
-ALTER TABLE `telefone` ADD CONSTRAINT `fk_tel_tpt` FOREIGN KEY ( `tel_tpt_id` ) REFERENCES `tipo_telefone` ( `tpt_id` ) ;
+ALTER TABLE `contato` ADD CONSTRAINT `fk_con_tpt` FOREIGN KEY ( `con_tpt_id` ) REFERENCES `tipo_telefone` ( `tpt_id` ) ;
 
-ALTER TABLE `contato_telefone` ADD CONSTRAINT `fk_cot_tel` FOREIGN KEY ( `cot_tel_id` ) REFERENCES `contato` ( `con_id` ) ;
+ALTER TABLE `cliente` ADD CONSTRAINT `fk_cli_con` FOREIGN KEY ( `cli_con_id` ) REFERENCES `contato` ( `con_id` ) ;
 
 ALTER TABLE `cartao_credito` ADD CONSTRAINT `fk_cat_ban` FOREIGN KEY ( `cat_ban_id` ) REFERENCES `bandeira` ( `ban_id` ) ;
 

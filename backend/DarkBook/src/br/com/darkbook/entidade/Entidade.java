@@ -25,5 +25,4 @@ public class Entidade {
 		this.dataHoraRegistro = dataHoraRegistro;
 	}
 	
-	
 }
