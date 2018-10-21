@@ -225,6 +225,7 @@ public class ClienteController extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+			
 		
 		// instancias das classes
 		Contato contato = new Contato();     		
@@ -258,59 +259,59 @@ public class ClienteController extends HttpServlet {
      		contato.setDdd(clienteJson.getJSONObject("dadosPessoais").get("ddd").toString());
      		contato.setEmail(clienteJson.getJSONObject("dadosPessoais").get("email").toString());
      		
-			usuario.setNome(clienteJson.getJSONObject("dadosPessoais").get("nome").toString());
+			usuario.setNome(clienteJson.getJSONObject("dadosPessoais").get("primeiroNome").toString());
 			usuario.setDataNascimento(LocalDate.parse(clienteJson.getJSONObject("dadosPessoais").get("dataNascimento").toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 			usuario.setSobrenome(clienteJson.getJSONObject("dadosPessoais").get("sobrenome").toString());
 			usuario.setGenero(Genero.valueOf(clienteJson.getJSONObject("dadosPessoais").get("genero").toString()));
 			usuario.setSenha(clienteJson.getJSONObject("dadosPessoais").get("senha").toString());
 			usuario.setContato(contato);
 			
-			for(int i = 0; i < clienteJson.getJSONArray("enderecosCobranca").length(); i++) {
-				JSONObject enderecoJson = clienteJson.getJSONArray("enderecosCobranca").getJSONObject(i);
-				pais.setPais(enderecoJson.get("pais").toString());
-				estado.setEstado(enderecoJson.get("estado").toString());
-				estado.setPais(pais);
-				cidade.setCidade(enderecoJson.get("cidade").toString());
-				cidade.setEstado(estado);
-				
-				endereco.setBairro(enderecoJson.get("bairro").toString());
-				endereco.setCep(enderecoJson.get("cep").toString());
-				endereco.setLogradouro(enderecoJson.get("logradouro").toString());
-				endereco.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
-				endereco.setObservacao(enderecoJson.get("observacao").toString());
-				endereco.setTipoLogradouro(TipoLogradouro.valueOf(enderecoJson.get("tipoLogradouro").toString()));
-				endereco.setTipoResidencia(TipoResidencia.valueOf(enderecoJson.get("tipoResidencia").toString()));
-				endereco.setCidade(cidade);
-			}
 			
-			for(int i = 0; i < clienteJson.getJSONArray("enderecosEntrega").length(); i++) {
-				JSONObject enderecoJson = clienteJson.getJSONArray("enderecosEntrega").getJSONObject(i);
-				pais.setPais(enderecoJson.get("pais").toString());
-				estado.setEstado(enderecoJson.get("estado").toString());
-				estado.setPais(pais);
-				cidade.setCidade(enderecoJson.get("cidade").toString());
-				cidade.setEstado(estado);
+			JSONObject enderecoJson = clienteJson.getJSONObject("enderecosCobranca");
+			pais.setPais(enderecoJson.get("pais").toString());
+			estado.setEstado(enderecoJson.get("estado").toString());
+			estado.setPais(pais);
+			cidade.setCidade(enderecoJson.get("cidade").toString());
+			cidade.setEstado(estado);
 			
-				enderecoEntrega.setBairro(enderecoJson.get("bairro").toString());
-				enderecoEntrega.setCep(enderecoJson.get("cep").toString());
-				enderecoEntrega.setLogradouro(enderecoJson.get("logradouro").toString());
-				enderecoEntrega.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
-				enderecoEntrega.setObservacao(enderecoJson.get("observacao").toString());
-				enderecoEntrega.setNomeComposto(enderecoJson.get("nomeComposto").toString());
-				enderecoEntrega.setFavorito(Boolean.parseBoolean(enderecoJson.get("observacao").toString()));
-				enderecoEntrega.setTipoLogradouro(TipoLogradouro.valueOf(enderecoJson.get("tipoLogradouro").toString()));
-				enderecoEntrega.setTipoResidencia(TipoResidencia.valueOf(enderecoJson.get("tipoResidencia").toString()));
-				enderecoEntrega.setCidade(cidade);
-			}
+			endereco.setBairro(enderecoJson.get("bairro").toString());
+			endereco.setCep(enderecoJson.get("cep").toString());
+			endereco.setLogradouro(enderecoJson.get("logradouro").toString());
+			endereco.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
+			endereco.setObservacao(enderecoJson.get("observacao").toString());
+			endereco.setTipoLogradouro(TipoLogradouro.valueOf(enderecoJson.get("tipoLogradouro").toString()));
+			endereco.setTipoResidencia(TipoResidencia.valueOf(enderecoJson.get("tipoResidencia").toString()));
+			endereco.setCidade(cidade);
 			
-			for(int i = 0; i < clienteJson.getJSONArray("cartoes").length(); i++) {
-				JSONObject cartaoJson = clienteJson.getJSONArray("cartoes").getJSONObject(i);
-				cartaoCredito.setBandeira(Bandeira.valueOf(cartaoJson.get("bandeira").toString()));
-				cartaoCredito.setCodSeguranca(cartaoJson.get("codSeguranca").toString());
-				cartaoCredito.setNomeImpresso(cartaoJson.get("nomeImpresso").toString());
-				cartaoCredito.setNumero(cartaoJson.get("numero").toString());
-				cartaoCredito.setPreferencial(Boolean.parseBoolean(cartaoJson.get("preferencial").toString()));
-			}
+			
+			
+			JSONObject enderecoEntregaJson = clienteJson.getJSONObject("enderecosEntrega");
+			pais.setPais(enderecoEntregaJson.get("pais").toString());
+			estado.setEstado(enderecoEntregaJson.get("estado").toString());
+			estado.setPais(pais);
+			cidade.setCidade(enderecoEntregaJson.get("cidade").toString());
+			cidade.setEstado(estado);
+		
+			enderecoEntrega.setBairro(enderecoEntregaJson.get("bairro").toString());
+			enderecoEntrega.setCep(enderecoEntregaJson.get("cep").toString());
+			enderecoEntrega.setLogradouro(enderecoEntregaJson.get("logradouro").toString());
+			enderecoEntrega.setNumero(Integer.parseInt(enderecoEntregaJson.get("numero").toString()));
+			enderecoEntrega.setObservacao(enderecoEntregaJson.get("observacao").toString());
+			enderecoEntrega.setNomeComposto(enderecoEntregaJson.get("nomeComposto").toString());
+			enderecoEntrega.setFavorito(Boolean.parseBoolean(enderecoEntregaJson.get("observacao").toString()));
+			enderecoEntrega.setTipoLogradouro(TipoLogradouro.valueOf(enderecoEntregaJson.get("tipoLogradouro").toString()));
+			enderecoEntrega.setTipoResidencia(TipoResidencia.valueOf(enderecoEntregaJson.get("tipoResidencia").toString()));
+			enderecoEntrega.setCidade(cidade);
+			
+			
+			
+			JSONObject cartaoJson = clienteJson.getJSONObject("cartoes");
+			cartaoCredito.setBandeira(Bandeira.valueOf(cartaoJson.get("bandeira").toString()));
+			cartaoCredito.setCodSeguranca(cartaoJson.get("codSeguranca").toString());
+			cartaoCredito.setNomeImpresso(cartaoJson.get("nomeImpresso").toString());
+			cartaoCredito.setNumero(cartaoJson.get("numero").toString());
+			cartaoCredito.setPreferencial(Boolean.parseBoolean(cartaoJson.get("preferencial").toString()));
+			
 			
 			cliente.setCpf(clienteJson.getJSONObject("dadosPessoais").get("cpf").toString());
 			cliente.getCartoes().add(cartaoCredito);

@@ -15,8 +15,8 @@ public class Conexao {
 		
 		driver = "com.mysql.jdbc.Driver";
 		url = "jdbc:mysql://localhost/darkbook?createDatabaseIfNotExist=true";
-		usuario = "root";
-		senha = "";
+		usuario = "darkbook";
+		senha = "darkbook";
 		
 		Class.forName(driver);
 		
