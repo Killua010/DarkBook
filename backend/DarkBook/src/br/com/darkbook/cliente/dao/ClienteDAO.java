@@ -15,6 +15,7 @@ import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.conexao.Conexao;
 import br.com.darkbook.contato.Contato;
 import br.com.darkbook.contato.TipoTelefone;
+import br.com.darkbook.dao.IDAO;
 import br.com.darkbook.endereco.Cidade;
 import br.com.darkbook.endereco.Endereco;
 import br.com.darkbook.endereco.EnderecoEntrega;
@@ -27,7 +28,7 @@ import br.com.darkbook.usuario.Genero;
 import br.com.darkbook.usuario.Usuario;
 
 
-public class ClienteDAO {
+public class ClienteDAO implements IDAO{
 	 // a conexão com o banco de dados
     private Connection conexao;
 
@@ -35,177 +36,54 @@ public class ClienteDAO {
         this.conexao = (Connection) Conexao.getConexao();
     }
     
-    public List<Entidade> consultar(Entidade entidade) throws SQLException {
+    public List<Entidade> consultar(Entidade entidade) {
     	Cliente cli = (Cliente) entidade;
     	List<Entidade> cliList = new ArrayList<>();
     	ResultSet resultados;
     	PreparedStatement preparo;
-    	if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
-	          PreparedStatement comandosSQL = null;
-	          
-	          try {
-	          	String tabelaCliente = "SELECT * FROM cliente";
-	          	
-	          	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
-	          			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
-	          			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-	          			+ "tpr_id = end_tpr_id;";
-	          	
-	          	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
-	          	
-	          	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
-	          			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
-	          	
-	          	
-	          	resultados = (ResultSet) this.conexao.prepareStatement(tabelaCliente).executeQuery();
-	          	while(resultados.next()) {
-	          		Cliente c = new Cliente();
-	          		c.setCpf(resultados.getString("cli_cpf"));
-	          		c.setId(resultados.getLong("cli_id"));
-	          		c.setUsuario(new Usuario());
-	          		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
-	          		c.getUsuario().setNome(resultados.getString("cli_nome"));
-	          		c.getUsuario().setSenha(resultados.getString("cli_senha"));
-	          		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
-	          		cliList.add(c);
-	          	}
-	          	
-	          	for(Entidade c : cliList) {
-	          		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
-	          		((Cliente) c).setEnderecos(new ArrayList<>());
-	          		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
-	          		comandosSQL.setLong(1, c.getId());
-	          		
-	          		resultados = comandosSQL.executeQuery();
-	              	while(resultados.next()) {
-	              		Endereco endereco;
-	              		if(null != resultados.getString("end_nome_composto")) {
-	              			endereco = new EnderecoEntrega();
-	              			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
-	              			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
-	              		} else {
-	              			endereco = new Endereco();
-	              		}
-	              		
-	              		endereco.setBairro(resultados.getString("end_bairro"));
-	              		endereco.setCep(resultados.getString("end_cep"));
-	              		endereco.setCidade(new Cidade());
-	              		endereco.getCidade().setEstado(new Estado());
-	              		endereco.getCidade().getEstado().setPais(new Pais());
-	              		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
-	              		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
-	              		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
-	              		endereco.setLogradouro(resultados.getString("end_logradouro"));
-	              		endereco.setNumero(resultados.getShort("end_numero"));
-	              		endereco.setObservacao(resultados.getString("end_observacao"));
-	              		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
-	              		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
-	   
-	              		if(null != resultados.getString("end_nome_composto")) {
-	              			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) endereco);
-	              		} else {
-	              			((Cliente) c).getEnderecos().add(endereco);
-	              		}
-	              	} // ./enderecos
-	              	
-	              	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
-	          		comandosSQL.setLong(1, c.getId());
-	          		
-	          		resultados = comandosSQL.executeQuery();
-	              	while(resultados.next()) {
-	              		Contato con = new Contato();
-	              		con.setEmail(resultados.getString("con_email"));
-	              		con.setDdd(resultados.getString("con_ddd"));
-	              		con.setNumero(resultados.getString("con_numero"));
-	              		con.setTipoTelefone(TipoTelefone.valueOf(resultados.getString("tpt_tipo")));
-	              		
-	              		((Cliente) c).getUsuario().setContato(con);
-	              	}// ./contatos
-	              	
-	              	
-	              	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartoes);
-	          		comandosSQL.setLong(1, c.getId());
-	          		
-	          		((Cliente) c).setCartoes(new ArrayList<>());
-	          		
-	          		resultados = comandosSQL.executeQuery();
-	              	while(resultados.next()) {
-	              		CartaoCredito cart = new CartaoCredito();
-	              		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
-	              		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
-	              		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
-	              		cart.setNumero(resultados.getString("cat_numero"));
-	              		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
-	              		((Cliente) c).getCartoes().add(cart);
-	              	}// ./cartoes
-	              	
-	              	
-	              	
-	          	}
-	          	
-	          	
-	          }catch (SQLException e) {
-	          	e.printStackTrace();		// printa a pilha de erros
-	              throw new RuntimeException(e);	// lança uma exceção
-	          } finally {
-	          	comandosSQL.close();
-	          	conexao.close();
-	  		}
-	      	return cliList;
-    	} else if(null == cli.getId()) { // buscar por cpf
-    		
-    		String tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
-    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-    		preparo.setString(1, cli.getCpf());
+    	PreparedStatement comandosSQL = null;
+    	String tabelaCliente;
+    	
+    	try {
+    	
+	    	if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
+	          	tabelaCliente = "SELECT * FROM cliente";
+	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	    	} else if(null == cli.getId()) { // buscar por cpf
+	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
+	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	    		preparo.setString(1, cli.getCpf());
+	    	} else { // buscar por id /***********************************************************************/
+	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
+	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	          	preparo.setLong(1, entidade.getId());
+	    	}
+    	
+    		String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
+          			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
+          			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
+          			+ "tpr_id = end_tpr_id;";
+          	
+          	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
+          	
+          	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
+          			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
+          	
     		resultados = preparo.executeQuery();
-    		if(!resultados.next()) {
-    			conexao.close();
-    			cliList.add(cli);
-    			return cliList;
-    		} else {
-    			while(resultados.next()) {
-    				cli.setId(resultados.getLong("cli_id"));
-    			}
-    			conexao.close();
-    			cliList.add(cli);
-    			return cliList;
-    		}
-    	} else { // buscar por id /***********************************************************************/
-    		PreparedStatement comandosSQL = null;
-	          
-	          try {
-	          	String tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
-	          	
-	          	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
-	          			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
-	          			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-	          			+ "tpr_id = end_tpr_id;";
-	          	
-	          	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
-	          	
-	          	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
-	          			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
-	          	
-	          	
-	          	comandosSQL =  (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-	          	
-	          	comandosSQL.setLong(1, entidade.getId());
-	          	
-	          	resultados = comandosSQL.executeQuery();
-	          	
-	          	Cliente c = null;
-	          	
-	          	while(resultados.next()) {
-	          		c = new Cliente();
-	          		c.setCpf(resultados.getString("cli_cpf"));
-	          		c.setId(resultados.getLong("cli_id"));
-	          		c.setUsuario(new Usuario());
-	          		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
-	          		c.getUsuario().setNome(resultados.getString("cli_nome"));
-	          		c.getUsuario().setSenha(resultados.getString("cli_senha"));
-	          		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
-	          	}
-	          	
+    		
+          	while(resultados.next()) {
+          		Cliente c = new Cliente();
+          		c.setCpf(resultados.getString("cli_cpf"));
+          		c.setId(resultados.getLong("cli_id"));
+          		c.setUsuario(new Usuario());
+          		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
+          		c.getUsuario().setNome(resultados.getString("cli_nome"));
+          		c.getUsuario().setSenha(resultados.getString("cli_senha"));
+          		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
+          		cliList.add(c);
+          	}
+          	
+          	for(Entidade c : cliList) {
           		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
           		((Cliente) c).setEnderecos(new ArrayList<>());
           		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
@@ -273,140 +151,29 @@ public class ClienteDAO {
               		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
               		((Cliente) c).getCartoes().add(cart);
               	}// ./cartoes
-              	cliList.add(c);
-              	 for(Entidade cl : cliList) {
-              		 System.out.println(cl.getId());
-              	 }
-	          }catch (SQLException e) {
-	          	e.printStackTrace();		// printa a pilha de erros
-	              throw new RuntimeException(e);	// lança uma exceção
-	          } finally {
-	          	comandosSQL.close();
-	          	conexao.close();
-	  		}
-	          
-	      	return cliList;
-    	}
+              	
+              	
+              	
+          	}
+          	
+          	
+          }catch (SQLException e) {
+          	e.printStackTrace();		// printa a pilha de erros
+              throw new RuntimeException(e);	// lança uma exceção
+          } finally {
+          	try {
+				comandosSQL.close();
+				conexao.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+          	
+  		}
+      	return cliList;
     }
     
-//    public List<Entidade> buscar(Entidade entidade) throws SQLException {
-//    	List<Entidade> cliList = new ArrayList<>();
-//        PreparedStatement comandosSQL = null;
-//        try {
-//        	String tabelaCliente = "SELECT * FROM cliente";
-//        	
-//        	String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
-//        			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
-//        			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-//        			+ "tpr_id = end_tpr_id;";
-//        	
-//        	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
-//        	
-//        	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
-//        			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
-//        	
-//        	ResultSet resultados;
-//        	
-//        	resultados = (ResultSet) this.conexao.prepareStatement(tabelaCliente).executeQuery();
-//        	while(resultados.next()) {
-//        		Cliente c = new Cliente();
-//        		c.setCpf(resultados.getString("cli_cpf"));
-//        		c.setId(resultados.getLong("cli_id"));
-//        		c.setUsuario(new Usuario());
-//        		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
-//        		c.getUsuario().setNome(resultados.getString("cli_nome"));
-//        		c.getUsuario().setSenha(resultados.getString("cli_senha"));
-//        		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
-//        		cliList.add(c);
-//        	}
-//        	
-//        	for(Entidade c : cliList) {
-//        		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
-//        		((Cliente) c).setEnderecos(new ArrayList<>());
-//        		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
-//        		comandosSQL.setLong(1, c.getId());
-//        		
-//        		resultados = comandosSQL.executeQuery();
-//            	while(resultados.next()) {
-//            		Endereco endereco;
-//            		if(null != resultados.getString("end_nome_composto")) {
-//            			endereco = new EnderecoEntrega();
-//            			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
-//            			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
-//            		} else {
-//            			endereco = new Endereco();
-//            		}
-//            		
-//            		endereco.setBairro(resultados.getString("end_bairro"));
-//            		endereco.setCep(resultados.getString("end_cep"));
-//            		endereco.setCidade(new Cidade());
-//            		endereco.getCidade().setEstado(new Estado());
-//            		endereco.getCidade().getEstado().setPais(new Pais());
-//            		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
-//            		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
-//            		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
-//            		endereco.setLogradouro(resultados.getString("end_logradouro"));
-//            		endereco.setNumero(resultados.getShort("end_numero"));
-//            		endereco.setObservacao(resultados.getString("end_observacao"));
-//            		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
-//            		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
-// 
-//            		if(null != resultados.getString("end_nome_composto")) {
-//            			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) endereco);
-//            		} else {
-//            			((Cliente) c).getEnderecos().add(endereco);
-//            		}
-//            	} // ./enderecos
-//            	
-//            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
-//        		comandosSQL.setLong(1, c.getId());
-//        		
-//        		resultados = comandosSQL.executeQuery();
-//            	while(resultados.next()) {
-//            		Contato con = new Contato();
-//            		con.setEmail(resultados.getString("con_email"));
-//            		con.setDdd(resultados.getString("con_ddd"));
-//            		con.setNumero(resultados.getString("con_numero"));
-//            		con.setTipoTelefone(TipoTelefone.valueOf(resultados.getString("tpt_tipo")));
-//            		
-//            		((Cliente) c).getUsuario().setContato(con);
-//            	}// ./contatos
-//            	
-//            	
-//            	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartoes);
-//        		comandosSQL.setLong(1, c.getId());
-//        		
-//        		((Cliente) c).setCartoes(new ArrayList<>());
-//        		
-//        		resultados = comandosSQL.executeQuery();
-//            	while(resultados.next()) {
-//            		CartaoCredito cart = new CartaoCredito();
-//            		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
-//            		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
-//            		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
-//            		cart.setNumero(resultados.getString("cat_numero"));
-//            		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
-//            		((Cliente) c).getCartoes().add(cart);
-//            	}// ./cartoes
-//            	
-//            	
-//            	
-//        	}
-//        	
-//        	
-//        }catch (SQLException e) {
-//        	e.printStackTrace();		// printa a pilha de erros
-//            throw new RuntimeException(e);	// lança uma exceção
-//        } finally {
-//        	comandosSQL.close();
-//        	conexao.close();
-//		}
-//    	return cliList;
-//    }
-    
-    
-    
-    public void adiciona(Entidade entidade) throws SQLException {
+    public void salvar(Entidade entidade)  {
     	Cliente cliente = (Cliente) entidade;
         PreparedStatement comandosSQL = null;
         try {
@@ -523,7 +290,6 @@ public class ClienteDAO {
             	
         	comandosSQL.setString(1, con.getDdd());
     		comandosSQL.setString(2, con.getNumero());
-    		System.out.println(con.getTipoTelefone().toString());
     		comandosSQL.setString(3, con.getTipoTelefone().toString());
     		comandosSQL.setString(4, con.getEmail());
         	
@@ -625,9 +391,31 @@ public class ClienteDAO {
         	e.printStackTrace();		// printa a pilha de erros
             throw new RuntimeException(e);	// lança uma exceção
         } finally {
-        	comandosSQL.close();
-        	conexao.close();
+        	try {
+				comandosSQL.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	try {
+				conexao.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
     }
+
+@Override
+public void alterar(Entidade entidade) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void excluir(Entidade entidade) {
+	// TODO Auto-generated method stub
+	
+}
    
 }

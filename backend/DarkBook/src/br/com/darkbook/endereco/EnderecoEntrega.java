@@ -6,7 +6,7 @@ public class EnderecoEntrega extends Endereco{
 	
 	public String validarEndereco() {
 		String erro = super.validarEndereco();
-		
+		System.out.println(this.getCidade().getCidade());
 		if(null == nomeComposto || nomeComposto.isEmpty()) {
 			erro += "O dado do nome composto do endereço de entrega é obrigatorio\n";
 		}

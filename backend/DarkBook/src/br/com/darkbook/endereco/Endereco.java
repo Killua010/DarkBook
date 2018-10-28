@@ -30,6 +30,18 @@ public class Endereco {
 			erro += "O dado do estado do endereço de cobrança é obrigatorio\n";
 			erro += "O dado do pais do endereço de cobrança é obrigatorio\n";
 		}
+
+		if(cidade.getCidade().isEmpty()) {
+			erro += "O dado da cidade do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(cidade.getEstado().getEstado().isEmpty()) {
+			erro += "O dado do estado do endereço de cobrança é obrigatorio\n";
+		}
+		
+		if(cidade.getEstado().getPais().getPais().isEmpty()) {
+			erro += "O dado do pais do endereço de cobrança é obrigatorio\n";
+		}
 		
 		if(null == logradouro || logradouro.isEmpty()) {
 			erro += "O dado do logradouro do endereço de cobrança é obrigatorio\n";

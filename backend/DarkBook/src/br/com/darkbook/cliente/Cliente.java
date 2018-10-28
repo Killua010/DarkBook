@@ -118,11 +118,8 @@ public class Cliente extends Entidade{
 			erro += "O dado do tipo de residencia do endereço de entrega é obrigatorio\n";
 			
 		} else {
-			
 			for(EnderecoEntrega endereco : enderecoEntregas) {
-				
 				erro = endereco.validarEndereco();
-				
 			}
 			
 		}
