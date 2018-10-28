@@ -32,10 +32,10 @@
                         <md-button @click="telaCad-=1" v-if="telaCad >= 1" slot="footer" class="float-left md-simple md-primary md-lg">
                             Voltar
                         </md-button>
-                        <md-button @click="telaCad+=1" v-if="telaCad <= 2" slot="footer" class="float-right md-simple md-primary md-lg">
+                        <md-button @click="proximo()" v-if="telaCad <= 2" slot="footer" class="float-right md-simple md-primary md-lg">
                             Próximo
                         </md-button>
-                        <md-button @click="enviar()" v-if="telaCad == 3" slot="footer" class="float-right md-simple md-primary md-lg">
+                        <md-button @click="proximo()" v-if="telaCad == 3" slot="footer" class="float-right md-simple md-primary md-lg">
                             Salvar
                         </md-button>
                         </login-card>
@@ -53,58 +53,69 @@ import CadDadosCartao from './CadDadosCartao'
 import CadDadosEnderecoEntrega from './CadDadosEnderecoEntrega'
 import { LoginCard } from "@/components";
 import axios from 'axios';
+import { eventBus } from '../../../main';
 
 export default {
+    created(){
+        var dadosAtuais = this;
+        eventBus.$on('request', function(e){
+            if(e == 'proximo'){
+                dadosAtuais.telaCad++;
+            } else if(e == 'salvar'){
+                alert("eae")
+            }
+        });
+    },
     components:{LoginCard, CadDadosBasicos, CadDadosEndereco, CadDadosCartao, CadDadosEnderecoEntrega},
     data: () => ({
         telaCad : 0,
         cliente:{
             dadosPessoais:{
-                primeiroNome : "jOÃO",
-                sobrenome : "da Silva",
+                primeiroNome : "Daniel",
+                sobrenome : "Dias de Souza",
                 email : "daniel160598@hotmail.com",
-                genero : "NAOBINARIO",
-                cpf : "458.560.208-98",
+                genero : "MASCULINO",
+                cpf : "45856020898",
                 dataNascimento : "16/05/1998",
                 tipoTelefone : "MOVEL",
-                telefone : " 97590-5803",
-                ddd: "11",
-                senha1 : "123456789",
-                senha2 : "123456789",
-                senha : "123456789"
+                telefone : "(11) 97590-5803",
+                ddd: "",
+                senha1 : "123456",
+                senha2 : "123456",
+                senha : ""
               },
               enderecosEntrega:{
-                tipoResidencia : "CASA",
-                tipoLogradouro : "AVENIDA",
-                pais : "Brasil",
-                estado : "SP",
-                cidade : "Itaquaquecetuba",
-                logradouro : "Sardonica",
-                numero : 80,
-                bairro : "JD.Nicea",
-                cep: "08589589",
-                observacao : "Próximo ao CDHU",
-                nomeComposto : "Minha Cazinha",
-                favorito : true
+                tipoResidencia : "",
+                tipoLogradouro : "",
+                pais : "",
+                estado : "",
+                cidade : "",
+                logradouro : "",
+                numero : "",
+                bairro : "",
+                cep: "",
+                observacao : "",
+                nomeComposto : "",
+                favorito : false
             },
             enderecosCobranca : {
-                tipoResidencia : "CASA",
-                tipoLogradouro : "RUA",
-                pais : "Brasil",
-                estado : "SP",
-                cidade : "Itaquaquecetuba",
-                logradouro : "Sardonica",
-                numero : 80,
-                bairro : "JD.Nicea",
-                cep: "08589589",
-                observacao : "Próximo ao CDHU"
+                tipoResidencia : "",
+                tipoLogradouro : "",
+                pais : "",
+                estado : " ",
+                cidade : "",
+                logradouro : "",
+                numero : "",
+                bairro : "",
+                cep: "",
+                observacao : ""
             },
             cartoes : {
-                bandeira : "VISA",
-                numero : "123456789123",
-                nomeImpresso : "Daniel Dias de Souza",
-                codSeguranca : "456",
-                preferencial : true
+                bandeira : "",
+                numero : "",
+                nomeImpresso : "",
+                codSeguranca : "",
+                preferencial : false
             }  
         }
     }),// ./dados
@@ -121,6 +132,23 @@ export default {
                 } catch (e) {
                   console.log(e)
                 }
+          },
+          proximo(){
+              switch(this.telaCad){
+                  case 0:
+                    eventBus.$emit('validarDadosBasicos', true);
+                    break;
+                case 1:
+                    eventBus.$emit('validarDadosEndereco', true);
+                    break;
+                case 2:
+                    eventBus.$emit('validarDadosEnderecoCobranca', true);
+                    break;
+                case 3:
+                    eventBus.$emit('validarDadosCartao', true);
+                    break;
+              }
+              
           }
     }
 
@@ -179,5 +207,8 @@ export default {
     margin-bottom: -1.5em !important;
 }
 
-</style>
+.erros{
+    margin-bottom: 10px !important;
+}
 
+</style>

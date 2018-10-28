@@ -47,7 +47,7 @@
                           <i class="material-icons">face</i> 
                           <p>Embarque Conosco</p>
                         </md-button>
-                        <ul class="dropdown-menu" :class="{'dropdown-menu-right': responsive}">
+                        <ul class="dropdown-menu">
                           <li>
                             <a   href="#" class="dropdown-item">
                               <i class="material-icons">person_add</i> Novo Usuário
@@ -109,18 +109,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "dark",
-      validator(value) {
-        return [
-          "white",
-          "default",
-          "primary",
-          "danger",
-          "success",
-          "warning",
-          "info"
-        ].includes(value);
-      }
+      default: "dark"
     },
     colorOnScroll: {
       type: Number,
