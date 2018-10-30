@@ -67,24 +67,24 @@ public class Fachada implements IFachada {
 	}
 	
 	public boolean validarExistencia(Cliente cli) {
-		ClienteDAO cliDao;
-		List<Entidade> clientes = null;
+//		ClienteDAO cliDao;
+//		List<Entidade> clientes = null;
+//		
+//		try {
+//			cliDao = new ClienteDAO();
+//			clientes = cliDao.consultar(cli);
+//			
+//		} catch (ClassNotFoundException | SQLException e1) {
+//
+//			e1.printStackTrace();
+//		}
+//		for(Entidade cliente : clientes) {
+//			if(null == cliente.getId()) {
+//				return true;
+//			}
+//		}
 		
-		try {
-			cliDao = new ClienteDAO();
-			clientes = cliDao.consultar(cli);
-			
-		} catch (ClassNotFoundException | SQLException e1) {
-
-			e1.printStackTrace();
-		}
-		for(Entidade cliente : clientes) {
-			if(null == cliente.getId()) {
-				return true;
-			}
-		}
-		
-		return false;
+		return true;
 	}
 
 }

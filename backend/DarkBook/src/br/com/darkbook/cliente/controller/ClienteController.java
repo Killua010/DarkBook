@@ -253,6 +253,8 @@ public class ClienteController extends HttpServlet {
     		response.setStatus(400); // Erro 400 (Bad Request): parametros errados ou inexistentes
     		response.setHeader("Erros", erros);	// adiciona no header as mensagens de erros
     	}
+    	response.setHeader("Access-Control-Allow-Origin", "*");
+    	response.setHeader("Teste", "Testando");
 		
 	}
 	
