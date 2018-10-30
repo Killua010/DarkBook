@@ -62,7 +62,7 @@ export default {
             if(e == 'proximo'){
                 dadosAtuais.telaCad++;
             } else if(e == 'salvar'){
-                alert("eae")
+                dadosAtuais.enviar()
             }
         });
     },
@@ -79,10 +79,10 @@ export default {
                 dataNascimento : "16/05/1998",
                 tipoTelefone : "MOVEL",
                 telefone : "(11) 97590-5803",
-                ddd: "",
+                ddd: "11",
                 senha1 : "123456",
                 senha2 : "123456",
-                senha : ""
+                senha : "12312313213213"
               },
               enderecosEntrega:{
                 tipoResidencia : "",
@@ -122,16 +122,16 @@ export default {
 
     methods:{
         enviar: function(){
-               try {
                   axios.post(`http://localhost:8082/DarkBook/cliente`, 
                   this.cliente, {
                       headers: {
                           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                       }
+                  }).then(function(e){
+                      console.log(e)
+                  }).catch(function(e){
+                      console.log(e)
                   })
-                } catch (e) {
-                  console.log(e)
-                }
           },
           proximo(){
               switch(this.telaCad){
