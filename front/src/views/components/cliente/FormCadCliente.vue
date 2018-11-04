@@ -78,43 +78,43 @@ export default {
                 cpf : "45856020898",
                 dataNascimento : "16/05/1998",
                 tipoTelefone : "MOVEL",
-                telefone : "(11) 97590-5803",
-                ddd: "11",
+                telefone : "",
+                ddd: "",
                 senha1 : "123456",
                 senha2 : "123456",
-                senha : "12312313213213"
+                senha : ""
               },
               enderecosEntrega:{
-                tipoResidencia : "",
-                tipoLogradouro : "",
+                tipoResidencia : "CASA",
+                tipoLogradouro : "RUA",
                 pais : "",
                 estado : "",
                 cidade : "",
                 logradouro : "",
-                numero : "",
+                numero : "20",
                 bairro : "",
                 cep: "",
                 observacao : "",
-                nomeComposto : "",
+                nomeComposto : "ASDASD",
                 favorito : false
             },
             enderecosCobranca : {
-                tipoResidencia : "",
-                tipoLogradouro : "",
+                tipoResidencia : "CASA",
+                tipoLogradouro : "RUA",
                 pais : "",
-                estado : " ",
+                estado : "",
                 cidade : "",
                 logradouro : "",
-                numero : "",
+                numero : "40",
                 bairro : "",
                 cep: "",
                 observacao : ""
             },
             cartoes : {
-                bandeira : "",
-                numero : "",
-                nomeImpresso : "",
-                codSeguranca : "",
+                bandeira : "VISA",
+                numero : "1111.1111.1111.1111",
+                nomeImpresso : "ASDASDSA",
+                codSeguranca : "123",
                 preferencial : false
             }  
         }
@@ -122,16 +122,16 @@ export default {
 
     methods:{
         enviar: function(){
-                  axios.post(`http://localhost:8082/DarkBook/cliente`, 
-                  this.cliente, {
-                      headers: {
-                          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                      }
-                  }).then(function(e){
-                      console.log(e)
-                  }).catch(function(e){
-                      console.log(e)
-                  })
+                //   axios.post(`http://localhost:8082/DarkBook/cliente`, 
+                //   this.cliente, {
+                //       headers: {
+                //           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                //       }
+                //   }).then(function(e){
+                //       alert(e.data)
+                //   }).catch(function(e){
+                //       alert(e.response.data)
+                //   })
           },
           proximo(){
               switch(this.telaCad){

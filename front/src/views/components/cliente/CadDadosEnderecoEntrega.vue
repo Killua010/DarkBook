@@ -18,7 +18,7 @@
                 <md-field class="md-form-group">
                     <md-icon>place</md-icon>
                     <label>CEP...</label>
-                    <md-input v-on:keyup="buscarCep" id="cep" v-model="dados.enderecosEntrega.cep"></md-input>
+                    <md-input v-mask="'#####-###'" v-on:keyup="buscarCep" id="cep" v-model="dados.enderecosEntrega.cep"></md-input>
                      <span class="md-error erros">O cep tem que ter 8 digitos</span>
                 </md-field> 
             </div>

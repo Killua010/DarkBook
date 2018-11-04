@@ -18,7 +18,7 @@
                 <md-field class="md-form-group">
                     <md-icon>place</md-icon>
                     <label>CEP...</label>
-                    <md-input v-on:keyup="buscarCep" id="cep" v-model="dados.enderecosCobranca.cep"></md-input>
+                    <md-input v-mask="'#####-###'" v-on:keyup="buscarCep" id="cep" v-model="dados.enderecosCobranca.cep"></md-input>
                     <span class="md-error erros">O cep tem que ter 8 digitos</span>
                 </md-field> 
             </div>
@@ -46,29 +46,37 @@
 
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
-                    <md-icon>location_city</md-icon>
-                    <label>Cidade...</label>
-                    <md-input id="cidade" v-model="dados.enderecosCobranca.cidade"></md-input>
-                    <span class="md-error erros">A cidade necessida ter no minimo 3 caracteres</span>
-                </md-field> 
+                    <md-icon>public</md-icon>
+                    <label>Pais...</label>
+                    <md-select id="pais" v-model="dados.enderecosCobranca.pais" class="select-option">
+                        <md-option class="select" v-for="pais in paises" v-bind:value="pais.pais" >{{ pais.pais }}</md-option>
+                    </md-select>
+                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                </md-field>
             </div>
-            <div class="md-layout-item md-size-50 md-xsmall-size-100">
+             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
                     <md-icon>map</md-icon>
                     <label>Estado...</label>
-                    <md-input id="estado" v-model="dados.enderecosCobranca.estado"></md-input>
-                    <span class="md-error erros">O estado necessida ter no minimo 3 caracteres</span>
-                </md-field> 
+                    <md-select id="tpEstado" v-model="dados.enderecosCobranca.estado" class="select-option">
+                        <md-option class="select" v-for="(estado, index) in estados" v-bind:value="estado.sigla">{{ estado.estado }}</md-option>
+                    </md-select>
+                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                </md-field>
             </div>
+
 
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
-                    <md-icon>public</md-icon>
-                    <label>Pais...</label>
-                    <md-input id="pais" v-model="dados.enderecosCobranca.pais"></md-input>
-                    <span class="md-error erros">O pais necessida ter no minimo 3 caracteres</span>
-                </md-field> 
+                    <md-icon>location_city</md-icon>
+                    <label>Cidade...</label>
+                    <md-select id="tpLogradouro" v-model="dados.enderecosCobranca.cidade" class="select-option">
+                        <md-option v-if="null != indexEstado" class="select" v-for="(cidade, index) in cidades" v-bind:value="cidade.cidade">{{ cidade.cidade }}</md-option>
+                    </md-select>
+                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                </md-field>
             </div>
+
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
                     <md-icon>store_mall_directory</md-icon>
@@ -100,14 +108,40 @@
 
 <script>
 import { eventBus } from '../../../main';
+import axios from 'axios';
 
 export default {
+    watch: {
+        'dados.enderecosCobranca.estado' : function(e){
+            this.indexEstado = this.mapEstados[e];
+            this.cidades = this.estados[this.indexEstado].cidades;
+        }
+    },
+     data: () => ({
+         paises: {},
+         estados : [],
+         cidades : [],
+         mapEstados: [],
+         indexEstado : null
+     }),
     created(){
         var dadosAtuais = this;
         eventBus.$on('validarDadosEnderecoCobranca', function(e){
             if(e === true){
                 dadosAtuais.validar()
             }
+        });
+        axios.get("http://localhost:8082/DarkBook/pais")
+        .then(response => {
+            this.paises = response.data;
+            this.estados = this.paises.paises.estados;
+            for(let i = 0; i < this.paises.paises.estados.length; i++){
+                this.mapEstados[this.paises.paises.estados[i].sigla] = i;
+            }
+            
+        })
+        .catch(e => {
+            console.log(e)
         })
     },
     props:['dados'],
@@ -202,8 +236,8 @@ export default {
                             self.dados.enderecosCobranca.logradouro = dadosEndereco.logradouro;
                             //Atualiza os campos com os valores da consulta.
                             self.dados.enderecosCobranca.bairro = dadosEndereco.bairro
-                            self.dados.enderecosCobranca.cidade = dadosEndereco.localidade
                             self.dados.enderecosCobranca.estado = dadosEndereco.uf
+                            self.dados.enderecosCobranca.cidade = dadosEndereco.localidade                            
                             self.dados.enderecosCobranca.pais = "Brasil"
                         } //end if.
                        

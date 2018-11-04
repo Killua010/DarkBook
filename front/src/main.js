@@ -4,14 +4,17 @@ import router from "./router";
 
 import MaterialKit from "./plugins/material-kit";
 import JQuery from "jquery";
+import TheMask from 'vue-the-mask';
 
 global.JQuery = JQuery;
 global.$ = JQuery;
+global.Mask = TheMask;
 Vue.config.productionTip = false;
 
 export var eventBus = new Vue();
 
 Vue.use(MaterialKit);
+Vue.use(TheMask);
 
 const NavbarStore = {
   showNavbar: false

@@ -44,7 +44,7 @@
                 <md-field class="md-form-group">
                     <md-icon>picture_in_picture_alt</md-icon>
                     <label>CPF...</label>
-                    <md-input id="cpf" v-model="dados.dadosPessoais.cpf"></md-input>
+                    <md-input masked="true" v-mask="'###.###.###-##'" id="cpf" v-model="cpf"></md-input>
                     <span class="md-error erros">O cpf tem que ter 11 digitos</span>
                 </md-field> 
             </div>
@@ -52,7 +52,7 @@
                 <md-field class="md-form-group">
                     <md-icon>event</md-icon>
                     <label>Data de nascimento...</label>
-                    <md-input id="dtNascimento" v-model="dados.dadosPessoais.dataNascimento"></md-input>
+                    <md-input v-mask="'##/##/####'" id="dtNascimento" v-model="dados.dadosPessoais.dataNascimento"></md-input>
                     <span class="md-error erros">A data tem que estar no formato DD/MM/AAAA</span>
                 </md-field> 
             </div>
@@ -72,7 +72,7 @@
                 <md-field class="md-form-group">
                     <md-icon>local_phone</md-icon>
                     <label>Telefone...</label>
-                    <md-input id="telefone" v-model="dados.dadosPessoais.telefone"></md-input>
+                    <md-input v-mask="['(##) ####-####', '(##) #####-####']" id="telefone" v-model="telefone"></md-input>
                     <span class="md-error erros">O telefone informado é invalido</span>
                 </md-field> 
             </div>
@@ -99,10 +99,13 @@
 
 <script>
     // import axios from 'axios';
-import {TheMask} from 'vue-the-mask'
 import { eventBus } from '../../../main';
 
   export default {
+      data: () => ({
+          telefone: "",
+          cpf: ""
+      }),
     created(){
         var dadosAtuais = this;
         eventBus.$on('validarDadosBasicos', function(e){
@@ -115,6 +118,8 @@ import { eventBus } from '../../../main';
     methods:{
         validar(){
             var erro = false;
+
+            var regCPF = /\d{3}\.\d{3}\.\d{3}-\d{2}/;
 
             var regEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -140,9 +145,11 @@ import { eventBus } from '../../../main';
                 erro = true;
             }
 
-            if(this.dados.dadosPessoais.cpf.trim().length != 11){
+            if(!regCPF.test(this.cpf)){
                 this.corErroInput("cpf")
                 erro = true;
+            } else {
+                this.dados.dadosPessoais.cpf = this.cpf.replace(/[^\d]+/g,'');
             }
 
             if(this.dados.dadosPessoais.dataNascimento.trim().length == 0){
@@ -154,10 +161,13 @@ import { eventBus } from '../../../main';
                 this.corErroSelect("tpTelefone")
                 erro = true;
             }
-
-            if(!regTelefone.test(this.dados.dadosPessoais.telefone)){
+            
+            if(!regTelefone.test(this.telefone)){
                 this.corErroInput("telefone")
                 erro = true;
+            } else {
+                this.dados.dadosPessoais.ddd = this.telefone.replace(/[^\d]+/g,'').substring(0, 2)
+                this.dados.dadosPessoais.telefone = this.telefone.replace(/[^\d]+/g,'').substring(2)
             }
             
             if(this.dados.dadosPessoais.senha1.trim().length < 5){
@@ -169,22 +179,24 @@ import { eventBus } from '../../../main';
                 || this.dados.dadosPessoais.senha2 != this.dados.dadosPessoais.senha1){
                 this.corErroInput("senha2")
                 erro = true;
+            } else {
+                this.dados.dadosPessoais.senha = this.dados.dadosPessoais.senha2;
             }
 
             if(erro === false){
                 eventBus.$emit('request','proximo');
-            }
+            } 
 
         },
         corErroInput(elemento){
-            var elemento = document.getElementById(elemento).parentElement;
-            elemento.classList.add("md-error")
-            elemento.classList.add("md-invalid")
+            var elementoAtual = document.getElementById(elemento).parentElement;
+            elementoAtual.classList.add("md-error")
+            elementoAtual.classList.add("md-invalid")
         },
         corErroSelect(elemento){
-            var elemento = document.getElementById(elemento).parentElement.parentElement;
-            elemento.classList.add("md-error")
-            elemento.classList.add("md-invalid")
+            var elementoAtual = document.getElementById(elemento).parentElement.parentElement;
+            elementoAtual.classList.add("md-error")
+            elementoAtual.classList.add("md-invalid")
         }
     }
 

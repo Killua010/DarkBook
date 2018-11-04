@@ -6,7 +6,7 @@
                 <md-field class="md-form-group" >
                     <md-icon>call_to_action</md-icon>
                     <label>Número do cartão...</label>
-                    <md-input id="numero" v-model="dados.cartoes.numero"></md-input>
+                    <md-input v-mask="'####.####.####.####'" id="numero" v-model="dados.cartoes.numero"></md-input>
                     <span class="md-error erros">O numero do cartão tem que ter 16 digitos</span>
                 </md-field> 
             </div>
@@ -14,7 +14,7 @@
                 <md-field class="md-form-group" >
                     <md-icon>https</md-icon>
                     <label>Código de segurança...</label>
-                    <md-input id="codigo" v-model="dados.cartoes.codSeguranca"></md-input>
+                    <md-input v-mask="'###'" id="codigo" v-model="dados.cartoes.codSeguranca"></md-input>
                     <span class="md-error erros">O código de segurança tem que ter 3 digitos</span>
                 </md-field> 
             </div>
