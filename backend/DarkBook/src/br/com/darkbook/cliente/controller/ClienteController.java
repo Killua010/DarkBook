@@ -54,7 +54,11 @@ public class ClienteController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
 		List<Entidade> clientesList = null;
-		fachada = new Fachada();
+		try {
+			fachada = new Fachada();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 		
 		if(null != id) { // buscar por id
 			
@@ -245,17 +249,30 @@ public class ClienteController extends HttpServlet {
 			e.printStackTrace();
 		}
     	
-    	fachada = new Fachada();
+    	try {
+			fachada = new Fachada();
+		} catch (ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+		}
     	
     	String erros = fachada.salvar(cliente); 
-    	
+    	response.setHeader("Access-Control-Allow-Origin", "*");
     	if(!erros.isEmpty()) {
     		response.setStatus(400); // Erro 400 (Bad Request): parametros errados ou inexistentes
     		response.setHeader("Erros", erros);	// adiciona no header as mensagens de erros
+    		try {
+				response.getWriter().write(erros);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}else {
+    	
+	    	try {
+				response.getWriter().write("Salvo com Sucesso");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
     	}
-    	response.setHeader("Access-Control-Allow-Origin", "*");
-    	response.setHeader("Teste", "Testando");
-		
 	}
 	
 	

@@ -1,7 +1,20 @@
 package br.com.darkbook.endereco;
 
-public class Pais {
+import java.util.List;
+
+import br.com.darkbook.entidade.Entidade;
+
+public class Pais extends Entidade{
 	private String pais;
+	private List<Estado> estados;
+
+	public List<Estado> getEstados() {
+		return estados;
+	}
+
+	public void setEstados(List<Estado> estados) {
+		this.estados = estados;
+	}
 
 	public String getPais() {
 		return pais;

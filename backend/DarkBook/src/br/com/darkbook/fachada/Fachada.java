@@ -1,39 +1,56 @@
 package br.com.darkbook.fachada;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.com.darkbook.cliente.Cliente;
 import br.com.darkbook.cliente.dao.ClienteDAO;
+import br.com.darkbook.dao.IDAO;
+import br.com.darkbook.endereco.Pais;
+import br.com.darkbook.endereco.dao.PaisDAO;
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.strategy.IStrategy;
+import br.com.darkbook.strategy.ValidarCPF;
+import br.com.darkbook.strategy.ValidarDadosObrigatorios;
+import br.com.darkbook.strategy.ValidarExistencia;
+import br.com.darkbook.strategy.ValidarSenha;
 
 public class Fachada implements IFachada {
+	
+	private Map<String, List<IStrategy>> mapStrategy;
+	private Map<String, IDAO> mapDao;
+	
+	public Fachada() throws ClassNotFoundException, SQLException {
+		mapStrategy = new HashMap<>();
+		mapDao = new HashMap<>();
+		
+		ArrayList<IStrategy> clienteStrategy = new ArrayList<>();
+		clienteStrategy.add(new ValidarDadosObrigatorios());
+		clienteStrategy.add(new ValidarCPF());
+		clienteStrategy.add(new ValidarExistencia());
+		clienteStrategy.add(new ValidarSenha());
+		
+		mapStrategy.put(Cliente.class.getName(), clienteStrategy);
+		
+		mapDao.put(Cliente.class.getName(), new ClienteDAO());
+		mapDao.put(Pais.class.getName(), new PaisDAO());
+	}
 
 	@Override
 	public String salvar(Entidade entidade) {
-		Cliente cliente = (Cliente) entidade;
 		
 		String erros = "";
 		
-		erros += cliente.validarDadosObrigatorios(); 
-    	
-    	
-    	erros += cliente.validarCPF();
-    	
-    	
-    	if(!validarExistencia(cliente)){
-    		erros += "Cliente já existente";
-    	}
-    	
-    	erros += cliente.validarSenha();
+		for(IStrategy strategy : mapStrategy.get(entidade.getClass().getName())) {
+			erros += strategy.processar(entidade);
+		}
     	
     	if(erros.isEmpty()) {
-	    	try {
-				ClienteDAO cliDao = new ClienteDAO();
-				cliDao.salvar(cliente);
-			} catch (ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
-			}
+    		IDAO dao = mapDao.get(entidade.getClass().getName());
+    		dao.salvar(entidade);
     	}
     	
     	return erros;
@@ -42,15 +59,12 @@ public class Fachada implements IFachada {
 
 	@Override
 	public List<Entidade> consultar(Entidade entidade) {
-		List<Entidade> clientesList = null;
-		try {
-			ClienteDAO cliDao = new ClienteDAO();
-			clientesList = cliDao.consultar(entidade);
-		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return clientesList;
+		List<Entidade> entidades = null;
+		IDAO dao = mapDao.get(entidade.getClass().getName());
+		
+		entidades = dao.consultar(entidade);
+		
+		return entidades;
 		
 	}
 
@@ -66,25 +80,6 @@ public class Fachada implements IFachada {
 
 	}
 	
-	public boolean validarExistencia(Cliente cli) {
-//		ClienteDAO cliDao;
-//		List<Entidade> clientes = null;
-//		
-//		try {
-//			cliDao = new ClienteDAO();
-//			clientes = cliDao.consultar(cli);
-//			
-//		} catch (ClassNotFoundException | SQLException e1) {
-//
-//			e1.printStackTrace();
-//		}
-//		for(Entidade cliente : clientes) {
-//			if(null == cliente.getId()) {
-//				return true;
-//			}
-//		}
-		
-		return true;
-	}
+
 
 }

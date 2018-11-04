@@ -45,7 +45,7 @@ public class ClienteDAO implements IDAO{
     	String tabelaCliente;
     	
     	try {
-    	
+    		
 	    	if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
 	          	tabelaCliente = "SELECT * FROM cliente";
 	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
@@ -53,10 +53,12 @@ public class ClienteDAO implements IDAO{
 	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    		preparo.setString(1, cli.getCpf());
-	    	} else { // buscar por id /***********************************************************************/
+	    	} else { // buscar por id 
+	    		
 	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
 	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	          	preparo.setLong(1, entidade.getId());
+	          	
 	    	}
     	
     		String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
@@ -70,7 +72,7 @@ public class ClienteDAO implements IDAO{
           			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
           	
     		resultados = preparo.executeQuery();
-    		
+
           	while(resultados.next()) {
           		Cliente c = new Cliente();
           		c.setCpf(resultados.getString("cli_cpf"));
@@ -82,6 +84,10 @@ public class ClienteDAO implements IDAO{
           		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
           		cliList.add(c);
           	}
+          	
+          	if(!resultados.first()) {
+				return null;
+    		}
           	
           	for(Entidade c : cliList) {
           		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
@@ -109,7 +115,7 @@ public class ClienteDAO implements IDAO{
               		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
               		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
               		endereco.setLogradouro(resultados.getString("end_logradouro"));
-              		endereco.setNumero(resultados.getShort("end_numero"));
+              		endereco.setNumero(resultados.getInt("end_numero"));
               		endereco.setObservacao(resultados.getString("end_observacao"));
               		endereco.setTipoLogradouro(TipoLogradouro.valueOf(resultados.getString("tpl_nome")));
               		endereco.setTipoResidencia(TipoResidencia.valueOf(resultados.getString("tpr_nome")));
@@ -158,18 +164,21 @@ public class ClienteDAO implements IDAO{
           	
           	
           }catch (SQLException e) {
-          	e.printStackTrace();		// printa a pilha de erros
+        	  e.printStackTrace();		// printa a pilha de erros
               throw new RuntimeException(e);	// lança uma exceção
           } finally {
-          	try {
-				comandosSQL.close();
-				conexao.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+        	  
+			if(null != conexao) {
+				try {
+					conexao.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else {
+				return null;
 			}
-          	
   		}
+    	
       	return cliList;
     }
     

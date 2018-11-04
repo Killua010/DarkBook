@@ -1,6 +1,8 @@
 package br.com.darkbook.endereco;
 
-public class Cidade {
+import br.com.darkbook.entidade.Entidade;
+
+public class Cidade extends Entidade {
 	private Estado estado;
 	private String cidade;
 	
