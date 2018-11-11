@@ -4,19 +4,30 @@ import IndexMaterialKit from "./mk/views/Index-material-kit.vue";
 import Landing from "./mk/views/Landing.vue";
 import Login from "./mk/views/Login.vue";
 import Profile from "./mk/views/Profile.vue";
-import MainNavbar from "./mk/layout/MainNavbar.vue";
+import MainNavbar from "./views/MainNavbar.vue";
 import MainFooter from "./mk/layout/MainFooter.vue";
 import Footer from "./views/Footer.vue";
 import Template from "./views/Template.vue";
-import DashboardLayout from './mk_admin/pages/Layout/DashboardLayout.vue'
+import DashboardLayout from './views/perfil/DashboardLayout.vue'
 
-import Dashboard from './mk_admin/pages/Dashboard.vue'
-import UserProfile from './mk_admin/pages/UserProfile.vue'
+import Dashboard from './views/perfil/DadosPessoais.vue'
+import EnderecoEntrega from './views/perfil/EnderecoEntrega.vue'
+import EnderecoCobranca from './views/perfil/EnderecoCobranca.vue'
+import JavascriptComponents from "./mk/views/components/JavascriptComponentsSection.vue"
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
+    {
+      path: "/",
+      name: "index",
+      components: { default: JavascriptComponents, header: MainNavbar, footer: Footer },
+      props: {
+        header: { colorOnScroll: 400 },
+        footer: { backgroundColor: "black" }
+      }
+    },
     {
       path: "/cadastroCliente",
       name: "index",
@@ -32,13 +43,17 @@ export default new Router({
     children: [
       {
         path: 'dadosPessoais',
-        name: 'Dashboard',
+        name: 'Dados Pessoais',
         component: Dashboard
       },
       {
+        path: 'enderecoEntrega',
+        name: 'Endereço Entrega',
+        component: EnderecoEntrega
+      },{
         path: 'enderecoCobranca',
-        name: 'User Profile',
-        component: UserProfile
+        name: 'Endereço Cobrança',
+        component: EnderecoCobranca
       }
     ]
     },{

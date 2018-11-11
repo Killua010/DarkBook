@@ -8,69 +8,8 @@
         </div>
       </md-toolbar>
 
-      <md-list class="md-double-line">
-        <md-subheader>Nome e genero</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">face</md-icon>
+      
 
-          <div class="md-list-item-text">
-            <span>Daniel Dias de Souza</span>
-            <span>Masculino</span>
-          </div>
-        </md-list-item>
-
-        <md-divider></md-divider>
-        <md-subheader>Email</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">email</md-icon>
-
-          <div class="md-list-item-text">
-            <span>aliconnors@example.com</span>
-          </div>
-        </md-list-item>
-
-        <md-divider></md-divider>
-        <md-subheader>CPF</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">picture_in_picture_alt</md-icon>
-
-          <div class="md-list-item-text">
-            <span>458.560.208-98</span>
-          </div>
-        </md-list-item>
-
-        <md-divider></md-divider>
-        <md-subheader>Data de nascimento</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">event</md-icon>
-
-          <div class="md-list-item-text">
-            <span>16/05/1998</span>
-          </div>
-        </md-list-item>
-
-        <md-divider></md-divider>
-        <md-subheader>Telefone</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">local_phone</md-icon>
-
-          <div class="md-list-item-text">
-            <span>(11) 97590-5803</span>
-            <span>Movel</span>
-          </div>
-        </md-list-item>
-
-        <md-divider></md-divider>
-        <md-subheader>Senha</md-subheader>
-        <md-list-item>
-          <md-icon class="md-primary">fingerprint</md-icon>
-
-          <div class="md-list-item-text">
-            <span>123456</span>
-          </div>
-        </md-list-item>
-
-      </md-list>
     </div>
   </div>
 </template>

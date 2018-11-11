@@ -6,38 +6,38 @@
                 <div class="md-layout">
                     <div class="md-layout-item md-size-70 md-small-size-100 md-xsmall-size-100 mx-auto">
                         <login-card header-color="primary">
-                        <h4 slot="title" class="card-title">Novo Usuário</h4>
-                        <p slot="title" class="description-title">Cadastre-se com</p>
-                        <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
-                            <i class="fab fa-facebook-square"></i>
-                        </md-button>
-                        <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
-                            <i class="fab fa-twitter"></i>
-                        </md-button>
-                        <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
-                            <i class="fab fa-google-plus-g"></i>
-                        </md-button>
-                        <p slot="description" class="description text-center">Ou tradicionalmente</p>
-                        
-                        <keep-alive slot="inputs">
-                            <cad-dados-basicos v-bind:dados="{dadosPessoais: this.cliente.dadosPessoais}" v-if="telaCad == 0"></cad-dados-basicos>
-                            <cad-dados-endereco-entrega v-bind:dados="{enderecosEntrega: this.cliente.enderecosEntrega}" v-if="telaCad == 1"></cad-dados-endereco-entrega>
-                            <cad-dados-endereco v-bind:dados="{enderecosCobranca: this.cliente.enderecosCobranca}" v-if="telaCad == 2"></cad-dados-endereco>
-                            <cad-dados-cartao v-bind:dados="{cartoes: this.cliente.cartoes}" v-if="telaCad == 3"></cad-dados-cartao>
-                        </keep-alive>
-                            <!--md-button type="button" v-if="telaCad >= 1" @click="telaCad-=1" class="text-left btn btn-primary btn-link btn-wd btn-lg">Voltar</md-button>
-                            <md-button type="button" @click="telaCad+=1" v-if="telaCad <= 2" class="float-right btn btn-primary btn-link btn-wd btn-lg">Próximo</md-button>
-                            <md-button type="button" v-if="telaCad == 3" class="float-right btn btn-primary btn-link btn-wd btn-lg">Salvar</md-button-->
-                        
-                        <md-button @click="telaCad-=1" v-if="telaCad >= 1" slot="footer" class="float-left md-simple md-primary md-lg">
-                            Voltar
-                        </md-button>
-                        <md-button @click="proximo()" v-if="telaCad <= 2" slot="footer" class="float-right md-simple md-primary md-lg">
-                            Próximo
-                        </md-button>
-                        <md-button @click="proximo()" v-if="telaCad == 3" slot="footer" class="float-right md-simple md-primary md-lg">
-                            Salvar
-                        </md-button>
+                            <h4 slot="title" class="card-title">Novo Usuário</h4>
+                            <p slot="title" class="description-title">Cadastre-se com</p>
+                            <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
+                                <i class="fab fa-facebook-square"></i>
+                            </md-button>
+                            <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
+                                <i class="fab fa-twitter"></i>
+                            </md-button>
+                            <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
+                                <i class="fab fa-google-plus-g"></i>
+                            </md-button>
+                            <p slot="description" class="description text-center">Ou tradicionalmente</p>
+                            
+                            <keep-alive slot="inputs">
+                                <cad-dados-basicos v-bind:dados="{dadosPessoais: this.cliente.dadosPessoais}" v-if="telaCad == 0"></cad-dados-basicos>
+                                <cad-dados-endereco-entrega v-bind:dados="{enderecosEntrega: this.cliente.enderecosEntrega}" v-if="telaCad == 1"></cad-dados-endereco-entrega>
+                                <cad-dados-endereco v-bind:dados="{enderecosCobranca: this.cliente.enderecosCobranca}" v-if="telaCad == 2"></cad-dados-endereco>
+                                <cad-dados-cartao v-bind:dados="{cartoes: this.cliente.cartoes}" v-if="telaCad == 3"></cad-dados-cartao>
+                            </keep-alive>
+                                <!--md-button type="button" v-if="telaCad >= 1" @click="telaCad-=1" class="text-left btn btn-primary btn-link btn-wd btn-lg">Voltar</md-button>
+                                <md-button type="button" @click="telaCad+=1" v-if="telaCad <= 2" class="float-right btn btn-primary btn-link btn-wd btn-lg">Próximo</md-button>
+                                <md-button type="button" v-if="telaCad == 3" class="float-right btn btn-primary btn-link btn-wd btn-lg">Salvar</md-button-->
+                            
+                            <md-button @click="telaCad-=1" v-if="telaCad >= 1" slot="footer" class="float-left md-simple md-primary md-lg">
+                                Voltar
+                            </md-button>
+                            <md-button @click="proximo()" v-if="telaCad <= 2" slot="footer" class="float-right md-simple md-primary md-lg">
+                                Próximo
+                            </md-button>
+                            <md-button @click="proximo()" v-if="telaCad == 3" slot="footer" class="float-right md-simple md-primary md-lg">
+                                Salvar
+                            </md-button>
                         </login-card>
                     </div>
                 </div>
