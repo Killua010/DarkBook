@@ -10,7 +10,9 @@ import Footer from "./views/Footer.vue";
 import Template from "./views/Template.vue";
 import DashboardLayout from './views/perfil/DashboardLayout.vue'
 
-import Dashboard from './views/perfil/DadosPessoais.vue'
+import DadosPessoais from './views/perfil/DadosPessoais.vue'
+import DadosCartao from './views/perfil/DadosCartao.vue'
+import Pedidos from './views/perfil/Pedidos.vue'
 import EnderecoEntrega from './views/perfil/EnderecoEntrega.vue'
 import EnderecoCobranca from './views/perfil/EnderecoCobranca.vue'
 import JavascriptComponents from "./mk/views/components/JavascriptComponentsSection.vue"
@@ -44,7 +46,7 @@ export default new Router({
       {
         path: 'dadosPessoais',
         name: 'Dados Pessoais',
-        component: Dashboard
+        component: DadosPessoais
       },
       {
         path: 'enderecoEntrega',
@@ -54,6 +56,14 @@ export default new Router({
         path: 'enderecoCobranca',
         name: 'Endereço Cobrança',
         component: EnderecoCobranca
+      },{
+        path: 'cartao',
+        name: 'Cartao',
+        component: DadosCartao
+      },{
+        path: 'pedidos',
+        name: 'Pedidos',
+        component: Pedidos
       }
     ]
     },{

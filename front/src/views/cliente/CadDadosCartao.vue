@@ -42,7 +42,7 @@
 
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-icon class="icon-cartao">favorite_border</md-icon>
-                <md-checkbox v-model="dados.cartoes.preferencial">Endereço favorido?</md-checkbox>
+                <md-checkbox v-model="dados.cartoes.preferencial">Cartão favorido?</md-checkbox>
             </div>
         </div>
     </div>

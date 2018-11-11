@@ -16,6 +16,14 @@
         <md-icon>domain</md-icon>
         <p>Endereço de cobrança</p>
       </sidebar-link>
+      <sidebar-link to="/perfil/cartao">
+        <md-icon>credit_card</md-icon>
+        <p>Cartões</p>
+      </sidebar-link>
+      <sidebar-link to="/perfil/pedidos">
+        <md-icon>shopping_basket</md-icon>
+        <p>Pedidos</p>
+      </sidebar-link>
     </side-bar>
 
     <div class="main-panel">
