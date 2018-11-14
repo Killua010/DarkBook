@@ -1,10 +1,11 @@
 package br.com.darkbook.strategy;
 
-import br.com.darkbook.cliente.CartaoCredito;
-import br.com.darkbook.cliente.Cliente;
-import br.com.darkbook.endereco.Endereco;
-import br.com.darkbook.endereco.EnderecoEntrega;
+import br.com.darkbook.dominio.CartaoCredito;
+import br.com.darkbook.dominio.Cliente;
+import br.com.darkbook.dominio.Endereco;
+import br.com.darkbook.dominio.EnderecoEntrega;
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.util.Resultado;
 
 public class ValidarDadosObrigatorios implements IStrategy {
 
@@ -14,7 +15,7 @@ public class ValidarDadosObrigatorios implements IStrategy {
 	 * @return String - mensagens dos erros dos dados não preenchidos
 	 */
 	@Override
-	public String processar(Entidade entidade) {
+	public Resultado processar(Entidade entidade) {
 		Cliente cliente = (Cliente) entidade;
 		
 		String erro = "";
@@ -137,7 +138,7 @@ public class ValidarDadosObrigatorios implements IStrategy {
 			
 		}
 		
-		return erro;
+		return new Resultado(erro, entidade);
 	}
 
 }

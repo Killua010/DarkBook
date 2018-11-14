@@ -3,6 +3,7 @@ package br.com.darkbook.fachada;
 import java.util.List;
 
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.Entidade;
 
 public interface IFachada {
 	

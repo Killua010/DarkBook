@@ -1,33 +1,27 @@
 package br.com.darkbook.strategy;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import br.com.darkbook.cliente.dao.ClienteDAO;
+import br.com.darkbook.dao.ClienteDAO;
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.util.Resultado;
 
 public class ValidarExistencia implements IStrategy{
 
 	@Override
-	public String processar(Entidade entidade) {
+	public Resultado processar(Entidade entidade) {
 		ClienteDAO cliDao;
 		List<Entidade> clientes = null;
 		
-		try {
-			cliDao = new ClienteDAO();
-			clientes = cliDao.consultar(entidade);
-			
-		} catch (ClassNotFoundException | SQLException e1) {
-			e1.printStackTrace();
-		}
+		cliDao = new ClienteDAO();
+		clientes = cliDao.consultar(entidade);
 		
-		for(Entidade cliente : clientes) {
-			if(null == cliente) {
-				return "";
+			if(null == clientes) {
+				return null;
 			}
-		}
 		
-		return "Cliente já Cadastrado";
+		
+		return new Resultado("Cliente já Cadastrado", entidade);
 		
 	}
 

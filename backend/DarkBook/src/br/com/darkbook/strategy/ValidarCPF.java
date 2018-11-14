@@ -1,12 +1,13 @@
 package br.com.darkbook.strategy;
 
-import br.com.darkbook.cliente.Cliente;
+import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.util.Resultado;
 
 public class ValidarCPF implements IStrategy {
 
 	@Override
-	public String processar(Entidade entidade) {
+	public Resultado processar(Entidade entidade) {
 		Cliente cliente = (Cliente) entidade;
 		
 		if (cliente.getCpf().equals("00000000000") ||
@@ -16,7 +17,7 @@ public class ValidarCPF implements IStrategy {
 				cliente.getCpf().equals("66666666666") || cliente.getCpf().equals("77777777777") ||
 				cliente.getCpf().equals("88888888888") || cliente.getCpf().equals("99999999999") ||
 	            (cliente.getCpf().length() != 11)) {
-			return "O cpf informato é invalido";
+			return new Resultado("O cpf informato é invalido", entidade);
 		}
 		
 		
@@ -62,9 +63,9 @@ public class ValidarCPF implements IStrategy {
           
         // Verifica se os digitos calculados conferem com os digitos informados.
         if ((dig10 == cliente.getCpf().charAt(9)) && (dig11 == cliente.getCpf().charAt(10))) {
-             return "";
+             return null;
         } else { 
-        	return "O cpf informato é invalido";
+        	return new Resultado("O cpf informato é invalido", entidade);
         }
 	}
 
