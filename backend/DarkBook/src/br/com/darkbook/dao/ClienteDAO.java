@@ -32,7 +32,7 @@ public class ClienteDAO implements IDAO{
     private Connection conexao;
 
     public ClienteDAO() {
-        this.conexao = (Connection) Conexao.getConexao();
+        
     }
     
     public List<Entidade> consultar(Entidade entidade) {
@@ -43,21 +43,21 @@ public class ClienteDAO implements IDAO{
     	PreparedStatement comandosSQL = null;
     	String tabelaCliente;
     	
-    	try {
-    		
-	    	if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
-	          	tabelaCliente = "SELECT * FROM cliente";
-	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-	    	} else if(null == cli.getId()) { // buscar por cpf
-	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
-	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-	    		preparo.setString(1, cli.getCpf());
-	    	} else if(null != cli.getUsuario().getSenha() &&
+    	try { 
+    		this.conexao = (Connection) Conexao.getConexao();
+    		if(null != cli.getUsuario().getSenha() &&
 	    			null != cli.getUsuario().getContato().getEmail()) {
 	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ?";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    		preparo.setString(1, cli.getUsuario().getSenha());
 	    		preparo.setString(2, cli.getUsuario().getContato().getEmail());
+    		} else if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
+	          	tabelaCliente = "SELECT * FROM cliente";
+	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	    	} else if(null != cli.getCpf()) { // buscar por cpf
+	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
+	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	    		preparo.setString(1, cli.getCpf());
 	    	} else { // buscar por id 
 	    		
 	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
@@ -186,6 +186,7 @@ public class ClienteDAO implements IDAO{
 			if(null != conexao) {
 				try {
 					conexao.close();
+					conexao = null;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

@@ -10,8 +10,6 @@ public class JSONUtil {
 		while( (linha = json.readLine()) != null ){
 			JSON += linha.trim().toString();
 		}
-
-        
         return JSON;
 	}
 

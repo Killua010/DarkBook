@@ -1,26 +1,31 @@
 package br.com.darkbook.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.darkbook.entidade.Entidade;
 
 public class Resultado {
-	private String mensagem;
-	private Entidade entidade;
-	public Resultado(String mensagem, Entidade entidade) {
-		super();
-		this.mensagem = mensagem;
-		this.entidade = entidade;
+	private StringBuilder mensagens = new StringBuilder();
+	private List<Entidade> entidades;
+
+	public List<Entidade> getEntidades() {
+		return entidades;
 	}
-	public String getMensagem() {
-		return mensagem;
+	public void setEntidades(List<Entidade> entidades) {
+		this.entidades = entidades;
 	}
-	public void setMensagem(String mensagem) {
-		this.mensagem = mensagem;
+	public StringBuilder getMensagens() {
+		return mensagens;
 	}
-	public Entidade getEntidade() {
-		return entidade;
+	public void setMensagens(StringBuilder mensagens) {
+		this.mensagens = mensagens;
 	}
-	public void setEntidade(Entidade entidade) {
-		this.entidade = entidade;
+	public void addEntidade(Entidade entidade) {
+		if(null == entidades) {
+			entidades = new ArrayList<>();
+		}
+		entidades.add(entidade);
 	}
 	
 }

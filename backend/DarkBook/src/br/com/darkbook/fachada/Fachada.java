@@ -28,10 +28,11 @@ public class Fachada implements IFachada {
 	
 	private Map<String, List<IStrategy>> mapStrategy;
 	private Map<String, IDAO> mapDao;
+	private Resultado resultado;
 	// construtor
-	public Fachada() throws ClassNotFoundException, SQLException {
-		mapStrategy = new HashMap<>();
-		mapDao = new HashMap<>();
+	public Fachada() {
+		mapStrategy = new HashMap<String, List<IStrategy>>();
+		mapDao = new HashMap<String, IDAO>();
 		
 		ArrayList<IStrategy> clienteStrategy = new ArrayList<>();
 		clienteStrategy.add(new ValidarDadosObrigatorios());
@@ -43,53 +44,64 @@ public class Fachada implements IFachada {
 		mapStrategy.put(Cliente.class.getName(), clienteStrategy);
 		
 		mapDao.put(Cliente.class.getName(), new ClienteDAO());
-		mapDao.put(Pais.class.getName(), new PaisDAO());
-		mapDao.put(TipoLogradouro.class.getName(), new TipoLogradouroDAO());
-		mapDao.put(TipoResidencia.class.getName(), new TipoResidenciaDAO());
+		try {
+			mapDao.put(Pais.class.getName(), new PaisDAO());
+			mapDao.put(TipoLogradouro.class.getName(), new TipoLogradouroDAO());
+			mapDao.put(TipoResidencia.class.getName(), new TipoResidenciaDAO());
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
-	public String salvar(Entidade entidade) {
+	public Resultado salvar(Entidade entidade) {
+		resultado = new Resultado();
 		
-		String erros = "";
+		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()));
 		
-		for(IStrategy strategy : mapStrategy.get(entidade.getClass().getName())) {
-			Resultado r = strategy.processar(entidade);
-			if(r != null) {
-				erros += r.getMensagem();
-			}
-				
-		}
-    	if(erros.isEmpty()) {
+    	if(resultado.getMensagens().length() == 0) {
     		IDAO dao = mapDao.get(entidade.getClass().getName());
     		dao.salvar(entidade);
     	}
-    	
-    	System.out.println(erros);
-    	
-    	return erros;
+    	resultado.addEntidade(entidade);
+    	return resultado;
 
 	}
 
 	@Override
-	public List<Entidade> consultar(Entidade entidade) {
+	public Resultado consultar(Entidade entidade) {
 		
 		IDAO dao = mapDao.get(entidade.getClass().getName());
+		resultado = new Resultado();
+		resultado.setEntidades(dao.consultar(entidade));
 		
-		return dao.consultar(entidade);
+		return resultado;
 		
 	}
 
 	@Override
-	public void alterar(Entidade entidade) {
+	public Resultado alterar(Entidade entidade) {
+		return null;
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void excluir(Entidade entidade) {
+	public Resultado excluir(Entidade entidade) {
+		return null;
 		// TODO Auto-generated method stub
 
+	}
+	
+	private List<IStrategy> executarStrategys(Entidade entidade, List<IStrategy> strategys) {
+		for(IStrategy str : strategys) {
+			String mensagem = str.processar(entidade);
+			if(mensagem != null) {
+				resultado.getMensagens().append(mensagem);
+			}
+		}
+		return strategys;
 	}
 	
 
