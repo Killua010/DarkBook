@@ -1,18 +1,35 @@
 import Vue from "vue";
 import Router from "vue-router";
-import IndexMaterialKit from "./views/Index-material-kit.vue";
-import Landing from "./views/Landing.vue";
-import Login from "./views/Login.vue";
-import Profile from "./views/Profile.vue";
-import MainNavbar from "./layout/MainNavbar.vue";
-import MainFooter from "./layout/MainFooter.vue";
-import Footer from "./views/components/cliente/Footer.vue";
-import Template from "./views/components/cliente/Template.vue";
+import IndexMaterialKit from "./mk/views/Index-material-kit.vue";
+import Landing from "./mk/views/Landing.vue";
+import Login from "./mk/views/Login.vue";
+import Profile from "./mk/views/Profile.vue";
+import MainNavbar from "./views/MainNavbar.vue";
+import MainFooter from "./mk/layout/MainFooter.vue";
+import Footer from "./views/Footer.vue";
+import Template from "./views/Template.vue";
+import DashboardLayout from './views/perfil/DashboardLayout.vue'
+
+import DadosPessoais from './views/perfil/DadosPessoais.vue'
+import DadosCartao from './views/perfil/DadosCartao.vue'
+import Pedidos from './views/perfil/Pedidos.vue'
+import EnderecoEntrega from './views/perfil/EnderecoEntrega.vue'
+import EnderecoCobranca from './views/perfil/EnderecoCobranca.vue'
+import JavascriptComponents from "./mk/views/components/JavascriptComponentsSection.vue"
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
+    {
+      path: "/",
+      name: "index",
+      components: { default: JavascriptComponents, header: MainNavbar, footer: Footer },
+      props: {
+        header: { colorOnScroll: 400 },
+        footer: { backgroundColor: "black" }
+      }
+    },
     {
       path: "/cadastroCliente",
       name: "index",
@@ -23,13 +40,32 @@ export default new Router({
       }
     },
     {
-      path: "/",
-      name: "index",
-      components: { default: Template, header: MainNavbar, footer: Footer },
-      props: {
-        header: { colorOnScroll: 400 },
-        footer: { backgroundColor: "black" }
+    path: '/perfil',
+    component: DashboardLayout,
+    children: [
+      {
+        path: 'dadosPessoais',
+        name: 'Dados Pessoais',
+        component: DadosPessoais
+      },
+      {
+        path: 'enderecoEntrega',
+        name: 'Endereço Entrega',
+        component: EnderecoEntrega
+      },{
+        path: 'enderecoCobranca',
+        name: 'Endereço Cobrança',
+        component: EnderecoCobranca
+      },{
+        path: 'cartao',
+        name: 'Cartao',
+        component: DadosCartao
+      },{
+        path: 'pedidos',
+        name: 'Pedidos',
+        component: Pedidos
       }
+    ]
     },{
       path: "/index2",
       name: "index2",
