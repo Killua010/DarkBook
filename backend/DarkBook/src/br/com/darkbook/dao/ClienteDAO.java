@@ -47,7 +47,7 @@ public class ClienteDAO implements IDAO{
     		this.conexao = (Connection) Conexao.getConexao();
     		if(null != cli.getUsuario().getSenha() &&
 	    			null != cli.getUsuario().getContato().getEmail()) {
-	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ?";
+	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ? AND cli_con_id = con_id";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    		preparo.setString(1, cli.getUsuario().getSenha());
 	    		preparo.setString(2, cli.getUsuario().getContato().getEmail());
@@ -208,6 +208,7 @@ public class ClienteDAO implements IDAO{
         
         Cliente cliente = (Cliente) entidade;
         try {
+        	this.conexao = (Connection) Conexao.getConexao();
         	// Cliente
             String tabelaCliente = ""
             		+ "insert into cliente ("
