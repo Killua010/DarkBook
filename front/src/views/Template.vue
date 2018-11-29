@@ -23,7 +23,8 @@ export default {
 
 #background-image{
     
-    background: url('../assets/background2.jpg');
+    background: url('../assets/img/bg-dark12.jpg');
+    background-size: 100% 100%;
      -webkit-box-shadow: inset 0 -16px 66px 40px #000;
     box-shadow: inset 0 -16px 66px 40px #000;
     height: 650px;

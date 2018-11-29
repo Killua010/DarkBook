@@ -101,7 +101,7 @@
 
 
   // default color for dropdown
-  @include dropdown-colors($brand-success);
+  @include dropdown-colors($grey-900);
   @include toolbar-colors($gray-light, $white-color);
 
   &.md-white {

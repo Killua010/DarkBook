@@ -3,7 +3,7 @@ import Router from "vue-router";
 import IndexMaterialKit from "./mk/views/Index-material-kit.vue";
 import Landing from "./mk/views/Landing.vue";
 import Login from "./views/cliente/Login.vue";
-import Profile from "./mk/views/Profile.vue";
+import Profile from "./views/TeamDeveloper/Profile.vue";
 import MainNavbar from "./views/MainNavbar.vue";
 import MainFooter from "./mk/layout/MainFooter.vue";
 import Footer from "./views/Footer.vue";
@@ -41,7 +41,7 @@ export default new Router({
       }
     },{
       path: "/catalogo",
-      name: "Sobre nós",
+      name: "catalogo",
       components: { default: Catalogo, header: MainNavbar, footer: Footer },
       props: {
         header: { colorOnScroll: 400 },
@@ -50,7 +50,7 @@ export default new Router({
     },
     {
       path: "/cadastroCliente",
-      name: "index",
+      name: "cadastro_cliente",
       components: { default: Template, header: MainNavbar, footer: Footer },
       props: {
         header: { colorOnScroll: 400 },
@@ -59,20 +59,21 @@ export default new Router({
     },
     {
     path: '/perfil',
+    name: 'perfil',
     component: DashboardLayout,
     children: [
       {
         path: 'dadosPessoais',
-        name: 'Dados Pessoais',
+        name: 'Dados_Pessoais',
         component: DadosPessoais
       },
       {
         path: 'enderecoEntrega',
-        name: 'Endereço Entrega',
+        name: 'Endereço_Entrega',
         component: EnderecoEntrega
       },{
         path: 'enderecoCobranca',
-        name: 'Endereço Cobrança',
+        name: 'Endereço_Cobrança',
         component: EnderecoCobranca
       },{
         path: 'cartao',
@@ -112,8 +113,8 @@ export default new Router({
       }
     },
     {
-      path: "/profile",
-      name: "profile",
+      path: "/teamDeveloper",
+      name: "Team Developer",
       components: { default: Profile, header: MainNavbar, footer: MainFooter },
       props: {
         header: { colorOnScroll: 400 },

@@ -11,6 +11,7 @@
               </md-button>
               <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
                 <i class="fab fa-twitter"></i>
+                
               </md-button>
               <md-button slot="buttons" href="javascript:void(0)" class="md-just-icon md-simple md-white">
                 <i class="fab fa-google-plus-g"></i>
@@ -19,14 +20,14 @@
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>email</md-icon>
                 <label>Email...</label>
-                <md-input v-model="email" type="email"></md-input>
+                <md-input v-model="cliente.dadosPessoais.email" type="email"></md-input>
               </md-field>
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>lock_outline</md-icon>
                 <label>Senha...</label>
-                <md-input v-model="password"></md-input>
+                <md-input v-model="cliente.dadosPessoais.senha" type="password"></md-input>
               </md-field>
-              <md-button slot="footer" class="md-simple md-primary md-lg" @click="perfil()">
+              <md-button slot="footer" class="md-simple md-primary md-lg" @click="login()">
                 Entrar
               </md-button>
             </login-card>
@@ -39,19 +40,23 @@
 
 <script>
 import { LoginCard } from "@/mk/components";
+import axios from 'axios';
+import { eventBus } from '@/main';
+import DadosPessoais from '@/model/DadosPessoais.js';
 
 export default {
   components: {
     LoginCard
   },
   bodyClass: "login-page",
-  data() {
-    return {
-      firstname: null,
-      email: null,
-      password: null
-    };
-  },
+  data: () => ({
+      cliente: {
+        dadosPessoais: {
+          "email" : "",
+          "senha" : ""
+        }
+      }
+  }),
   props: {
     header: {
       type: String,
@@ -66,8 +71,19 @@ export default {
     }
   },
   methods:{
-    perfil: function(){
-      this.$router.push("/perfil/dadosPessoais")
+    login: function(){
+      var dadosAtuais = this;
+        axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
+        this.cliente, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+        }).then(function(e){
+          dadosAtuais.$router.replace({name: "perfil", params: { "id": e.data.dadosPessoais.id, "nome": e.data.dadosPessoais.nome }})
+        }).catch(function(e){
+            alert(e)
+        })
+      
     }
   }
 };

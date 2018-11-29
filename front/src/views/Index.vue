@@ -232,7 +232,8 @@ export default {
   computed: {
     headerStyle() {
       return {
-        backgroundImage: `url(${this.image})`
+        backgroundImage: `url(${this.image})`,
+        height: '700px'
       };
     },
     signupImage() {

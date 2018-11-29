@@ -9,7 +9,7 @@
         </md-button>
 
         <div class="md-collapse">
-          <md-list-item href="#/catalogo">
+          <md-list-item @click="catalogoPath()" href="javascript:void(0)">
             <i class="material-icons">book</i> 
                 <p>Catálogo</p>
           </md-list-item>
@@ -32,11 +32,11 @@
                 <drop-down direction="down">
                   <md-button slot="title" class="md-button md-button-link md-white md-simple dropdown-toggle" data-toggle="dropdown">
                     <i class="material-icons">face</i> 
-                    <p>Olá Daniel</p>
+                    <p>Olá {{this.clienteNome}}</p>
                   </md-button>
                   <ul class="dropdown-menu">
                     <li>
-                      <a href="#/" class="dropdown-item">
+                      <a href="javascript:void(0)" @click="sair()" class="dropdown-item">
                         <i class="material-icons">close</i> Sair
                       </a>
                     </li>
@@ -53,26 +53,46 @@
 </template>
 
 <script>
-
+import { eventBus } from '@/main';
 export default{
-  data () {
-    return {
-      selectedEmployee: null,
-      employees: [
-        'Jim Halpert',
-        'Dwight Schrute',
-        'Michael Scott',
-        'Pam Beesly',
-        'Angela Martin',
-        'Kelly Kapoor',
-        'Ryan Howard',
-        'Kevin Malone'
-      ]
+  // created() {
+  //   if(this.$route.params.id == '' || this.$route.params.nome == ''){
+  //     alert("Usuario não logado");
+  //     this.$router.push("/login")
+  //   } else {
+  //     this.id = this.$route.params.id;
+  //     this.clienteNome = this.$route.params.nome;
+  //   }
+   
+  // },
+  mounted(){
+  console.log(this.$route.params)
+  if(this.$route.params.id == '' || this.$route.params.nome == undefined
+  || this.$route.params.nome == '' || this.$route.params.nome == undefined){
+      alert("Usuario não logado");
+      this.$router.push("/login")
+    } else {
+      this.id = this.$route.params.id;
+      this.clienteNome = this.$route.params.nome;
     }
   },
+  data() {
+    return {
+      id: '',
+      clienteNome: ''
+    };
+  },
   methods: {
+    sair: function(){
+      this.id = undefined;
+      this.clienteNome = undefined;
+      this.$router.push({name: "index"})
+    },
     toggleSidebar () {
       this.$sidebar.displaySidebar(!this.$sidebar.showSidebar)
+    },
+    catalogoPath(){
+       this.$router.push({name: "catalogo", params: { "id": this.id, "nome": this.clienteNome }})
     }
   }
 }

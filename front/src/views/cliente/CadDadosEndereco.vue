@@ -6,19 +6,17 @@
                 <md-field class="md-form-group">
                     <md-icon>business</md-icon>
                     <label>Tipo de endereco</label>
-                    <md-select id="tpEndereco" v-model="dados.enderecosCobranca.tipoResidencia" class="select-option">
-                        <md-option class="select" value="APARTAMENTO">Apartamento</md-option>
-                        <md-option class="select" value="CASA">Casa</md-option>
-                        <md-option class="select" value="COMERCIAL">Comercial</md-option>
+                    <md-select id="tpEndereco" v-model="tipoResidencia" class="select-option">
+                        <md-option v-for="tipo in tiposResidencia" class="select"  v-bind:value="tipo">{{tipo | firstUpperCase() }}</md-option>
                     </md-select>
-                    <span class="md-error erros">O tipo de endereço é obrigadório</span>
+                    <span class="md-error erros">O tipo de endereço é obrigatório</span>
                 </md-field>
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
                     <md-icon>place</md-icon>
                     <label>CEP...</label>
-                    <md-input v-mask="'#####-###'" v-on:keyup="buscarCep" id="cep" v-model="dados.enderecosCobranca.cep"></md-input>
+                    <md-input v-mask="'#####-###'" v-on:keyup="buscarCep(this)" id="cep" v-model="cep"></md-input>
                     <span class="md-error erros">O cep tem que ter 8 digitos</span>
                 </md-field> 
             </div>
@@ -27,12 +25,10 @@
                 <md-field class="md-form-group">
                     <md-icon>explore</md-icon>
                     <label>Tipo Logradouro</label>
-                    <md-select id="tpLogradouro" v-model="dados.enderecosCobranca.tipoLogradouro" class="select-option">
-                        <md-option class="select" value="RUA">Rua</md-option>
-                        <md-option class="select" value="AVENIDA">Avenida</md-option>
-                        <md-option class="select" value="VIELA">Viela</md-option>
+                    <md-select id="tpLogradouro" v-model="tipoLogradouro" class="select-option">
+                        <md-option v-for="tipo in tiposLogradouro" class="select"  v-bind:value="tipo">{{tipo | firstUpperCase() }}</md-option>
                     </md-select>
-                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                    <span class="md-error erros">O tipo de logradouro é obrigatório</span>
                 </md-field>
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
@@ -48,20 +44,20 @@
                 <md-field class="md-form-group">
                     <md-icon>public</md-icon>
                     <label>Pais...</label>
-                    <md-select id="pais" v-model="dados.enderecosCobranca.pais" class="select-option">
-                        <md-option class="select" v-for="pais in paises" v-bind:value="pais.pais" >{{ pais.pais }}</md-option>
+                     <md-select id="pais" v-model="dados.enderecosCobranca.pais" class="select-option">
+                        <md-option v-for="pais in paises" class="select"  v-bind:value="pais.pais">{{pais.pais}}</md-option>
                     </md-select>
-                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                    <span class="md-error erros">O pais é obrigatório</span>
                 </md-field>
             </div>
              <div class="md-layout-item md-size-50 md-xsmall-size-100">
                 <md-field class="md-form-group">
                     <md-icon>map</md-icon>
                     <label>Estado...</label>
-                    <md-select id="tpEstado" v-model="dados.enderecosCobranca.estado" class="select-option">
-                        <md-option class="select" v-for="(estado, index) in estados" v-bind:value="estado.sigla">{{ estado.estado }}</md-option>
+                    <md-select id="estado" v-model="dados.enderecosCobranca.estado" class="select-option">
+                        <md-option v-if="null != indexPais" v-for="estado in estados" class="select"  v-bind:value="estado.sigla">{{ estado.estado }}</md-option>
                     </md-select>
-                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                    <span class="md-error erros">O estado é obrigatório</span>
                 </md-field>
             </div>
 
@@ -70,10 +66,10 @@
                 <md-field class="md-form-group">
                     <md-icon>location_city</md-icon>
                     <label>Cidade...</label>
-                    <md-select id="tpLogradouro" v-model="dados.enderecosCobranca.cidade" class="select-option">
+                    <md-select id="cidade" v-model="dados.enderecosCobranca.cidade" class="select-option">
                         <md-option v-if="null != indexEstado" class="select" v-for="(cidade, index) in cidades" v-bind:value="cidade.cidade">{{ cidade.cidade }}</md-option>
                     </md-select>
-                    <span class="md-error erros">O tipo de logradouro é obrigadório</span>
+                    <span class="md-error erros">A cidade é obrigatório</span>
                 </md-field>
             </div>
 
@@ -90,7 +86,7 @@
                 <md-field class="md-form-group">
                     <md-icon>home</md-icon>
                     <label>Numero...</label>
-                    <md-input type="number" min="1" id="numero" v-model="dados.enderecosCobranca.numero"></md-input>
+                    <md-input type="number" min="1" id="numero" v-model="numero"></md-input>
                     <span class="md-error erros">O numero é obrigatório</span>
                 </md-field> 
             </div>
@@ -98,7 +94,7 @@
                 <md-field class="md-form-group">
                     <md-icon>directions</md-icon>
                     <label>Complemento...</label>
-                    <md-input id="complemento" v-model="dados.enderecosCobranca.observacao"></md-input>
+                    <md-input id="complemento" v-model="observacao"></md-input>
                     <span class="md-error erros">O complemento necessida ter no minimo 5 caracteres</span>
                 </md-field> 
             </div>
@@ -112,18 +108,29 @@ import axios from 'axios';
 
 export default {
     watch: {
+        'dados.enderecosCobranca.pais' : function(e){
+            this.indexPais = this.mapPais[e];
+            this.estados = this.paises[this.indexPais].estados;
+        },
         'dados.enderecosCobranca.estado' : function(e){
             this.indexEstado = this.mapEstados[e];
             this.cidades = this.estados[this.indexEstado].cidades;
         }
     },
      data: () => ({
-         paises: {},
-         estados : [],
-         cidades : [],
-         mapEstados: [],
-         indexEstado : null
+        paises : [],
+        estados : [],
+        cidades : [],
+        mapPais: [],
+        mapEstados: [],
+        indexPais : null,
+        indexEstado : null
      }),
+     filters: {
+        firstUpperCase(str){
+            return str.toLowerCase().replace(/(?:^)\S/g, function(a) { return a.toUpperCase(); });
+        }
+    },
     created(){
         var dadosAtuais = this;
         eventBus.$on('validarDadosEnderecoCobranca', function(e){
@@ -131,79 +138,148 @@ export default {
                 dadosAtuais.validar()
             }
         });
-        axios.get("http://localhost:8082/DarkBook/pais")
-        .then(response => {
-            this.paises = response.data;
-            this.estados = this.paises.paises.estados;
-            for(let i = 0; i < this.paises.paises.estados.length; i++){
-                this.mapEstados[this.paises.paises.estados[i].sigla] = i;
-            }
-            
-        })
-        .catch(e => {
-            console.log(e)
-        })
+
+        this.buscarTipoLogradouro();
+        this.buscarTipoResidencia();
+        this.buscarPaises();
+        
+        if(this.dados != null){
+            this.tipoResidencia = this.dados.enderecosCobranca.tipoResidencia;
+            this.tipoLogradouro = this.dados.enderecosCobranca.tipoLogradouro;
+            this.numero = this.dados.enderecosCobranca.numero;
+            this.cep = this.dados.enderecosCobranca.cep;
+            this.observacao = this.dados.enderecosCobranca.observacao;
+            this.nomeComposto = this.dados.enderecosCobranca.nomeComposto;
+            this.favorito = this.dados.enderecosCobranca.favorito;
+            this.cep = this.dados.enderecosCobranca.cep;
+        }
+
+        
     },
     props:['dados'],
     methods:{
+        buscarTipoLogradouro(){
+            var dadosAtuais = this;
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8082/DarkBook/tipoLogradouro?operacao=CONSULTAR",
+                async: false
+            }).done(function(msg){
+                dadosAtuais.tiposLogradouro = msg
+             }).fail(function(jqXHR, textStatus, msg){
+                  console.log(msg);
+             })
+        },
+        buscarTipoResidencia(){
+            var dadosAtuais = this;
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8082/DarkBook/tipoResidencia?operacao=CONSULTAR",
+                async: false
+            }).done(function(msg){
+                dadosAtuais.tiposResidencia = msg
+             }).fail(function(jqXHR, textStatus, msg){
+                  console.log(msg);
+             })
+        },
+        buscarPaises(){
+            var dadosAtuais = this;
+            axios.post(`http://localhost:8082/DarkBook/paises?operacao=CONSULTAR`, 
+            this.cliente, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                }
+            }).then(function(e){
+                dadosAtuais.paises = e.data
+                for(let i = 0; i < dadosAtuais.paises.length; i++){
+                    dadosAtuais.mapPais[dadosAtuais.paises[i].pais] = i;
+                    for(let j = 0; j < dadosAtuais.paises[i].estados.length; j++){
+                        dadosAtuais.mapEstados[dadosAtuais.paises[i].estados[j].sigla] = j;
+                    }
+                }
+
+                if(dadosAtuais.dados.enderecosCobranca.pais != ""){
+                    dadosAtuais.indexPais = dadosAtuais.mapPais[dadosAtuais.dados.enderecosCobranca.pais];
+                    dadosAtuais.estados = dadosAtuais.paises[dadosAtuais.indexPais].estados;
+                    dadosAtuais.indexEstado = dadosAtuais.mapEstados[dadosAtuais.dados.enderecosCobranca.estado];
+                    dadosAtuais.cidades = dadosAtuais.estados[dadosAtuais.indexEstado].cidades;
+                }
+
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
         validar(){
             var erro = false;
 
             var regCep = /\d{5}-?\d{3}/;
 
-            if(this.dados.enderecosCobranca.tipoResidencia == ""){
+            if(this.tipoResidencia == ""){
                 this.corErroSelect("tpEndereco");
                 erro = true;
             }
 
-            if(!regCep.test(this.dados.enderecosCobranca.cep)){
+            if(!regCep.test(this.cep)){
                 this.corErroInput("cep");
                 erro = true;
+            } else {
+                this.cep = this.cep.replace("-","")
             }
 
-            if(this.dados.enderecosCobranca.tipoLogradouro == ""){
+            if(this.tipoLogradouro == ""){
                 this.corErroSelect("tpLogradouro");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.logradouro.trim().length <= 3){
+            if(this.dados.enderecosCobranca.logradouro.trim().length < 3){
                 this.corErroInput("logradouro");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.cidade.trim().length <= 3){
-                this.corErroInput("cidade");
+            console.log(this.dados.enderecosCobranca.cidade)
+
+            if(this.dados.enderecosCobranca.cidade == ""){
+                this.corErroSelect("cidade");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.estado.trim().length < 2){
-                this.corErroInput("estado");
+            if(this.dados.enderecosCobranca.estado == ""){
+                this.corErroSelect("estado");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.pais.trim().length <= 3){
-                this.corErroInput("pais");
+            if(this.dados.enderecosCobranca.pais == ""){
+                this.corErroSelect("pais");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.bairro.trim().length <= 3){
+            if(this.dados.enderecosCobranca.bairro.trim().length < 3){
                 this.corErroInput("bairro");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.numero <= 0){
+            if(this.numero <= 0){
                 this.corErroInput("numero");
                 erro = true;
             }
 
-            if(this.dados.enderecosCobranca.observacao.trim().length > 0
-                && this.dados.enderecosCobranca.observacao.trim().length < 5){
+            if(this.observacao.trim().length > 0
+                && this.observacao.trim().length < 5){
                 this.corErroInput("complemento");
                 erro = true;
             }
 
             if(erro == false){
-                eventBus.$emit('request','proximo');
+                this.dados.enderecosCobranca.tipoResidencia = this.tipoResidencia;
+                this.dados.enderecosCobranca.tipoLogradouro = this.tipoLogradouro;
+                this.dados.enderecosCobranca.numero = this.numero;
+                this.dados.enderecosCobranca.cep = this.cep;
+                this.dados.enderecosCobranca.observacao = this.observacao;
+                this.dados.enderecosCobranca.nomeComposto = this.nomeComposto;
+                this.dados.enderecosCobranca.favorito = this.favorito;
+                this.dados.enderecosCobranca.cep = this.cep;
+                eventBus.$emit('page', 3);
             }
 
         },
@@ -217,27 +293,29 @@ export default {
             elementoAtual.classList.add("md-error")
             elementoAtual.classList.add("md-invalid")
         },
-        buscarCep: function() {
-            var self = this;
+        buscarCep: function(event) {
             // Nova variável "cep" somente com dígitos.
-            var cep = $("#cep").val().replace(/\D/g, '');
+            
+            let cep = $("#cep").val().replace(/\D/g, '');
+            var self = this;
 
             //Verifica se campo cep possui valor informado.
             if (cep != "") {
                 //Expressão regular para validar o CEP.
-                var validacep = /^[0-9]{8}$/;
+                let validacep = /^[0-9]{8}$/;
 
                 //Valida o formato do CEP.
                 if(validacep.test(cep)) {
                     //Consulta o webservice viacep.com.br/
                     $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dadosEndereco) {
-
+                        
+                        
                         if (!("erro" in dadosEndereco)) {
                             self.dados.enderecosCobranca.logradouro = dadosEndereco.logradouro;
                             //Atualiza os campos com os valores da consulta.
                             self.dados.enderecosCobranca.bairro = dadosEndereco.bairro
+                            self.dados.enderecosCobranca.cidade = dadosEndereco.localidade
                             self.dados.enderecosCobranca.estado = dadosEndereco.uf
-                            self.dados.enderecosCobranca.cidade = dadosEndereco.localidade                            
                             self.dados.enderecosCobranca.pais = "Brasil"
                         } //end if.
                        
@@ -246,6 +324,8 @@ export default {
 
                 } //end if.
             } //end if.
+
+            console.log(this)
         }   
         
     }

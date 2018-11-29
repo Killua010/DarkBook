@@ -12,7 +12,7 @@
                   </a>
               </li>
              <li>
-              <a href="/sobreNos">
+              <a href="#/teamDeveloper">
                 Sobre Nós
               </a>
             </li>

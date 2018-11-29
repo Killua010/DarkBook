@@ -24,9 +24,7 @@
                     <md-icon>payment</md-icon>
                     <label>Bandeira</label>
                     <md-select id="bandeira" v-model="dados.cartoes.bandeira" class="select-option">
-                        <md-option class="select" value="VISA">Visa</md-option>
-                        <md-option class="select" value="MASTER">Master</md-option>
-                        <md-option class="select" value="ELO">Elo</md-option>
+                        <md-option v-for="bandeira in bandeiras" class="select"  v-bind:value="bandeira">{{bandeira | firstUpperCase() }}</md-option>
                     </md-select>
                     <span class="md-error erros">A bandeira é obrigatória</span>
                 </md-field>
@@ -53,6 +51,9 @@
 import { eventBus } from '../../main';
 
 export default {
+    data: () => ({
+        bandeiras : []
+    }),
     created(){
         var dadosAtuais = this;
         eventBus.$on('validarDadosCartao', function(e){
@@ -60,9 +61,27 @@ export default {
                 dadosAtuais.validar()
             }
         })
+        this.buscarBandeira()
     },
     props:['dados'],
+    filters: {
+        firstUpperCase(str){
+            return str.toLowerCase().replace(/(?:^)\S/g, function(a) { return a.toUpperCase(); });
+        }
+    },
     methods:{
+        buscarBandeira(){
+            var dadosAtuais = this;
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8082/DarkBook/bandeira?operacao=CONSULTAR",
+                async: false
+            }).done(function(msg){
+                dadosAtuais.bandeiras = msg
+             }).fail(function(jqXHR, textStatus, msg){
+                  console.log(msg);
+             })
+        },
         validar(){
             var erro = false;
 
@@ -89,7 +108,7 @@ export default {
             }
 
             if(erro == false){
-                eventBus.$emit('request','salvar');
+                eventBus.$emit('page', 4);
             }
 
         },

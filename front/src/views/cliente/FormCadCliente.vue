@@ -54,85 +54,101 @@ import CadDadosEnderecoEntrega from './CadDadosEnderecoEntrega'
 import { LoginCard } from "@/mk/components";
 import axios from 'axios';
 import { eventBus } from '../../main';
+import  DadosPessoais  from "@/model/DadosPessoais.js"
+import  EnderecoCobranca  from "@/model/EnderecoCobranca.js"
+import  EnderecoEntrega  from "@/model/EnderecoEntrega.js"
+import  Cartao  from "@/model/Cartao.js"
 
 export default {
     created(){
-        var dadosAtuais = this;
-        eventBus.$on('request', function(e){
-            if(e == 'proximo'){
-                dadosAtuais.telaCad++;
-            } else if(e == 'salvar'){
+        var dadosAtuais = this; 
+        eventBus.$on('page', function(e){
+            if(e == 1){
+                dadosAtuais.telaCad = 1
+            } else if(e == 2){
+                dadosAtuais.telaCad = 2
+            } else if( e == 3) {
+                dadosAtuais.telaCad = 3
+            } else if( e == 4 ){
                 dadosAtuais.enviar()
             }
         });
     },
+
     components:{LoginCard, CadDadosBasicos, CadDadosEndereco, CadDadosCartao, CadDadosEnderecoEntrega},
     data: () => ({
         telaCad : 0,
-        cliente:{
-            dadosPessoais:{
-                primeiroNome : "Daniel",
-                sobrenome : "Dias de Souza",
-                email : "daniel160598@hotmail.com",
-                genero : "MASCULINO",
-                cpf : "45856020898",
-                dataNascimento : "16/05/1998",
-                tipoTelefone : "MOVEL",
+        cliente :   {
+            dadosPessoais : {
+                id : "",
+                primeiroNome : "",
+                sobrenome : "",
+                email : "",
+                genero : "",
+                cpf : "",
+                dataNascimento : "",
+                tipoTelefone : "",
                 telefone : "",
-                ddd: "",
-                senha1 : "123456",
-                senha2 : "123456",
+                ddd : "",
+                senha1 : "",
+                senha2 : "",
                 senha : ""
-              },
-              enderecosEntrega:{
-                tipoResidencia : "CASA",
-                tipoLogradouro : "RUA",
+            },
+            enderecosEntrega : {
+                tipoResidencia : "",
+                tipoLogradouro : "",
                 pais : "",
                 estado : "",
                 cidade : "",
                 logradouro : "",
-                numero : "20",
+                numero : "",
                 bairro : "",
-                cep: "",
+                cep : "",
                 observacao : "",
-                nomeComposto : "ASDASD",
+                nomeComposto : "",
                 favorito : false
             },
             enderecosCobranca : {
-                tipoResidencia : "CASA",
-                tipoLogradouro : "RUA",
+                tipoResidencia : "",
+                tipoLogradouro : "",
                 pais : "",
                 estado : "",
                 cidade : "",
                 logradouro : "",
-                numero : "40",
+                numero : "",
                 bairro : "",
-                cep: "",
+                cep : "",
                 observacao : ""
             },
             cartoes : {
-                bandeira : "VISA",
-                numero : "1111.1111.1111.1111",
-                nomeImpresso : "ASDASDSA",
-                codSeguranca : "123",
+                bandeira : "",
+                numero : "",
+                nomeImpresso : "",
+                codSeguranca : "",
                 preferencial : false
-            }  
+            }
         }
     }),// ./dados
-
+    beforeDestroy: function(){
+        this.telaCad = 0;
+        this.cliente = null;
+    },
     methods:{
         enviar: function(){
-            this.$router.push("/perfil/dadosPessoais")
-                //   axios.post(`http://localhost:8082/DarkBook/cliente`, 
-                //   this.cliente, {
-                //       headers: {
-                //           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                //       }
-                //   }).then(function(e){
-                //       alert(e.data)
-                //   }).catch(function(e){
-                //       alert(e.response.data)
-                //   })
+            console.log(this.cliente)
+            var dadosAtuais = this;
+            axios.post(`http://localhost:8082/DarkBook/cliente?operacao=SALVAR`, 
+            this.cliente, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                }
+            }).then(function(e){
+                alert(e.data)
+                dadosAtuais.$router.push({ name:"login" })
+            }).catch(function(e){
+                console.log(e.response.data)
+                alert(e.response.data)
+            })
           },
           proximo(){
               switch(this.telaCad){
