@@ -45,7 +45,7 @@
 import TopNavbar from '@/views/perfil/TopNavbarDashboard.vue'
 import ContentFooter from '@/mk_admin/pages/Layout/ContentFooter.vue'
 import DashboardContent from '@/mk_admin/pages/Layout/Content.vue'
-import MobileMenu from '@/mk_admin/pages/Layout/MobileMenu.vue'
+import MobileMenu from '@/views/MobileMenu.vue'
 import MainNavbar from '@/views/MainNavbar.vue'
 import Footer from "@/views/Footer.vue";
 

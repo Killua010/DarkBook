@@ -122,7 +122,7 @@ export default {
 
     methods:{
         enviar: function(){
-            this.$router.push("/")
+            this.$router.push("/perfil/dadosPessoais")
                 //   axios.post(`http://localhost:8082/DarkBook/cliente`, 
                 //   this.cliente, {
                 //       headers: {

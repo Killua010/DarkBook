@@ -9,7 +9,7 @@
         </md-button>
 
         <div class="md-collapse">
-          <md-list-item href="#" target="_blank">
+          <md-list-item href="#/catalogo">
             <i class="material-icons">book</i> 
                 <p>Catálogo</p>
           </md-list-item>
@@ -36,7 +36,7 @@
                   </md-button>
                   <ul class="dropdown-menu">
                     <li>
-                      <a href="#/login" class="dropdown-item">
+                      <a href="#/" class="dropdown-item">
                         <i class="material-icons">close</i> Sair
                       </a>
                     </li>

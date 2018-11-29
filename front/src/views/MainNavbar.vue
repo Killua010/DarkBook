@@ -2,7 +2,7 @@
   <md-toolbar id="toolbar" md-elevation="0" class="md-transparent md-absolute" :class="extraNavClasses" :color-on-scroll="colorOnScroll">
     <div class="md-toolbar-row md-collapse-lateral">
       <div class="md-toolbar-section-start">
-        <a href="#/index2">
+        <a href="#/">
           <img src="../assets/logo2.png" class="img-nav">
         </a>
       </div>
@@ -15,13 +15,13 @@
 
         <div class="md-collapse">
           <div class="md-collapse-wrapper">
-            <mobile-menu nav-mobile-section-start="false">
+            <mobile-menu nav-mobile-section-start="true">
               <!-- Here you can add your items from the section-start of your toolbar -->
             </mobile-menu>
             <md-list>
 
 
-              <md-list-item href="#" target="_blank">
+              <md-list-item href="#" to="/catalogo"> 
                 <i class="material-icons">book</i> 
                     <p>Catálogo</p>
               </md-list-item>
@@ -49,7 +49,7 @@
                         </md-button>
                         <ul class="dropdown-menu">
                           <li>
-                            <a   href="#" class="dropdown-item">
+                            <a href="#/cadastroCliente" class="dropdown-item">
                               <i class="material-icons">person_add</i> Novo Usuário
                             </a>
                           </li>
