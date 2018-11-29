@@ -1,6 +1,7 @@
-package br.com.darkbook.viewhelper.helper;
+package br.com.darkbook.viewhelper.helper.cliente;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,13 +14,14 @@ import br.com.darkbook.dominio.Contato;
 import br.com.darkbook.dominio.Endereco;
 import br.com.darkbook.dominio.EnderecoEntrega;
 import br.com.darkbook.dominio.Usuario;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.Resultado;
+import br.com.darkbook.viewhelper.helper.IHelper;
 
 public class ConsultarCliente implements IHelper {
 
 	@Override
-	public Entidade getEntidade(JSONObject objetoJson) {
+	public EntidadeDominio getEntidade(JSONObject objetoJson) {
 		
 		Contato contato = new Contato();     		
  		Usuario usuario = new Usuario();
@@ -58,7 +60,7 @@ public class ConsultarCliente implements IHelper {
 			}
 		}
 		
-    	for(Entidade ent : resultado.getEntidades()) {
+    	for(EntidadeDominio ent : resultado.getEntidades()) {
     		Cliente cli = (Cliente) ent;
     		JSONObject clienteJson = new JSONObject();
     		JSONObject dadosPessoais = new JSONObject();
@@ -67,7 +69,7 @@ public class ConsultarCliente implements IHelper {
     		dadosPessoais.put("cpf", cli.getCpf());
     		dadosPessoais.put("nome", cli.getUsuario().getNome());
     		dadosPessoais.put("sobrenome", cli.getUsuario().getSobrenome());
-    		dadosPessoais.put("dataNascimento", cli.getUsuario().getDataNascimento());
+    		dadosPessoais.put("dataNascimento", cli.getUsuario().getDataNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     		dadosPessoais.put("genero", cli.getUsuario().getGenero());
     		dadosPessoais.put("senha", cli.getUsuario().getSenha());
     		dadosPessoais.put("email",  cli.getUsuario().getContato().getEmail());
@@ -118,7 +120,7 @@ public class ConsultarCliente implements IHelper {
     		JSONArray cartoes = new JSONArray();
     		for(CartaoCredito cartao : cli.getCartoes()) {
     			JSONObject cartaoJson = new JSONObject();
-    			cartaoJson.put("bandeira", cartao.getBandeira());
+    			cartaoJson.put("bandeira", cartao.getBandeira().getNome());
     			cartaoJson.put("numero", cartao.getNumero());
     			cartaoJson.put("nomeImpresso", cartao.getNomeImpresso());
     			cartaoJson.put("codSeguranca", cartao.getCodSeguranca());

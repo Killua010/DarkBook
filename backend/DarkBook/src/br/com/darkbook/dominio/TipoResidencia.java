@@ -1,8 +1,8 @@
 package br.com.darkbook.dominio;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class TipoResidencia extends Entidade {
+public class TipoResidencia extends EntidadeDominio {
 	private String nome;
 
 	public String getNome() {

@@ -2,7 +2,7 @@ package br.com.darkbook.dominio;
 
 import java.time.LocalDate;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class Pessoa{
 	protected String nome;

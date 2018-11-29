@@ -6,16 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.com.darkbook.dao.BandeiraCartaoDAO;
 import br.com.darkbook.dao.ClienteDAO;
 import br.com.darkbook.dao.IDAO;
 import br.com.darkbook.dao.PaisDAO;
 import br.com.darkbook.dao.TipoLogradouroDAO;
 import br.com.darkbook.dao.TipoResidenciaDAO;
+import br.com.darkbook.dominio.Bandeira;
 import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.dominio.Pais;
 import br.com.darkbook.dominio.TipoLogradouro;
 import br.com.darkbook.dominio.TipoResidencia;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.strategy.ComplementarDataCadastro;
 import br.com.darkbook.strategy.IStrategy;
 import br.com.darkbook.strategy.ValidarCPF;
@@ -48,6 +50,7 @@ public class Fachada implements IFachada {
 			mapDao.put(Pais.class.getName(), new PaisDAO());
 			mapDao.put(TipoLogradouro.class.getName(), new TipoLogradouroDAO());
 			mapDao.put(TipoResidencia.class.getName(), new TipoResidenciaDAO());
+			mapDao.put(Bandeira.class.getName(), new BandeiraCartaoDAO());
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -55,7 +58,7 @@ public class Fachada implements IFachada {
 	}
 
 	@Override
-	public Resultado salvar(Entidade entidade) {
+	public Resultado salvar(EntidadeDominio entidade) {
 		resultado = new Resultado();
 		
 		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()));
@@ -70,7 +73,7 @@ public class Fachada implements IFachada {
 	}
 
 	@Override
-	public Resultado consultar(Entidade entidade) {
+	public Resultado consultar(EntidadeDominio entidade) {
 		
 		IDAO dao = mapDao.get(entidade.getClass().getName());
 		resultado = new Resultado();
@@ -81,20 +84,29 @@ public class Fachada implements IFachada {
 	}
 
 	@Override
-	public Resultado alterar(Entidade entidade) {
-		return null;
-		// TODO Auto-generated method stub
+	public Resultado alterar(EntidadeDominio entidade) {
+		resultado = new Resultado();
+		
+//		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()));
+		
+    	if(resultado.getMensagens().length() == 0) {
+    		IDAO dao = mapDao.get(entidade.getClass().getName());
+    		dao.alterar(entidade);
+    	}
+    	
+    	resultado.addEntidade(entidade);
+    	return resultado;
 
 	}
 
 	@Override
-	public Resultado excluir(Entidade entidade) {
+	public Resultado excluir(EntidadeDominio entidade) {
 		return null;
 		// TODO Auto-generated method stub
 
 	}
 	
-	private List<IStrategy> executarStrategys(Entidade entidade, List<IStrategy> strategys) {
+	private List<IStrategy> executarStrategys(EntidadeDominio entidade, List<IStrategy> strategys) {
 		for(IStrategy str : strategys) {
 			String mensagem = str.processar(entidade);
 			if(mensagem != null) {

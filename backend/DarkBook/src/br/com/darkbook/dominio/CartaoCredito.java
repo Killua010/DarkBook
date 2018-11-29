@@ -1,8 +1,8 @@
 package br.com.darkbook.dominio;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class CartaoCredito extends Entidade{
+public class CartaoCredito extends EntidadeDominio{
 	private Bandeira bandeira;
 	private String numero;
 	private String nomeImpresso;

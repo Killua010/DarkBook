@@ -3,16 +3,16 @@ package br.com.darkbook.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class Resultado {
 	private StringBuilder mensagens = new StringBuilder();
-	private List<Entidade> entidades;
+	private List<EntidadeDominio> entidades;
 
-	public List<Entidade> getEntidades() {
+	public List<EntidadeDominio> getEntidades() {
 		return entidades;
 	}
-	public void setEntidades(List<Entidade> entidades) {
+	public void setEntidades(List<EntidadeDominio> entidades) {
 		this.entidades = entidades;
 	}
 	public StringBuilder getMensagens() {
@@ -21,7 +21,7 @@ public class Resultado {
 	public void setMensagens(StringBuilder mensagens) {
 		this.mensagens = mensagens;
 	}
-	public void addEntidade(Entidade entidade) {
+	public void addEntidade(EntidadeDominio entidade) {
 		if(null == entidades) {
 			entidades = new ArrayList<>();
 		}

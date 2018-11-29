@@ -9,7 +9,7 @@ import com.mysql.jdbc.PreparedStatement;
 
 import br.com.darkbook.dao.conexao.Conexao;
 import br.com.darkbook.dominio.CartaoCredito;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class CartaoDAO implements IDAO{
 	
@@ -20,7 +20,7 @@ public class CartaoDAO implements IDAO{
 	}
 
 	@Override
-	public void salvar(Entidade entidade) {
+	public void salvar(EntidadeDominio entidade) {
 		ResultSet ultimoID = null;
 		PreparedStatement comandosSQL = null;
 		
@@ -49,7 +49,7 @@ public class CartaoDAO implements IDAO{
 	    	comandosSQL.setString(2, car.getNomeImpresso());
 	    	comandosSQL.setString(3, car.getCodSeguranca());
 	    	comandosSQL.setBoolean(4, car.isPreferencial());
-	    	comandosSQL.setString(5, car.getBandeira().name());
+	    	comandosSQL.setString(5, car.getBandeira().getNome());
 	    	
 	    	comandosSQL.execute();
 	    	
@@ -66,19 +66,19 @@ public class CartaoDAO implements IDAO{
 	}
 
 	@Override
-	public List<Entidade> consultar(Entidade entidade) {
+	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void alterar(Entidade entidade) {
+	public void alterar(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void excluir(Entidade entidade) {
+	public void excluir(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 		
 	}

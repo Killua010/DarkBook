@@ -8,14 +8,15 @@ import java.util.List;
 import com.mysql.jdbc.Connection;
 
 import br.com.darkbook.dao.conexao.Conexao;
+import br.com.darkbook.dominio.Bandeira;
 import br.com.darkbook.dominio.TipoResidencia;
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class TipoResidenciaDAO implements IDAO {
+public class BandeiraCartaoDAO implements IDAO {
 	
 	private Connection conexao;
 
-	public TipoResidenciaDAO() throws ClassNotFoundException, SQLException {
+	public BandeiraCartaoDAO() throws ClassNotFoundException, SQLException {
 		super();
 		this.conexao = (Connection) Conexao.getConexao();
 	}
@@ -28,26 +29,26 @@ public class TipoResidenciaDAO implements IDAO {
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-		List<EntidadeDominio> tiposResidencia = new ArrayList<>();
+		List<EntidadeDominio> bandeiras = new ArrayList<>();
 		
 		ResultSet resultados;
 		
-		String tabelaDadosTiposResidencia = "SELECT * FROM tipo_residencia;";
+		String tabelaDadosBandeiraCartao = "SELECT * FROM bandeira";
 		
 		
 			try {
-				resultados = this.conexao.prepareStatement(tabelaDadosTiposResidencia).executeQuery();
+				resultados = this.conexao.prepareStatement(tabelaDadosBandeiraCartao).executeQuery();
 				while(resultados.next()) {
-					TipoResidencia tipoResidencia = new TipoResidencia();
-					tipoResidencia.setId(resultados.getLong("tpr_id"));
-					tipoResidencia.setNome(resultados.getString("tpr_nome"));
-					tiposResidencia.add(tipoResidencia);
+					Bandeira bandeira = new Bandeira();
+					bandeira.setNome(resultados.getString("ban_tipo"));
+              		bandeira.setId(resultados.getLong("ban_id"));
+              		bandeiras.add(bandeira);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		
-		return tiposResidencia;
+		return bandeiras;
 	}
 
 	@Override

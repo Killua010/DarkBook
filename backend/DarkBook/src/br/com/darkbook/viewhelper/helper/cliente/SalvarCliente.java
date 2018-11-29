@@ -1,4 +1,4 @@
-package br.com.darkbook.viewhelper.helper;
+package br.com.darkbook.viewhelper.helper.cliente;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,9 +22,9 @@ import br.com.darkbook.dominio.TipoLogradouro;
 import br.com.darkbook.dominio.TipoResidencia;
 import br.com.darkbook.dominio.TipoTelefone;
 import br.com.darkbook.dominio.Usuario;
-import br.com.darkbook.entidade.Entidade;
-import br.com.darkbook.util.JSONUtil;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.Resultado;
+import br.com.darkbook.viewhelper.helper.IHelper;
 
 public class SalvarCliente implements IHelper {
 	
@@ -44,7 +44,7 @@ public class SalvarCliente implements IHelper {
 	}
 
 	@Override
-	public Entidade getEntidade(JSONObject objetoJson) {
+	public EntidadeDominio getEntidade(JSONObject objetoJson) {
 		
 		JSONObject clienteJson = objetoJson;
      	System.out.println(clienteJson);
@@ -143,7 +143,9 @@ public class SalvarCliente implements IHelper {
 			
 			JSONObject cartaoJson = clienteJson.getJSONObject("cartoes");
 			cartaoCredito = new CartaoCredito();
-			cartaoCredito.setBandeira(Bandeira.valueOf(cartaoJson.get("bandeira").toString()));
+			Bandeira bandeira = new Bandeira();
+			bandeira.setNome(cartaoJson.get("bandeira").toString());
+			cartaoCredito.setBandeira(bandeira);
 			cartaoCredito.setCodSeguranca(cartaoJson.get("codSeguranca").toString());
 			cartaoCredito.setNomeImpresso(cartaoJson.get("nomeImpresso").toString());
 			cartaoCredito.setNumero(cartaoJson.get("numero").toString());
@@ -152,10 +154,12 @@ public class SalvarCliente implements IHelper {
 			cliente.setCpf(clienteJson.getJSONObject("dadosPessoais").get("cpf").toString());
 			cliente.getCartoes().add(cartaoCredito);
 			cliente.getEnderecos().add(endereco);
+			cliente.getEnderecoEntregas().add(enderecoEntrega);
 			cliente.setUsuario(usuario);
 			
 		}catch (Exception e) {}
-    	
+    	System.out.println(clienteJson.getJSONObject("dadosPessoais").get("primeiroNome").toString());
+    	System.out.println(cliente.getUsuario().getNome());
 		return cliente;
 	}
 

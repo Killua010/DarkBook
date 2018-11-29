@@ -26,4 +26,14 @@ public class Conexao {
 		}
 		return null;
 	}
+	
+	public static void fechar(Connection conn){
+		if(conn!=null){
+			try {
+				conn.close();
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		}
+	}
 }

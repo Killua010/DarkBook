@@ -15,12 +15,13 @@ import br.com.darkbook.dominio.CartaoCredito;
 import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.dominio.Endereco;
 import br.com.darkbook.dominio.EnderecoEntrega;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.JSONUtil;
 import br.com.darkbook.util.Resultado;
-import br.com.darkbook.viewhelper.helper.ConsultarCliente;
 import br.com.darkbook.viewhelper.helper.IHelper;
-import br.com.darkbook.viewhelper.helper.SalvarCliente;
+import br.com.darkbook.viewhelper.helper.cliente.AlterarCliente;
+import br.com.darkbook.viewhelper.helper.cliente.ConsultarCliente;
+import br.com.darkbook.viewhelper.helper.cliente.SalvarCliente;
 
 public class ClienteViewHelper implements IViewHelper {
 	
@@ -32,10 +33,11 @@ public class ClienteViewHelper implements IViewHelper {
 		helperView = new HashMap<String, IHelper>();
 		helperView.put("CONSULTAR", new ConsultarCliente());
 		helperView.put("SALVAR", new SalvarCliente());
+		helperView.put("ALTERAR", new AlterarCliente());
 	}
 
 	@Override
-	public Entidade getEntidade(HttpServletRequest request) {
+	public EntidadeDominio getEntidade(HttpServletRequest request) {
 		JSONObject clienteJson = null;
 		
 		try {

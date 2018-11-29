@@ -39,40 +39,7 @@ public class DadosEnderecoController extends HttpServlet {
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
-		
-		paisList = fachada.consultar(new Pais());
-		
-		JSONObject dadosEnderecoJson = new JSONObject();
-		
-		for(Entidade entidade :  paisList) {
-			Pais pais = (Pais) entidade;
-			JSONObject paisJson = new JSONObject();
-			
-			paisJson.put("pais", pais.getPais());
-			
-			JSONArray estadoArray = new JSONArray();
-			
-			for(Estado estado : pais.getEstados()) {
-				JSONObject estadoJson = new JSONObject();
-				estadoJson.put("sigla", estado.getSigla());
-				estadoJson.put("estado", estado.getEstado());
-				
-				JSONArray cidadeArray = new JSONArray();
-				
-				for(Cidade cidade : estado.getCidades()) {
-					JSONObject cidadeJson = new JSONObject();
-					cidadeJson.put("cidade", cidade.getCidade());
-					cidadeArray.put(cidadeJson);
-				}
-				estadoJson.put("cidades", cidadeArray);
-				estadoArray.put(estadoJson);
-			}
-			
-			paisJson.put("estados", estadoArray);
-			
-			dadosEnderecoJson.put("paises", paisJson);
-			
-		}
+
 		
 		tiposLogradouroList = fachada.consultar(new TipoLogradouro());
 		JSONArray tiposLogradouroListJson = new JSONArray();

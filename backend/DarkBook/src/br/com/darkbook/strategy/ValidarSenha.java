@@ -1,12 +1,12 @@
 package br.com.darkbook.strategy;
 
 import br.com.darkbook.dominio.Cliente;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class ValidarSenha implements IStrategy{
 
 	@Override
-	public String processar(Entidade entidade) {
+	public String processar(EntidadeDominio entidade) {
 		Cliente cliente = (Cliente) entidade;
 		
 		String senha = cliente.getUsuario().getSenha();

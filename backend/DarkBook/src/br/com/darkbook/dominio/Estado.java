@@ -2,9 +2,9 @@ package br.com.darkbook.dominio;
 
 import java.util.List;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class Estado extends Entidade {
+public class Estado extends EntidadeDominio {
 	private String estado;
 	private String sigla;
 	private Pais pais;

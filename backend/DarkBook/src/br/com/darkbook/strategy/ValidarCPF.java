@@ -1,13 +1,13 @@
 package br.com.darkbook.strategy;
 
 import br.com.darkbook.dominio.Cliente;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.Resultado;
 
 public class ValidarCPF implements IStrategy {
 
 	@Override
-	public String processar(Entidade entidade) {
+	public String processar(EntidadeDominio entidade) {
 		Cliente cliente = (Cliente) entidade;
 		
 		if (cliente.getCpf().equals("00000000000") ||

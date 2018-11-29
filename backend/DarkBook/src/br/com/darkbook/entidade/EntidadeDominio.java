@@ -2,7 +2,7 @@ package br.com.darkbook.entidade;
 
 import java.time.LocalDateTime;
 
-public class Entidade {
+public class EntidadeDominio {
 	protected Long id;
 	protected boolean status;
 	protected LocalDateTime dataHoraRegistro;

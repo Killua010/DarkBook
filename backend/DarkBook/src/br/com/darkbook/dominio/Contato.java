@@ -2,9 +2,9 @@ package br.com.darkbook.dominio;
 
 import java.util.List;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class Contato extends Entidade{
+public class Contato extends EntidadeDominio{
 	private TipoTelefone tipoTelefone;
 	private String ddd;
 	private String numero;

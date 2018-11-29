@@ -11,13 +11,13 @@ import org.json.JSONObject;
 import br.com.darkbook.dominio.Cidade;
 import br.com.darkbook.dominio.Estado;
 import br.com.darkbook.dominio.Pais;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.Resultado;
 
 public class PaisViewHelper implements IViewHelper {
 
 	@Override
-	public Entidade getEntidade(HttpServletRequest request) {
+	public EntidadeDominio getEntidade(HttpServletRequest request) {
 		return new Pais();
 	}
 
@@ -25,7 +25,8 @@ public class PaisViewHelper implements IViewHelper {
 	public void setEntidade(Resultado resultado, HttpServletResponse response) {
 		JSONArray dadosEnderecoJson = new JSONArray();
 		
-		for(Entidade entidade :  resultado.getEntidades()) {
+		for(EntidadeDominio entidade :  resultado.getEntidades()) {
+			System.out.println(((Pais)entidade).getPais());
 			Pais pais = (Pais) entidade;
 			JSONObject paisJson = new JSONObject();
 			

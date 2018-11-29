@@ -21,6 +21,18 @@
    <servlet-mapping>
        <servlet-name>Controller</servlet-name>
        <url-pattern>/paises</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+       <servlet-name>Controller</servlet-name>
+       <url-pattern>/tipoLogradouro</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+       <servlet-name>Controller</servlet-name>
+       <url-pattern>/tipoResidencia</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+       <servlet-name>Controller</servlet-name>
+       <url-pattern>/bandeira</url-pattern>
    </servlet-mapping> 	
   
 </web-app>

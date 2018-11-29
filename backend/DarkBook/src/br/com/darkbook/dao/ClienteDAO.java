@@ -3,6 +3,7 @@ package br.com.darkbook.dao;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,26 +25,22 @@ import br.com.darkbook.dominio.TipoLogradouro;
 import br.com.darkbook.dominio.TipoResidencia;
 import br.com.darkbook.dominio.TipoTelefone;
 import br.com.darkbook.dominio.Usuario;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 
 public class ClienteDAO implements IDAO{
 	 // a conexão com o banco de dados
     private Connection conexao;
-
-    public ClienteDAO() {
-        
-    }
     
-    public List<Entidade> consultar(Entidade entidade) {
+    public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
     	Cliente cli = (Cliente) entidade;
-    	List<Entidade> cliList = new ArrayList<>();
+    	List<EntidadeDominio> cliList = new ArrayList<>();
     	ResultSet resultados;
     	PreparedStatement preparo;
     	PreparedStatement comandosSQL = null;
     	String tabelaCliente;
     	
-    	try { 
+    	try {
     		this.conexao = (Connection) Conexao.getConexao();
     		if(null != cli.getUsuario().getSenha() &&
 	    			null != cli.getUsuario().getContato().getEmail()) {
@@ -80,13 +77,16 @@ public class ClienteDAO implements IDAO{
 
           	while(resultados.next()) {
           		Cliente c = new Cliente();
+          		c.setUsuario(new Usuario());
+          		c.getUsuario().setContato(new Contato());
           		c.setCpf(resultados.getString("cli_cpf"));
           		c.setId(resultados.getLong("cli_id"));
-          		c.setUsuario(new Usuario());
           		c.getUsuario().setGenero(Genero.valueOf(resultados.getString("cli_genero")));
           		c.getUsuario().setNome(resultados.getString("cli_nome"));
           		c.getUsuario().setSenha(resultados.getString("cli_senha"));
           		c.getUsuario().setSobrenome(resultados.getString("cli_sobrenome"));
+          		c.getUsuario().getContato().setId(Long.parseLong(resultados.getString("cli_con_id")));
+          		c.getUsuario().setDataNascimento(LocalDate.parse(resultados.getString("cli_dataNascimento")));
           		cliList.add(c);
           	}
           	
@@ -94,8 +94,8 @@ public class ClienteDAO implements IDAO{
 				return null;
     		}
           	
-          	for(Entidade cli1 : cliList) {
-          		Entidade c = (Entidade) cli1;
+          	for(EntidadeDominio cli1 : cliList) {
+          		EntidadeDominio c = (EntidadeDominio) cli1;
           		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
           		((Cliente) c).setEnderecos(new ArrayList<>());
           		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
@@ -143,7 +143,7 @@ public class ClienteDAO implements IDAO{
               	} // ./enderecos
               	
               	comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaContato);
-          		comandosSQL.setLong(1, c.getId());
+          		comandosSQL.setLong(1, ((Cliente) c).getUsuario().getContato().getId());
           		
           		resultados = comandosSQL.executeQuery();
               	while(resultados.next()) {
@@ -165,7 +165,10 @@ public class ClienteDAO implements IDAO{
           		resultados = comandosSQL.executeQuery();
               	while(resultados.next()) {
               		CartaoCredito cart = new CartaoCredito();
-              		cart.setBandeira(Bandeira.valueOf(resultados.getString("ban_tipo")));
+              		Bandeira bandeira =  new Bandeira();
+              		bandeira.setNome(resultados.getString("ban_tipo"));
+              		bandeira.setId(resultados.getLong("ban_id"));
+              		cart.setBandeira(bandeira);
               		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
               		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
               		cart.setNumero(resultados.getString("cat_numero"));
@@ -182,31 +185,26 @@ public class ClienteDAO implements IDAO{
         	  e.printStackTrace();		// printa a pilha de erros
               throw new RuntimeException(e);	// lança uma exceção
           } finally {
-        	  
-			if(null != conexao) {
-				try {
-					conexao.close();
-					conexao = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			} else {
-				return null;
-			}
-  		}
+        	  try {
+  				comandosSQL.close();
+  				Conexao.fechar(conexao);
+  			} catch (SQLException e) {
+  				e.printStackTrace();
+  			}
+  		  }
     	
       	return cliList;
     }
     
-    public void salvar(Entidade entidade)  {
+    public void salvar(EntidadeDominio entidade)  {
     	IDAO enderecoDAO = new EnderecoDAO();
         IDAO contatoDAO = new ContatoDAO();
         IDAO cartaoDAO = new CartaoDAO();
     	
         PreparedStatement comandosSQL = null;
         ResultSet ultimoID = null;
-        
         Cliente cliente = (Cliente) entidade;
+        
         try {
         	this.conexao = (Connection) Conexao.getConexao();
         	// Cliente
@@ -293,21 +291,76 @@ public class ClienteDAO implements IDAO{
         } finally {
         	try {
 				comandosSQL.close();
-				conexao.close();
+				Conexao.fechar(conexao);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
+    }
+
+@Override
+public void alterar(EntidadeDominio entidade) {
+	PreparedStatement comandosSQL = null;
+    ResultSet ultimoID = null;
+    Cliente cliente = (Cliente) entidade;
+    try {
+    	this.conexao = (Connection) Conexao.getConexao();
+//    	String tabelaCliente = ""
+//			+ "UPDATE cliente SET "
+//				+ "cli_nome = ?, "
+//				+ "cli_sobrenome = ?, "
+//				+ "cli_dataNascimento = ?, "
+//				+ "cli_cpf = ?,"
+//				+ "cli_genero = ?,"
+//				+ "cli_senha = ?, "
+//				+ "WHERE cli_id = ?";
+    	
+    	String tabelaCliente = "UPDATE cliente "
+    			+ " join contato ON"
+    			+ " contato.con_id = cliente.cli_con_id"
+    			+ " SET"
+    			+ " cliente.cli_nome = ?,"
+    			+ " cliente.cli_sobrenome = ?,"
+    			+ " contato.con_email = ?,"
+    			+ " cliente.cli_genero = ?,"
+    			+ " cliente.cli_cpf = ?,"
+    			+ " cliente.cli_dataNascimento = ?,"
+    			+ " contato.con_tpt_id = (SELECT tpt_id FROM tipo_telefone WHERE tpt_tipo = ?),"
+    			+ " contato.con_ddd = ?,"
+    			+ " contato.con_numero = ?,"
+    			+ " cliente.cli_senha = ?"
+    			+ " WHERE cliente.cli_id = ?";
+    	
+    	
+		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+        comandosSQL.setString(1,cliente.getUsuario().getNome());
+        comandosSQL.setString(2,cliente.getUsuario().getSobrenome());
+        comandosSQL.setString(3,cliente.getUsuario().getContato().getEmail());
+        comandosSQL.setString(4, cliente.getUsuario().getGenero().toString());
+        comandosSQL.setString(5, cliente.getCpf());
+        comandosSQL.setDate(6, Date.valueOf(cliente.getUsuario().getDataNascimento()));
+        comandosSQL.setString(7, cliente.getUsuario().getContato().getTipoTelefone().toString());
+        comandosSQL.setString(8, cliente.getUsuario().getContato().getDdd());
+        comandosSQL.setString(9, cliente.getUsuario().getContato().getNumero());
+        comandosSQL.setString(10, cliente.getUsuario().getSenha());
+        comandosSQL.setLong(11, cliente.getId());
+        comandosSQL.execute();//
+    	} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				comandosSQL.close();
+				Conexao.fechar(conexao);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-    }
-
-@Override
-public void alterar(Entidade entidade) {
-	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void excluir(Entidade entidade) {
+public void excluir(EntidadeDominio entidade) {
 	// TODO Auto-generated method stub
 	
 }

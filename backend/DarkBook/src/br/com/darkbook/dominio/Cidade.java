@@ -1,8 +1,8 @@
 package br.com.darkbook.dominio;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class Cidade extends Entidade {
+public class Cidade extends EntidadeDominio {
 	private Estado estado;
 	private String cidade;
 	

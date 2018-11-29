@@ -4,7 +4,7 @@ import br.com.darkbook.dominio.CartaoCredito;
 import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.dominio.Endereco;
 import br.com.darkbook.dominio.EnderecoEntrega;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class ValidarDadosObrigatorios extends AbstractStrategy {
 
@@ -14,7 +14,7 @@ public class ValidarDadosObrigatorios extends AbstractStrategy {
 	 * @return String - mensagemns dos erros dos dados não preenchidos
 	 */
 	@Override
-	public String processar(Entidade entidade) {
+	public String processar(EntidadeDominio entidade) {
 		Cliente cliente = (Cliente) entidade;
 		
 		if(null == cliente.getCpf() || cliente.getCpf().isEmpty()) {

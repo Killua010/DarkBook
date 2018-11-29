@@ -1,8 +1,8 @@
 package br.com.darkbook.dominio;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class Endereco extends Entidade{
+public class Endereco extends EntidadeDominio{
 	private Cidade cidade;
 	private TipoLogradouro tipoLogradouro;
 	private TipoResidencia tipoResidencia;

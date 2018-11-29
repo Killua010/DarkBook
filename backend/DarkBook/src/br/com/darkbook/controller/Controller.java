@@ -12,10 +12,15 @@ import br.com.darkbook.command.ConsultarCommand;
 import br.com.darkbook.command.ExcluirCommand;
 import br.com.darkbook.command.ICommand;
 import br.com.darkbook.command.SalvarCommand;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.dominio.TipoLogradouro;
+import br.com.darkbook.dominio.TipoResidencia;
+import br.com.darkbook.entidade.EntidadeDominio;
+import br.com.darkbook.viewhelper.BandeiraCartaoViewHelper;
 import br.com.darkbook.viewhelper.ClienteViewHelper;
 import br.com.darkbook.viewhelper.IViewHelper;
 import br.com.darkbook.viewhelper.PaisViewHelper;
+import br.com.darkbook.viewhelper.TipoLogradouroViewHelper;
+import br.com.darkbook.viewhelper.TipoResidenciaViewHelper;
 
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -23,7 +28,7 @@ public class Controller extends HttpServlet {
 	private Map<String, ICommand> commands;
 	private Map<String, IViewHelper> viewHelpers;
 	private ICommand command;
-	private Entidade entidade;
+	private EntidadeDominio entidade;
     
 	public Controller() {
 		super();
@@ -37,6 +42,9 @@ public class Controller extends HttpServlet {
 		this.viewHelpers = new HashMap<String, IViewHelper>();
 		viewHelpers.put("/DarkBook/cliente", new ClienteViewHelper());
 		viewHelpers.put("/DarkBook/paises", new PaisViewHelper());
+		viewHelpers.put("/DarkBook/tipoLogradouro", new TipoLogradouroViewHelper());
+		viewHelpers.put("/DarkBook/tipoResidencia", new TipoResidenciaViewHelper());
+		viewHelpers.put("/DarkBook/bandeira", new BandeiraCartaoViewHelper());
 		
 	}
 

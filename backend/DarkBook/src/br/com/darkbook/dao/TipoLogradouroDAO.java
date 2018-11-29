@@ -9,7 +9,7 @@ import com.mysql.jdbc.Connection;
 
 import br.com.darkbook.dao.conexao.Conexao;
 import br.com.darkbook.dominio.TipoLogradouro;
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public class TipoLogradouroDAO implements IDAO {
 	
@@ -21,14 +21,14 @@ public class TipoLogradouroDAO implements IDAO {
 	}
 
 	@Override
-	public void salvar(Entidade entidade) {
+	public void salvar(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<Entidade> consultar(Entidade entidade) {
-		List<Entidade> tiposLogradouro = new ArrayList<>();
+	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+		List<EntidadeDominio> tiposLogradouro = new ArrayList<>();
 		ResultSet resultados;
 		
 		String tabelaDadosTiposLogradouro = "SELECT * FROM tipo_logradouro;";
@@ -50,13 +50,13 @@ public class TipoLogradouroDAO implements IDAO {
 	}
 
 	@Override
-	public void alterar(Entidade entidade) {
+	public void alterar(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void excluir(Entidade entidade) {
+	public void excluir(EntidadeDominio entidade) {
 		// TODO Auto-generated method stub
 
 	}

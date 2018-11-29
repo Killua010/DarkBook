@@ -2,13 +2,13 @@ package br.com.darkbook.dao;
 
 import java.util.List;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
 public interface IDAO {
 	
-	public void salvar(Entidade entidade);
-	public List<Entidade> consultar(Entidade entidade);
-	public void alterar(Entidade entidade);
-	public void excluir(Entidade entidade);
+	public void salvar(EntidadeDominio entidade);
+	public List<EntidadeDominio> consultar(EntidadeDominio entidade);
+	public void alterar(EntidadeDominio entidade);
+	public void excluir(EntidadeDominio entidade);
 
 }

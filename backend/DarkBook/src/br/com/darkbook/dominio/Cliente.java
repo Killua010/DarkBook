@@ -2,9 +2,9 @@ package br.com.darkbook.dominio;
 
 import java.util.List;
 
-import br.com.darkbook.entidade.Entidade;
+import br.com.darkbook.entidade.EntidadeDominio;
 
-public class Cliente extends Entidade{
+public class Cliente extends EntidadeDominio{
 	private String cpf;
 	private Usuario usuario;
 	private List<CartaoCredito> cartoes;
