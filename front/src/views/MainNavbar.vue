@@ -2,7 +2,7 @@
   <md-toolbar id="toolbar" md-elevation="0" class="md-transparent md-absolute" :class="extraNavClasses" :color-on-scroll="colorOnScroll">
     <div class="md-toolbar-row md-collapse-lateral">
       <div class="md-toolbar-section-start">
-        <a href="#/index2">
+        <a href="#/">
           <img src="../assets/logo2.png" class="img-nav">
         </a>
       </div>
@@ -15,13 +15,13 @@
 
         <div class="md-collapse">
           <div class="md-collapse-wrapper">
-            <mobile-menu nav-mobile-section-start="false">
+            <mobile-menu nav-mobile-section-start="true">
               <!-- Here you can add your items from the section-start of your toolbar -->
             </mobile-menu>
             <md-list>
 
 
-              <md-list-item href="#" target="_blank">
+              <md-list-item href="#" to="/catalogo"> 
                 <i class="material-icons">book</i> 
                     <p>Catálogo</p>
               </md-list-item>
@@ -42,14 +42,33 @@
                 <li class="md-list-item">
                   <a href="javascript:void(0)" class="md-list-item-router md-list-item-container md-button-clean dropdown">
                     <div class="md-list-item-content">
-                      <drop-down direction="down">
+                      <drop-down direction="down" v-if="id != '' && clienteNome != '' && id != undefined && clienteNome != undefined">
+                        <md-button slot="title" class="md-button md-button-link md-white md-simple dropdown-toggle" data-toggle="dropdown">
+                          <i class="material-icons">face</i> 
+                          <p>Olá {{this.clienteNome}}</p>
+                        </md-button>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a href="javascript:void(0)" @click="perfil()" class="dropdown-item">
+                            
+                              <i class="material-icons">perm_identity</i> Perfil
+                            </a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0)" @click="sair()" class="dropdown-item">
+                              <i class="material-icons">close</i> Sair
+                            </a>
+                          </li>
+                        </ul>
+                      </drop-down>
+                      <drop-down direction="down" v-else>
                         <md-button slot="title" class="md-button md-button-link md-white md-simple dropdown-toggle" data-toggle="dropdown">
                           <i class="material-icons">face</i> 
                           <p>Embarque Conosco</p>
                         </md-button>
                         <ul class="dropdown-menu">
                           <li>
-                            <a   href="#" class="dropdown-item">
+                            <a @click="cadastroCliente()" class="dropdown-item">
                               <i class="material-icons">person_add</i> Novo Usuário
                             </a>
                           </li>
@@ -102,7 +121,15 @@ function resizeThrottler(actualResizeHandler) {
 }
 
 import MobileMenu from "@/mk/layout/MobileMenu";
+import { eventBus } from '@/main';
 export default {
+  created() {
+    console.log(this.$route.params)
+     if(this.$route.params.id != undefined | this.$route.params.nome != undefined){
+      this.id = this.$route.params.id;
+      this.clienteNome = this.$route.params.nome;
+    }
+  },
   components: {
     MobileMenu
   },
@@ -118,8 +145,10 @@ export default {
   },
   data() {
     return {
-      extraNavClasses: "",
-      toggledClass: false
+      id: '',
+      clienteNome: '',
+      extraNavClasses: null,
+      toggledClass: null
     };
   },
   computed: {
@@ -129,6 +158,18 @@ export default {
     }
   },
   methods: {
+    cadastroCliente: function(){
+      location.reload();
+      this.$router.push({name: "cadastro_cliente"})
+    },
+    perfil: function(){
+      this.$router.push({name: "perfil", params: { "id": this.id, "nome": this.clienteNome }})
+    },
+    sair: function(){
+      this.id = undefined;
+      this.clienteNome = undefined;
+      this.$router.push({name: "index"})
+    },
     bodyClick() {
       let bodyClick = document.getElementById("bodyClick");
 
@@ -156,10 +197,12 @@ export default {
       this.currentScrollValue = scrollValue;
       if (this.colorOnScroll > 0 && scrollValue > this.colorOnScroll) {
         this.extraNavClasses = `md-${this.type}`;
+        navbarColor.classList.add(`md-${this.type}`)
         navbarColor.classList.remove("md-transparent");
       } else {
         if (this.extraNavClasses) {
           this.extraNavClasses = "";
+          navbarColor.classList.remove(`md-${this.type}`)
           navbarColor.classList.add("md-transparent");
         }
       }

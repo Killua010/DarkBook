@@ -7,17 +7,17 @@
       <nav>
           <ul>
               <li>
-                  <a href="">
+                  <a href="#/">
                     The Dark Book
                   </a>
               </li>
              <li>
-              <a href="">
+              <a href="#/teamDeveloper">
                 Sobre Nós
               </a>
             </li>
             <li>
-              <a href="">
+              <a href="#">
                 Licença
               </a>
             </li>

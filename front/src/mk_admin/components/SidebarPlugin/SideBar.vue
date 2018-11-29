@@ -7,7 +7,7 @@
         </div>
       </a>
 
-      <a href="https://www.creative-tim.com/product/vue-material-dashboard" target="_blank" class="simple-text logo-normal">
+      <a href="javascript:void(0)" @click="indexPath()" class="simple-text logo-normal">
         {{title}}
       </a>
     </div>
@@ -31,9 +31,27 @@ import SidebarLink from './SidebarLink.vue'
 import MobileMenu from '@/mk_admin/pages/Layout/MobileMenu.vue'
 
 export default{
+  created() {
+    if(this.$route.params.id != undefined | this.$route.params.nome != undefined){
+      this.id = this.$route.params.id;
+      this.clienteNome = this.$route.params.nome;
+    }
+   
+  },
   components: {
     SidebarLink,
     MobileMenu
+  },
+  data() {
+    return {
+      id: '',
+      clienteNome: ''
+    };
+  },
+  methods: {
+    indexPath(){
+       this.$router.push({name: "index", params: { "id": this.id, "nome": this.clienteNome }})
+    }
   },
   props: {
     title: {
