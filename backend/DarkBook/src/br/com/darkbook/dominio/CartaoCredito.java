@@ -8,29 +8,7 @@ public class CartaoCredito extends EntidadeDominio{
 	private String nomeImpresso;
 	private String codSeguranca;
 	private boolean preferencial;
-	
-	public String validarCartao() {
-		String erro = "";
-		
-		if(null == bandeira) {
-			erro += "O dado da bandeira do cartão é obrigatorio\n";
-		}
-		
-		if(null == codSeguranca || codSeguranca.isEmpty()) {
-			erro += "O dado do código de segurança do cartão é obrigatorio\n";
-		}
-		
-		if(null == nomeImpresso || nomeImpresso.isEmpty()) {
-			erro += "O dado do nome impresso do cartão é obrigatorio\n";
-		}
-		
-		if(null == numero || numero.isEmpty()) {
-			erro += "O dado do numero do cartão é obrigatorio\n";
-		}
-		
-		return erro;
-	}
-	
+
 	/*
 	 * Métodos GETs e SETs
 	 */

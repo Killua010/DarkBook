@@ -6,7 +6,7 @@ import br.com.darkbook.dominio.Endereco;
 import br.com.darkbook.dominio.EnderecoEntrega;
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class ValidarDadosObrigatorios extends AbstractStrategy {
+public class StValidarDadosObrigatorios extends AbstractStrategy {
 
 	/**
 	 * @method validarDadosObrigatorios
@@ -16,6 +16,7 @@ public class ValidarDadosObrigatorios extends AbstractStrategy {
 	@Override
 	public String processar(EntidadeDominio entidade) {
 		Cliente cliente = (Cliente) entidade;
+		IStrategy strategy;
 		
 		if(null == cliente.getCpf() || cliente.getCpf().isEmpty()) {
 			mensagem.append("O dado de cpf é obrigatorio\n");
@@ -89,8 +90,10 @@ public class ValidarDadosObrigatorios extends AbstractStrategy {
 			
 		} else {
 			
+			strategy = new StValidarCartao();
+			
 			for(CartaoCredito car : cliente.getCartoes()) {
-				mensagem.append(car.validarCartao());
+				mensagem.append(strategy.processar(car));
 			}
 			
 		}
@@ -109,13 +112,16 @@ public class ValidarDadosObrigatorios extends AbstractStrategy {
 			mensagem.append("O dado do tipo de residencia do endereço de entrega é obrigatorio\n");
 			
 		} else {
+			
+			strategy = new StValidarEnderecoEntrega();
+			
 			for(EnderecoEntrega endereco : cliente.getEnderecoEntregas()) {
-				mensagem.append(endereco.validarEndereco());
+				mensagem.append(strategy.processar(endereco));
 			}
 			
 		}
 		
-		if(null == cliente.getEnderecos()) {
+		if(null == cliente.getEnderecoCobrancas()) {
 			
 			mensagem.append("O dado do bairro do endereço de cobrança é obrigatorio\n");
 			mensagem.append("O dado do cep do endereço de cobrança é obrigatorio\n");
@@ -129,8 +135,10 @@ public class ValidarDadosObrigatorios extends AbstractStrategy {
 			
 		} else {
 			
-			for(Endereco endereco : cliente.getEnderecos()) {
-				mensagem.append(endereco.validarEndereco());
+			strategy = new StValidarEndereco();
+			
+			for(Endereco enderecoCobranca : cliente.getEnderecoCobrancas()) {
+				mensagem.append(strategy.processar(enderecoCobranca));
 			}
 			
 		}

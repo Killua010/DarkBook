@@ -55,22 +55,16 @@ public class SalvarCliente implements IHelper {
  		Pais pais;
  		Estado estado;
  		Cidade cidade;
- 		Endereco endereco;
+ 		Endereco enderecoCobranca;
  		EnderecoEntrega enderecoEntrega;
  		CartaoCredito cartaoCredito;
  		TipoResidencia tpr;
   		TipoLogradouro tpl;
  		
     	try {
-	     	// caso os arrays não estejam instanciados, instancia-se
-     		if (null == cliente.getCartoes())
-     			cliente.setCartoes(new ArrayList<>());
-     		
-     		if (null == cliente.getEnderecoEntregas())
-     			cliente.setEnderecoEntregas(new ArrayList<>());
-     		
-     		if (null == cliente.getEnderecos())
-     			cliente.setEnderecos(new ArrayList<>());
+ 			cliente.setCartoes(new ArrayList<>());
+ 			cliente.setEnderecoEntregas(new ArrayList<>());
+ 			cliente.setEnderecoCobrancas(new ArrayList<>());
      		
      		// preencher os objetos com os dados da requisição 
      		contato.setTipoTelefone(TipoTelefone.valueOf(clienteJson.getJSONObject("dadosPessoais").get("tipoTelefone").toString()));
@@ -89,18 +83,18 @@ public class SalvarCliente implements IHelper {
 			pais = new Pais();
 			estado = new Estado();
 			cidade = new Cidade();
-			endereco = new Endereco();
+			enderecoCobranca = new Endereco();
 			pais.setPais(enderecoJson.get("pais").toString());
 			estado.setEstado(enderecoJson.get("estado").toString());
 			estado.setPais(pais);
 			cidade.setCidade(enderecoJson.get("cidade").toString());
 			cidade.setEstado(estado);
 			
-			endereco.setBairro(enderecoJson.get("bairro").toString());
-			endereco.setCep(enderecoJson.get("cep").toString());
-			endereco.setLogradouro(enderecoJson.get("logradouro").toString());
-			endereco.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
-			endereco.setObservacao(enderecoJson.get("observacao").toString());
+			enderecoCobranca.setBairro(enderecoJson.get("bairro").toString());
+			enderecoCobranca.setCep(enderecoJson.get("cep").toString());
+			enderecoCobranca.setLogradouro(enderecoJson.get("logradouro").toString());
+			enderecoCobranca.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
+			enderecoCobranca.setObservacao(enderecoJson.get("observacao").toString());
 			
 			tpr = new TipoResidencia();
       		tpr.setNome(enderecoJson.get("tipoResidencia").toString());
@@ -108,9 +102,9 @@ public class SalvarCliente implements IHelper {
       		tpl = new TipoLogradouro();
       		tpl.setNome(enderecoJson.get("tipoLogradouro").toString());
       		
-      		endereco.setTipoLogradouro(tpl);
-			endereco.setTipoResidencia(tpr);
-			endereco.setCidade(cidade);
+      		enderecoCobranca.setTipoLogradouro(tpl);
+			enderecoCobranca.setTipoResidencia(tpr);
+			enderecoCobranca.setCidade(cidade);
 			
 			JSONObject enderecoEntregaJson = clienteJson.getJSONObject("enderecosEntrega");
 			pais = new Pais();
@@ -153,13 +147,11 @@ public class SalvarCliente implements IHelper {
 			
 			cliente.setCpf(clienteJson.getJSONObject("dadosPessoais").get("cpf").toString());
 			cliente.getCartoes().add(cartaoCredito);
-			cliente.getEnderecos().add(endereco);
+			cliente.getEnderecoCobrancas().add(enderecoCobranca);
 			cliente.getEnderecoEntregas().add(enderecoEntrega);
 			cliente.setUsuario(usuario);
 			
 		}catch (Exception e) {}
-    	System.out.println(clienteJson.getJSONObject("dadosPessoais").get("primeiroNome").toString());
-    	System.out.println(cliente.getUsuario().getNome());
 		return cliente;
 	}
 

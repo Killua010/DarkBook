@@ -4,7 +4,7 @@ import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.entidade.EntidadeDominio;
 import br.com.darkbook.util.Resultado;
 
-public class ValidarCPF implements IStrategy {
+public class StValidarCPF implements IStrategy {
 
 	@Override
 	public String processar(EntidadeDominio entidade) {

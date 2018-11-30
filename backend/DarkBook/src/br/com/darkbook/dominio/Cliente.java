@@ -9,7 +9,7 @@ public class Cliente extends EntidadeDominio{
 	private Usuario usuario;
 	private List<CartaoCredito> cartoes;
 	private List<EnderecoEntrega> enderecoEntregas;
-	private List<Endereco> enderecos;
+	private List<Endereco> enderecoCobrancas;
 	
 	/*
 	 * Métodos GETs e SETs
@@ -22,12 +22,12 @@ public class Cliente extends EntidadeDominio{
 		this.enderecoEntregas = enderecoEntregas;
 	}
 
-	public List<Endereco> getEnderecos() {
-		return enderecos;
+	public List<Endereco> getEnderecoCobrancas() {
+		return enderecoCobrancas;
 	}
 
-	public void setEnderecos(List<Endereco> enderecos) {
-		this.enderecos = enderecos;
+	public void setEnderecoCobrancas(List<Endereco> enderecoCobrancas) {
+		this.enderecoCobrancas = enderecoCobrancas;
 	}
 
 	public List<CartaoCredito> getCartoes() {
