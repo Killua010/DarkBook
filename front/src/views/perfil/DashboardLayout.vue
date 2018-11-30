@@ -50,7 +50,10 @@ import MainNavbar from '@/views/MainNavbar.vue'
 import Footer from "@/views/Footer.vue";
 import { eventBus } from '../../main';
 import axios from 'axios';
+<<<<<<< HEAD
 import swal from 'sweetalert';
+=======
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
 
 export default {
   data: () => ({
@@ -82,10 +85,14 @@ export default {
           this.$router.push("/login")
       })
       if(this.$route.params.salvou == true){
+<<<<<<< HEAD
         swal({
           title: "Alterado com sucesso",
           icon: "success"
         });
+=======
+        alert("Alterado com sucesso")
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
       }
       }
     },

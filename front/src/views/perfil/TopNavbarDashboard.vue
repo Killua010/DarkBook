@@ -54,8 +54,11 @@
 
 <script>
 import { eventBus } from '@/main';
+<<<<<<< HEAD
 import swal from 'sweetalert';
 
+=======
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
 export default{
   // created() {
   //   if(this.$route.params.id == '' || this.$route.params.nome == ''){
@@ -71,11 +74,15 @@ export default{
   console.log(this.$route.params)
   if(this.$route.params.id == '' || this.$route.params.nome == undefined
   || this.$route.params.nome == '' || this.$route.params.nome == undefined){
+<<<<<<< HEAD
       swal({
           title: "Usuario não logado",
           text: "Entre antes para acessar está pagina",
           icon: "error",
         });
+=======
+      alert("Usuario não logado");
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
       this.$router.push("/login")
     } else {
       this.id = this.$route.params.id;
