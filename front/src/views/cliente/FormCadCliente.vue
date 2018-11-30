@@ -58,6 +58,7 @@ import  DadosPessoais  from "@/model/DadosPessoais.js"
 import  EnderecoCobranca  from "@/model/EnderecoCobranca.js"
 import  EnderecoEntrega  from "@/model/EnderecoEntrega.js"
 import  Cartao  from "@/model/Cartao.js"
+import swal from 'sweetalert';
 
 export default {
     created(){
@@ -143,11 +144,16 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 }
             }).then(function(e){
-                alert(e.data)
+                swal({
+                    title: e.data,
+                    icon: "success"
+                });
                 dadosAtuais.$router.push({ name:"login" })
             }).catch(function(e){
-                console.log(e.response.data)
-                alert(e.response.data)
+                swal({
+                    title: e,
+                    icon: "error"
+                });
             })
           },
           proximo(){

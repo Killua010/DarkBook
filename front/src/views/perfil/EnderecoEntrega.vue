@@ -41,8 +41,8 @@
         <cad-dados-endereco-entrega v-else v-bind:dados="{enderecosEntrega: this.enderecosEntrega}"></cad-dados-endereco-entrega>
       </template>
       <template slot="footer">
-        <md-button class="md-danger md-sm">Cancelar</md-button>
-        <md-button class="md-primary md-simple" @click="fecharModalEnderecoEntrega">Salvar</md-button>
+        <md-button class="md-danger md-sm" @click="fecharModalEnderecoEntrega">Cancelar</md-button>
+        <md-button class="md-primary md-simple" @click="ValidarEnderecoEntrega">Salvar</md-button>
       </template>
   </modal>
   </div>
@@ -60,6 +60,8 @@
 <script>
 import { Modal } from "@/mk/components";
 import CadDadosEnderecoEntrega from '../cliente/CadDadosEnderecoEntrega'
+import { eventBus } from '../../main';
+import axios from 'axios';
 import {
   EditProfileForm,
   UserCard
@@ -67,8 +69,13 @@ import {
 
 export default{
   created(){
-    this.cliente = this.$route.params.cliente
-    console.log(this.cliente.enderecosEntrega)
+      this.cliente = this.$route.params.cliente
+      var dadosAtuais = this;
+      eventBus.$on('dadosValidoEnderecoEntrega', function(e){
+        if(e == true){
+          dadosAtuais.AtualizarCliente();
+        }
+      })
   },
   data: () => ({
   cliente:{},
@@ -98,7 +105,27 @@ export default{
   methods: {
     fecharModalEnderecoEntrega() {
       this.modalEnderecoEntrega = false;
-    }
+    },
+    ValidarEnderecoEntrega(){
+      eventBus.$emit('validarDadosEndereco', true);
+    },
+    AtualizarCliente(){
+      this.modalCliente = false;
+      var dadosAtuais = this;
+      console.log(this.cliente)
+      axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
+        this.cliente, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+        }).then(function(e){
+            // alert(e.data)
+            dadosAtuais.$router.replace({name: "perfil", params: { "id": dadosAtuais.cliente.dadosPessoais.id, "nome": dadosAtuais.cliente.dadosPessoais.primeiroNome, salvou: true }})
+        }).catch(function(e){
+            console.log(e)
+            alert(e.response.data)
+        })
+    },
   }
 }
 </script>

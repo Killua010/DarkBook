@@ -245,7 +245,7 @@ export default {
                 this.corErroInput("logradouro");
                 erro = true;
             }
-            console.log(this.dados.enderecosEntrega.cidade  == "")
+           
             if(this.dados.enderecosEntrega.cidade == ""){
                 this.corErroSelect("cidade");
                 erro = true;
@@ -291,6 +291,7 @@ export default {
                 this.dados.enderecosEntrega.nomeComposto = this.nomeComposto;
                 this.dados.enderecosEntrega.favorito = this.favorito;
                 eventBus.$emit('page', 2);
+                eventBus.$emit('dadosValidoEnderecoEntrega', true);
             }
 
         },
