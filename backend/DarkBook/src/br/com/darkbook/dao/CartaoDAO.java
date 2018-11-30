@@ -58,7 +58,6 @@ public class CartaoDAO implements IDAO{
 	    		car.setId(ultimoID.getLong(1));
 	    	
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
@@ -73,14 +72,42 @@ public class CartaoDAO implements IDAO{
 
 	@Override
 	public void alterar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
+		PreparedStatement comandosSQL = null;
 		
+		// Tabela Cartão
+        String tabelaCartao = ""
+        		+ "UPDATE cartao_credito "
+        		+ "SET"
+        		+ "(cat_numero = ?,"
+        			+ "cat_nome_impresso = ?,"
+        			+ "cat_codigo_seguranca = ?,"
+        			+ "cat_preferencial = ?,"
+        			+ "cat_ban_id = (SELECT ban_id FROM bandeira WHERE ban_tipo = ?))"
+        			+ "WHERE cat_id = ?";
+		
+		CartaoCredito car = (CartaoCredito) entidade;
+		
+		// cartao
+        try {
+        	
+			comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCartao);
+			
+	        comandosSQL.setString(1, car.getNumero());
+	    	comandosSQL.setString(2, car.getNomeImpresso());
+	    	comandosSQL.setString(3, car.getCodSeguranca());
+	    	comandosSQL.setBoolean(4, car.isPreferencial());
+	    	comandosSQL.setString(5, car.getBandeira().getNome());
+	    	comandosSQL.setLong(6, car.getId());
+	    	
+	    	comandosSQL.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
 	}
 
 	@Override
 	public void excluir(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 }

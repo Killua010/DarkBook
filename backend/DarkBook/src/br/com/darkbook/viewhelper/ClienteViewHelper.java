@@ -39,7 +39,9 @@ public class ClienteViewHelper implements IViewHelper {
 	@Override
 	public EntidadeDominio getEntidade(HttpServletRequest request) {
 		JSONObject clienteJson = null;
+		String linha;
 		
+
 		try {
 			clienteJson = new JSONObject(JSONUtil.ParseString(request.getReader()));
 		} catch (JSONException | IOException e) {

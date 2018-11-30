@@ -42,7 +42,11 @@ public class ClienteDAO implements IDAO{
     	
     	try {
     		this.conexao = (Connection) Conexao.getConexao();
-    		if(null != cli.getUsuario().getSenha() &&
+    		if(null != cli.getCpf()) { // buscar por cpf
+	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
+	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	    		preparo.setString(1, cli.getCpf());
+    		} else if(null != cli.getUsuario().getSenha() &&
 	    			null != cli.getUsuario().getContato().getEmail()) {
 	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ? AND cli_con_id = con_id";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
@@ -51,10 +55,6 @@ public class ClienteDAO implements IDAO{
     		} else if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
 	          	tabelaCliente = "SELECT * FROM cliente";
 	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-	    	} else if(null != cli.getCpf()) { // buscar por cpf
-	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
-	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-	    		preparo.setString(1, cli.getCpf());
 	    	} else { // buscar por id 
 	    		
 	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
@@ -97,32 +97,32 @@ public class ClienteDAO implements IDAO{
           	for(EntidadeDominio cli1 : cliList) {
           		EntidadeDominio c = (EntidadeDominio) cli1;
           		((Cliente) c).setEnderecoEntregas(new ArrayList<>());
-          		((Cliente) c).setEnderecos(new ArrayList<>());
+          		((Cliente) c).setEnderecoCobrancas(new ArrayList<>());
           		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
           		comandosSQL.setLong(1, c.getId());
           		
           		resultados = comandosSQL.executeQuery();
               	while(resultados.next()) {
-              		Endereco endereco;
+              		Endereco enderecoCobranca;
               		if(null != resultados.getString("end_nome_composto")) {
-              			endereco = new EnderecoEntrega();
-              			((EnderecoEntrega) endereco).setNomeComposto(resultados.getString("end_nome_composto"));
-              			((EnderecoEntrega) endereco).setFavorito(resultados.getBoolean("end_favorido"));
+              			enderecoCobranca = new EnderecoEntrega();
+              			((EnderecoEntrega) enderecoCobranca).setNomeComposto(resultados.getString("end_nome_composto"));
+              			((EnderecoEntrega) enderecoCobranca).setFavorito(resultados.getBoolean("end_favorido"));
               		} else {
-              			endereco = new Endereco();
+              			enderecoCobranca = new Endereco();
               		}
               		
-              		endereco.setBairro(resultados.getString("end_bairro"));
-              		endereco.setCep(resultados.getString("end_cep"));
-              		endereco.setCidade(new Cidade());
-              		endereco.getCidade().setEstado(new Estado());
-              		endereco.getCidade().getEstado().setPais(new Pais());
-              		endereco.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
-              		endereco.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
-              		endereco.getCidade().setCidade(resultados.getString("cid_nome"));
-              		endereco.setLogradouro(resultados.getString("end_logradouro"));
-              		endereco.setNumero(resultados.getInt("end_numero"));
-              		endereco.setObservacao(resultados.getString("end_observacao"));
+              		enderecoCobranca.setBairro(resultados.getString("end_bairro"));
+              		enderecoCobranca.setCep(resultados.getString("end_cep"));
+              		enderecoCobranca.setCidade(new Cidade());
+              		enderecoCobranca.getCidade().setEstado(new Estado());
+              		enderecoCobranca.getCidade().getEstado().setPais(new Pais());
+              		enderecoCobranca.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
+              		enderecoCobranca.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
+              		enderecoCobranca.getCidade().setCidade(resultados.getString("cid_nome"));
+              		enderecoCobranca.setLogradouro(resultados.getString("end_logradouro"));
+              		enderecoCobranca.setNumero(resultados.getInt("end_numero"));
+              		enderecoCobranca.setObservacao(resultados.getString("end_observacao"));
               		
               		TipoLogradouro tpl = new TipoLogradouro();
               		tpl.setNome(resultados.getString("tpl_nome"));
@@ -132,13 +132,13 @@ public class ClienteDAO implements IDAO{
               		tpr.setNome(resultados.getString("tpr_nome"));
               		tpr.setId(resultados.getLong("tpr_id"));
               		
-              		endereco.setTipoLogradouro(tpl);
-              		endereco.setTipoResidencia(tpr);
+              		enderecoCobranca.setTipoLogradouro(tpl);
+              		enderecoCobranca.setTipoResidencia(tpr);
    
               		if(null != resultados.getString("end_nome_composto")) {
-              			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) endereco);
+              			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) enderecoCobranca);
               		} else {
-              			((Cliente) c).getEnderecos().add(endereco);
+              			((Cliente) c).getEnderecoCobrancas().add(enderecoCobranca);
               		}
               	} // ./enderecos
               	
@@ -183,14 +183,9 @@ public class ClienteDAO implements IDAO{
           	
           }catch (SQLException e) {
         	  e.printStackTrace();		// printa a pilha de erros
-              throw new RuntimeException(e);	// lança uma exceção
           } finally {
-        	  try {
-  				comandosSQL.close();
+//  				comandosSQL.close();
   				Conexao.fechar(conexao);
-  			} catch (SQLException e) {
-  				e.printStackTrace();
-  			}
   		  }
     	
       	return cliList;
@@ -255,7 +250,7 @@ public class ClienteDAO implements IDAO{
         		cliente.setId(ultimoID.getLong(1));            
         	
             // endereco cobrança
-            for(Endereco end : cliente.getEnderecos()) {
+            for(Endereco end : cliente.getEnderecoCobrancas()) {
             	enderecoDAO.salvar(end);
             	
         		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
@@ -301,20 +296,14 @@ public class ClienteDAO implements IDAO{
 @Override
 public void alterar(EntidadeDominio entidade) {
 	PreparedStatement comandosSQL = null;
-    ResultSet ultimoID = null;
     Cliente cliente = (Cliente) entidade;
+    
+    IDAO enderecoDAO = new EnderecoDAO();
+    IDAO cartaoDAO = new CartaoDAO();
+    
     try {
     	this.conexao = (Connection) Conexao.getConexao();
-//    	String tabelaCliente = ""
-//			+ "UPDATE cliente SET "
-//				+ "cli_nome = ?, "
-//				+ "cli_sobrenome = ?, "
-//				+ "cli_dataNascimento = ?, "
-//				+ "cli_cpf = ?,"
-//				+ "cli_genero = ?,"
-//				+ "cli_senha = ?, "
-//				+ "WHERE cli_id = ?";
-    	
+
     	String tabelaCliente = "UPDATE cliente "
     			+ " join contato ON"
     			+ " contato.con_id = cliente.cli_con_id"
@@ -331,6 +320,21 @@ public void alterar(EntidadeDominio entidade) {
     			+ " cliente.cli_senha = ?"
     			+ " WHERE cliente.cli_id = ?";
     	
+    	 // Ligação (Endeços - Cliente)
+        String tabelaEnderecoCliente = ""
+        		+ "INSERT INTO cliente_endereco("
+        			+ "cle_cli_id,"
+        			+ "cle_end_id)"
+        		+ "VALUES( ?, ?)";
+        
+        // Ligação (Cliente - Cartao)
+        String tabelaClienteCartao = ""
+        		+ "INSERT INTO cliente_cartao_credito ("
+        			+ "ccc_cli_id, "
+        			+ "ccc_cat_id) "
+        		+ "VALUES "
+        			+ "(?, ?);";
+    	
     	
 		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
         comandosSQL.setString(1,cliente.getUsuario().getNome());
@@ -345,6 +349,52 @@ public void alterar(EntidadeDominio entidade) {
         comandosSQL.setString(10, cliente.getUsuario().getSenha());
         comandosSQL.setLong(11, cliente.getId());
         comandosSQL.execute();//
+        
+        // endereco cobrança
+        for(Endereco end : cliente.getEnderecoCobrancas()) {
+        	if(null != end.getId()) {
+        		enderecoDAO.alterar(end);
+        	} else {
+	        	enderecoDAO.salvar(end);
+	        	
+	    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+	    		comandosSQL.setLong(1, cliente.getId());
+	    		comandosSQL.setLong(2, end.getId());
+	    		comandosSQL.execute();
+        	}
+        }
+        
+        // endereco entrega
+        for(EnderecoEntrega end : cliente.getEnderecoEntregas()) {
+        	
+        	if(null != end.getId()) {
+        		enderecoDAO.alterar(end);
+        	} else {
+	        	enderecoDAO.salvar(end);
+	        	
+	    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+	    		comandosSQL.setLong(1, cliente.getId());
+	    		comandosSQL.setLong(2, end.getId());
+	    		comandosSQL.execute();
+        	}
+        }
+        
+        // cartao
+        for(CartaoCredito car : cliente.getCartoes()) {
+        	
+        	if(null != car.getId()) {
+        		cartaoDAO.alterar(car);
+        	} else {
+	        	cartaoDAO.salvar(car);
+	        	
+	            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteCartao);
+	            comandosSQL.setLong(1, cliente.getId());
+	        	comandosSQL.setLong(2, car.getId());
+	        	comandosSQL.execute();
+        	}
+        }
+        
+        
     	} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

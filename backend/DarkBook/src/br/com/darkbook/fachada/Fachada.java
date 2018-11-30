@@ -18,32 +18,48 @@ import br.com.darkbook.dominio.Pais;
 import br.com.darkbook.dominio.TipoLogradouro;
 import br.com.darkbook.dominio.TipoResidencia;
 import br.com.darkbook.entidade.EntidadeDominio;
-import br.com.darkbook.strategy.ComplementarDataCadastro;
+import br.com.darkbook.strategy.StComplementarDataCadastro;
 import br.com.darkbook.strategy.IStrategy;
-import br.com.darkbook.strategy.ValidarCPF;
-import br.com.darkbook.strategy.ValidarDadosObrigatorios;
-import br.com.darkbook.strategy.ValidarExistencia;
-import br.com.darkbook.strategy.ValidarSenha;
+import br.com.darkbook.strategy.StValidarCPF;
+import br.com.darkbook.strategy.StValidarDadosObrigatorios;
+import br.com.darkbook.strategy.StValidarExistenciaCliente;
+import br.com.darkbook.strategy.StValidarSenha;
 import br.com.darkbook.util.Resultado;
 
 public class Fachada implements IFachada {
 	
-	private Map<String, List<IStrategy>> mapStrategy;
+	private Map<String, Map<String, List<IStrategy>>> mapStrategy;
 	private Map<String, IDAO> mapDao;
 	private Resultado resultado;
 	// construtor
 	public Fachada() {
-		mapStrategy = new HashMap<String, List<IStrategy>>();
+		mapStrategy = new HashMap<String, Map<String, List<IStrategy>>>();
 		mapDao = new HashMap<String, IDAO>();
+		Map<String, List<IStrategy>> strategysCliente = new HashMap<>();
+		ArrayList<IStrategy> clienteSalvarStrategy = new ArrayList<>();
+		ArrayList<IStrategy> clienteAlterarStrategy = new ArrayList<>();
 		
-		ArrayList<IStrategy> clienteStrategy = new ArrayList<>();
-		clienteStrategy.add(new ValidarDadosObrigatorios());
-		clienteStrategy.add(new ValidarCPF());
-		clienteStrategy.add(new ValidarExistencia());
-		clienteStrategy.add(new ValidarSenha());
-		clienteStrategy.add(new ComplementarDataCadastro());
+		StValidarDadosObrigatorios stValidarDadosObrigatorios = new StValidarDadosObrigatorios();
+		StValidarCPF stValidarCPF = new StValidarCPF();
+		StValidarExistenciaCliente stValidarExistenciaCliente = new StValidarExistenciaCliente();
+		StValidarSenha stValidarSenha = new StValidarSenha();
+		StComplementarDataCadastro stComplementarDataCadastro = new StComplementarDataCadastro();
 		
-		mapStrategy.put(Cliente.class.getName(), clienteStrategy);
+		clienteSalvarStrategy.add(stValidarDadosObrigatorios);
+		clienteSalvarStrategy.add(stValidarCPF);
+		clienteSalvarStrategy.add(stValidarExistenciaCliente);
+		clienteSalvarStrategy.add(stValidarSenha);
+		clienteSalvarStrategy.add(stComplementarDataCadastro);
+		
+		strategysCliente.put("SALVAR", clienteSalvarStrategy);
+		
+		clienteAlterarStrategy.add(stValidarDadosObrigatorios);
+		clienteAlterarStrategy.add(stValidarCPF);
+		clienteAlterarStrategy.add(stValidarSenha);
+		
+		strategysCliente.put("ALTERAR", clienteAlterarStrategy);
+		
+		mapStrategy.put(Cliente.class.getName(), strategysCliente);
 		
 		mapDao.put(Cliente.class.getName(), new ClienteDAO());
 		try {
@@ -61,7 +77,7 @@ public class Fachada implements IFachada {
 	public Resultado salvar(EntidadeDominio entidade) {
 		resultado = new Resultado();
 		
-		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()));
+		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()).get("SALVAR"));
 		
     	if(resultado.getMensagens().length() == 0) {
     		IDAO dao = mapDao.get(entidade.getClass().getName());
@@ -86,8 +102,8 @@ public class Fachada implements IFachada {
 	@Override
 	public Resultado alterar(EntidadeDominio entidade) {
 		resultado = new Resultado();
-		
-//		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()));
+		System.out.println(mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
+		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
 		
     	if(resultado.getMensagens().length() == 0) {
     		IDAO dao = mapDao.get(entidade.getClass().getName());

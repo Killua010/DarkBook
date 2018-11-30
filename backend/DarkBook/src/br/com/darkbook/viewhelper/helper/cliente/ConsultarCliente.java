@@ -78,7 +78,6 @@ public class ConsultarCliente implements IHelper {
     		dadosPessoais.put("telefone", cli.getUsuario().getContato().getNumero());
     		
     		clienteJson.put("dadosPessoais", dadosPessoais);
-    		
     		JSONArray enderecosEntrega = new JSONArray();
     		for(EnderecoEntrega endereco : cli.getEnderecoEntregas()) {
     			JSONObject enderecoJson = new JSONObject();
@@ -91,6 +90,7 @@ public class ConsultarCliente implements IHelper {
     			enderecoJson.put("numero", endereco.getNumero());
     			enderecoJson.put("bairro", endereco.getBairro());
     			enderecoJson.put("cep", endereco.getCep());
+    			enderecoJson.put("id", endereco.getId());
     			enderecoJson.put("observacao", endereco.getObservacao());
     			enderecoJson.put("nomeComposto", endereco.getNomeComposto());
     			enderecoJson.put("favorito", endereco.isFavorito());
@@ -98,20 +98,21 @@ public class ConsultarCliente implements IHelper {
     		}
     		
     		clienteJson.put("enderecosEntrega", enderecosEntrega);
-    		
+
     		JSONArray enderecosCobranca = new JSONArray();
-    		for(Endereco endereco : cli.getEnderecos()) {
+    		for(Endereco enderecoCobranca : cli.getEnderecoCobrancas()) {
     			JSONObject enderecoJson = new JSONObject();
-    			enderecoJson.put("tipoResidencia", endereco.getTipoResidencia().getNome());
-    			enderecoJson.put("tipoLogradouro", endereco.getTipoLogradouro().getNome());
-    			enderecoJson.put("pais", endereco.getCidade().getEstado().getPais().getPais());
-    			enderecoJson.put("estado", endereco.getCidade().getEstado().getEstado());
-    			enderecoJson.put("cidade", endereco.getCidade().getCidade());
-    			enderecoJson.put("logradouro", endereco.getLogradouro());
-    			enderecoJson.put("numero", endereco.getNumero());
-    			enderecoJson.put("bairro", endereco.getBairro());
-    			enderecoJson.put("cep", endereco.getCep());
-    			enderecoJson.put("observacao", endereco.getObservacao());
+    			enderecoJson.put("tipoResidencia", enderecoCobranca.getTipoResidencia().getNome());
+    			enderecoJson.put("tipoLogradouro", enderecoCobranca.getTipoLogradouro().getNome());
+    			enderecoJson.put("pais", enderecoCobranca.getCidade().getEstado().getPais().getPais());
+    			enderecoJson.put("estado", enderecoCobranca.getCidade().getEstado().getEstado());
+    			enderecoJson.put("cidade", enderecoCobranca.getCidade().getCidade());
+    			enderecoJson.put("logradouro", enderecoCobranca.getLogradouro());
+    			enderecoJson.put("numero", enderecoCobranca.getNumero());
+    			enderecoJson.put("bairro", enderecoCobranca.getBairro());
+    			enderecoJson.put("cep", enderecoCobranca.getCep());
+    			enderecoJson.put("observacao", enderecoCobranca.getObservacao());
+    			enderecoJson.put("id", enderecoCobranca.getId());
     			enderecosCobranca.put(enderecoJson);
     		}
     		
@@ -121,6 +122,7 @@ public class ConsultarCliente implements IHelper {
     		for(CartaoCredito cartao : cli.getCartoes()) {
     			JSONObject cartaoJson = new JSONObject();
     			cartaoJson.put("bandeira", cartao.getBandeira().getNome());
+    			cartaoJson.put("id", cartao.getId());
     			cartaoJson.put("numero", cartao.getNumero());
     			cartaoJson.put("nomeImpresso", cartao.getNomeImpresso());
     			cartaoJson.put("codSeguranca", cartao.getCodSeguranca());

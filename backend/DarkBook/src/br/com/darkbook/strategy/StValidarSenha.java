@@ -3,7 +3,7 @@ package br.com.darkbook.strategy;
 import br.com.darkbook.dominio.Cliente;
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class ValidarSenha implements IStrategy{
+public class StValidarSenha implements IStrategy{
 
 	@Override
 	public String processar(EntidadeDominio entidade) {

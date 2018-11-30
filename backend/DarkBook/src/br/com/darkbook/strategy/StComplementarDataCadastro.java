@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class ComplementarDataCadastro implements IStrategy {
+public class StComplementarDataCadastro implements IStrategy {
 
 	@Override
 	public String processar(EntidadeDominio entidade) {

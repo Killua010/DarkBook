@@ -5,7 +5,7 @@ import java.util.List;
 import br.com.darkbook.dao.ClienteDAO;
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class ValidarExistencia implements IStrategy{
+public class StValidarExistenciaCliente implements IStrategy{
 
 	@Override
 	public String processar(EntidadeDominio entidade) {
