@@ -245,7 +245,11 @@ export default {
                 this.corErroInput("logradouro");
                 erro = true;
             }
+<<<<<<< HEAD
+           
+=======
             console.log(this.dados.enderecosEntrega.cidade  == "")
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
             if(this.dados.enderecosEntrega.cidade == ""){
                 this.corErroSelect("cidade");
                 erro = true;
@@ -291,6 +295,10 @@ export default {
                 this.dados.enderecosEntrega.nomeComposto = this.nomeComposto;
                 this.dados.enderecosEntrega.favorito = this.favorito;
                 eventBus.$emit('page', 2);
+<<<<<<< HEAD
+                eventBus.$emit('dadosValidoEnderecoEntrega', true);
+=======
+>>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
             }
 
         },
