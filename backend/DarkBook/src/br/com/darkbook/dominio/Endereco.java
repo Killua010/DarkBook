@@ -11,10 +11,23 @@ public class Endereco extends EntidadeDominio{
 	private String bairro;
 	private String cep;
 	private String observacao;
+	private Boolean favorito;
 	
 	/*
 	 * Métodos GETs e SETs
 	 */
+	public boolean isFavorito() {
+		return favorito;
+	}
+	public void setFavorito(boolean favorito) {
+		this.favorito = favorito;
+	}
+	public Boolean getFavorito() {
+		return favorito;
+	}
+	public void setFavorito(Boolean favorito) {
+		this.favorito = favorito;
+	}
 	public Cidade getCidade() {
 		return cidade;
 	}

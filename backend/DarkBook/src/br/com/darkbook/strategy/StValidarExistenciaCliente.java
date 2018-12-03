@@ -19,7 +19,7 @@ public class StValidarExistenciaCliente implements IStrategy{
 			return null;
 		}			
 		
-		return "Cliente já Cadastrado";
+		return "CPF ou Email já cadastrado, por favor informe outro";
 		
 	}
 

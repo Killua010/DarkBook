@@ -6,7 +6,8 @@ CREATE TABLE cliente(
     cli_cpf CHAR(11) NOT NULL,
     cli_genero VARCHAR(30) NOT NULL,
     cli_senha VARCHAR(40) NOT NULL,
-    cli_con_id BIGINT(5) NOT NULL
+    cli_con_id BIGINT(5) NOT NULL,
+    cli_status tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tipo_logradouro(
@@ -53,7 +54,8 @@ CREATE TABLE endereco(
     end_favorido BOOLEAN,
     end_tpl_id BIGINT(2) NOT NULL,
     end_tpr_id BIGINT(2) NOT NULL,
-    end_cid_id BIGINT(5) NOT NULL
+    end_cid_id BIGINT(5) NOT NULL,
+    end_status tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE cliente_endereco(
@@ -87,7 +89,8 @@ CREATE TABLE cartao_credito(
     cat_nome_impresso VARCHAR(80) NOT NULL,
     cat_codigo_seguranca CHAR(3) NOT NULL,
     cat_preferencial BOOLEAN,
-    cat_ban_id BIGINT(2) NOT NULL
+    cat_ban_id BIGINT(2) NOT NULL,
+    cat_status tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

@@ -31,7 +31,10 @@ public class SalvarCliente implements IHelper {
 	@Override
 	public void setEntidade(Resultado resultado, HttpServletResponse response) {
 		try {
+			response.setContentType("application/json");
+    	    response.setCharacterEncoding("UTF-8");
 			if(resultado.getMensagens().length() != 0) {
+				System.out.println(resultado.getMensagens().toString());
 	    		response.setStatus(400); // Erro 400 (Bad Request): parametros errados ou inexistentes
 	    		response.setHeader("Erros", resultado.getMensagens().toString());	// adiciona no header as mensagens de erros
 	    		response.getWriter().write(resultado.getMensagens().toString());
@@ -72,7 +75,7 @@ public class SalvarCliente implements IHelper {
      		contato.setDdd(clienteJson.getJSONObject("dadosPessoais").get("ddd").toString());
      		contato.setEmail(clienteJson.getJSONObject("dadosPessoais").get("email").toString());
      		
-			usuario.setNome(clienteJson.getJSONObject("dadosPessoais").get("primeiroNome").toString());
+			usuario.setNome(clienteJson.getJSONObject("dadosPessoais").get("nome").toString());
 			usuario.setDataNascimento(LocalDate.parse(clienteJson.getJSONObject("dadosPessoais").get("dataNascimento").toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 			usuario.setSobrenome(clienteJson.getJSONObject("dadosPessoais").get("sobrenome").toString());
 			usuario.setGenero(Genero.valueOf(clienteJson.getJSONObject("dadosPessoais").get("genero").toString()));
@@ -95,6 +98,7 @@ public class SalvarCliente implements IHelper {
 			enderecoCobranca.setLogradouro(enderecoJson.get("logradouro").toString());
 			enderecoCobranca.setNumero(Integer.parseInt(enderecoJson.get("numero").toString()));
 			enderecoCobranca.setObservacao(enderecoJson.get("observacao").toString());
+			enderecoCobranca.setFavorito(Boolean.parseBoolean(enderecoJson.get("favorito").toString()));
 			
 			tpr = new TipoResidencia();
       		tpr.setNome(enderecoJson.get("tipoResidencia").toString());
@@ -123,7 +127,7 @@ public class SalvarCliente implements IHelper {
 			enderecoEntrega.setNumero(Integer.parseInt(enderecoEntregaJson.get("numero").toString()));
 			enderecoEntrega.setObservacao(enderecoEntregaJson.get("observacao").toString());
 			enderecoEntrega.setNomeComposto(enderecoEntregaJson.get("nomeComposto").toString());
-			enderecoEntrega.setFavorito(Boolean.parseBoolean(enderecoEntregaJson.get("observacao").toString()));
+			enderecoEntrega.setFavorito(Boolean.parseBoolean(enderecoEntregaJson.get("favorito").toString()));
 			
 			tpr = new TipoResidencia();
       		tpr.setNome(enderecoEntregaJson.get("tipoResidencia").toString());

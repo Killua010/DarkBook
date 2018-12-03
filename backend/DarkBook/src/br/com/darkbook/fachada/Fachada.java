@@ -102,7 +102,6 @@ public class Fachada implements IFachada {
 	@Override
 	public Resultado alterar(EntidadeDominio entidade) {
 		resultado = new Resultado();
-		System.out.println(mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
 		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
 		
     	if(resultado.getMensagens().length() == 0) {
@@ -117,9 +116,10 @@ public class Fachada implements IFachada {
 
 	@Override
 	public Resultado excluir(EntidadeDominio entidade) {
-		return null;
-		// TODO Auto-generated method stub
-
+		IDAO dao = mapDao.get(entidade.getClass().getName());
+		dao.excluir(entidade);
+		
+		return new Resultado();
 	}
 	
 	private List<IStrategy> executarStrategys(EntidadeDominio entidade, List<IStrategy> strategys) {
