@@ -115,7 +115,7 @@ export default new Router({
     {
       path: "/teamDeveloper",
       name: "Team Developer",
-      components: { default: Profile, header: MainNavbar, footer: MainFooter },
+      components: { default: Profile, header: MainNavbar, footer: Footer },
       props: {
         header: { colorOnScroll: 400 },
         footer: { backgroundColor: "black" }

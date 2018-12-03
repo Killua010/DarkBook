@@ -58,10 +58,7 @@ import  DadosPessoais  from "@/model/DadosPessoais.js"
 import  EnderecoCobranca  from "@/model/EnderecoCobranca.js"
 import  EnderecoEntrega  from "@/model/EnderecoEntrega.js"
 import  Cartao  from "@/model/Cartao.js"
-<<<<<<< HEAD
 import swal from 'sweetalert';
-=======
->>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
 
 export default {
     created(){
@@ -85,7 +82,7 @@ export default {
         cliente :   {
             dadosPessoais : {
                 id : "",
-                primeiroNome : "",
+                nome : "",
                 sobrenome : "",
                 email : "",
                 genero : "",
@@ -147,24 +144,24 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 }
             }).then(function(e){
-<<<<<<< HEAD
+                console.log(e.data)
                 swal({
                     title: e.data,
                     icon: "success"
                 });
                 dadosAtuais.$router.push({ name:"login" })
             }).catch(function(e){
-                swal({
-                    title: e,
-                    icon: "error"
-                });
-=======
-                alert(e.data)
-                dadosAtuais.$router.push({ name:"login" })
-            }).catch(function(e){
-                console.log(e.response.data)
-                alert(e.response.data)
->>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
+                try{
+                    swal({
+                        title: e.response.data,
+                        icon: "error"
+                    });
+                } catch (e) {
+                    swal({
+                        title: e,
+                        icon: "error"
+                    });
+                }
             })
           },
           proximo(){

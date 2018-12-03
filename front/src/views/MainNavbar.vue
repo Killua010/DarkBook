@@ -124,10 +124,10 @@ import MobileMenu from "@/mk/layout/MobileMenu";
 import { eventBus } from '@/main';
 export default {
   created() {
-    console.log(this.$route.params)
-     if(this.$route.params.id != undefined | this.$route.params.nome != undefined){
-      this.id = this.$route.params.id;
-      this.clienteNome = this.$route.params.nome;
+    let usuario = this.dadosUsuario;
+    if(usuario.id != null || usuario.id != ''){
+      this.id = usuario.id;
+      this.clienteNome = usuario.nome;
     }
   },
   components: {
@@ -152,6 +152,9 @@ export default {
     };
   },
   computed: {
+    dadosUsuario(){
+      return this.$store.state.usuario;
+    },
     showDownload() {
       const excludedRoutes = ["login", "landing", "profile"];
       return excludedRoutes.every(r => r !== this.$route.name);
@@ -163,12 +166,15 @@ export default {
       this.$router.push({name: "cadastro_cliente"})
     },
     perfil: function(){
-      this.$router.push({name: "perfil", params: { "id": this.id, "nome": this.clienteNome }})
+      this.$router.push({name: "perfil"})
     },
     sair: function(){
-      this.id = undefined;
-      this.clienteNome = undefined;
-      this.$router.push({name: "index"})
+      let cliente = {
+        id: null,
+        nome: ""
+      }
+      this.$store.commit('ALTERAR_USUARIO', cliente)
+      this.$router.go({name: "index"})
     },
     bodyClick() {
       let bodyClick = document.getElementById("bodyClick");

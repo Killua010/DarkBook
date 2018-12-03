@@ -79,9 +79,25 @@ export default {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
         }).then(function(e){
-          dadosAtuais.$router.replace({name: "perfil", params: { "id": e.data.dadosPessoais.id, "nome": e.data.dadosPessoais.nome }})
+          let cliente = {
+            id: e.data.dadosPessoais.id,
+            nome: e.data.dadosPessoais.nome
+          }
+          dadosAtuais.$store.commit('ALTERAR_USUARIO', cliente)
+          dadosAtuais.$router.push({name: "perfil"})
         }).catch(function(e){
-            alert(e)
+          try{
+              swal({
+                  title: "Erro " + e.response.status,
+                  text: e.response.data,
+                  icon: "error"
+              });
+          } catch (e) {
+              swal({
+                  title: e,
+                  icon: "error"
+              });
+          }
         })
       
     }

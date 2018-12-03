@@ -6,7 +6,7 @@
                 <md-field class="md-form-group">
                     <md-icon>face</md-icon>
                     <label>Primeiro Nome...</label>
-                    <md-input id="primeiroNome" v-model="primeiroNome"></md-input>
+                    <md-input id="primeiroNome" v-model="nome"></md-input>
                     <span class="md-error erros">O nome necessida ter no minimo 3 caracteres</span>
                 </md-field>
             </div>
@@ -103,7 +103,7 @@ import { eventBus } from '../../main';
 
   export default {
       data: () => ({
-        primeiroNome : "",
+        nome : "",
         sobrenome : "",
         email : "",
         genero : "",
@@ -125,7 +125,7 @@ import { eventBus } from '../../main';
         })
 
         if(this.dados != null){
-            this.primeiroNome = this.dados.dadosPessoais.nome
+            this.nome = this.dados.dadosPessoais.nome
             this.sobrenome = this.dados.dadosPessoais.sobrenome
             this.email = this.dados.dadosPessoais.email
             this.genero = this.dados.dadosPessoais.genero
@@ -196,7 +196,7 @@ import { eventBus } from '../../main';
 
             var regData = /[0-3][0-9]\/[0-1][0-9]\/[1-2]([0]|[9])([0-1]|[9])[0-9]/
             
-            if(undefined === this.primeiroNome || this.primeiroNome.trim().length < 3){
+            if(undefined === this.nome || this.nome.trim().length < 3){
                 this.corErroInput("primeiroNome")
                 erro = true;
             }
@@ -248,7 +248,7 @@ import { eventBus } from '../../main';
             }
 
             if(erro === false){
-                this.dados.dadosPessoais.primeiroNome = this.primeiroNome
+                this.dados.dadosPessoais.nome = this.nome
                 this.dados.dadosPessoais.sobrenome = this.sobrenome
                 this.dados.dadosPessoais.email = this.email
                 this.dados.dadosPessoais.genero = this.genero
@@ -259,7 +259,7 @@ import { eventBus } from '../../main';
                 this.dados.dadosPessoais.telefone = this.telefone.replace(/[^\d]+/g,'').substring(2)
                 this.dados.dadosPessoais.senha = this.senha2;
                 eventBus.$emit('page', 1);
-                eventBus.$emit('dadosValidoCliente', true);
+                this.$emit('dados-valido-cliente',true);
             } 
 
         },

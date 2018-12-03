@@ -3,6 +3,7 @@
     <div class="viewport">
       <md-toolbar class="md-primary">
         <span class="md-title">Dados Pessoais</span>
+        <md-button class="md-danger md-sm" @click="inativarCliente">Inativar Conta</md-button>
         <div class="md-toolbar-section-end">
           <md-button class="md-primary" @click="modalCliente = true"><md-icon>edit</md-icon>  Editar  </md-button>
         </div>
@@ -58,7 +59,7 @@
       <modal v-if="modalCliente" @close="fecharModalCliente">
         
           <template slot="body">
-            <cad-dados-basicos v-bind:dados="{dadosPessoais: this.cliente.dadosPessoais}"></cad-dados-basicos>
+            <cad-dados-basicos @dados-valido-cliente="valido" v-bind:dados="{dadosPessoais: this.cliente.dadosPessoais}"></cad-dados-basicos>
           </template>
           <template slot="footer">
             <md-button class="md-danger md-sm" @click="fecharModalCliente">Cancelar</md-button>
@@ -91,14 +92,14 @@ import {
 } from '@/mk_admin/components'
 
 export default{
-  created(){
+  mounted(){
     var dadosAtuais = this; 
-    this.cliente = this.$route.params.cliente;
-    eventBus.$on('dadosValidoCliente', function(e){
-      if(e == true){
-        dadosAtuais.AtualizarCliente();
-      }
-    })
+    this.dadosCliente;
+  },
+  computed: {
+    dadosCliente(){
+      this.cliente = this.$store.state.cliente.dados;
+    }
   },
   components: {
     StatsCard,
@@ -116,24 +117,62 @@ export default{
 
   }),
   methods: {
+    valido(){
+      this.AtualizarCliente();
+    },
+    inativarCliente(){
+      let dadosAtuais = this;
+      swal({
+        title: 'Tem certeza que deseja inativar sua conta?',
+        text: "Após inativado, caso queira recuperar sua conta, entre em contato com a nossa equipe de desenvolvimento!",
+        icon: 'warning',
+        buttons: {
+          cancel: 'Não, cancelar',
+          confirm: {
+            text: 'Sim, desejo deletar!'
+            }
+        },
+      }).then((result) => {
+        if (result) {
+          axios.post(`http://localhost:8082/DarkBook/cliente?operacao=EXCLUIR`, 
+            dadosAtuais.cliente, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                }
+            }).then(function(e){
+              swal({
+                  title: e.data,
+                  icon: "success"
+                });
+                dadosAtuais.$router.replace({name: "login"})
+            }).catch(function(e){
+                console.log(e)
+                alert(e.response.data)
+            })  
+        }
+      })
+    },
     fecharModalCliente() {
       this.modalCliente = false;
     },
     AtualizarCliente(){
-      this.modalCliente = false;
-      var dadosAtuais = this;
+        this.modalCliente = false;
+        let dadosAtuais = this;
         axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
-        this.cliente, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            }
-        }).then(function(e){
-            // alert(e.data)
-            dadosAtuais.$router.replace({name: "perfil", params: { "id": dadosAtuais.cliente.dadosPessoais.id, "nome": dadosAtuais.cliente.dadosPessoais.primeiroNome, salvou: true }})
-        }).catch(function(e){
-            console.log(e)
-            alert(e.response.data)
-        })
+          this.cliente, {
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              }
+          }).then(function(e){
+            dadosAtuais.$router.push({name: "Dados_Pessoais"})
+            swal({
+              title: "Alterado com sucesso",
+              icon: "success"
+            });
+          }).catch(function(e){
+              console.log(e)
+              alert(e.response.data)
+          })
     },
     ValidarCliente(){
       eventBus.$emit('validarDadosBasicos', true);

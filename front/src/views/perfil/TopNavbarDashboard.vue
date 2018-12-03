@@ -54,39 +54,26 @@
 
 <script>
 import { eventBus } from '@/main';
-<<<<<<< HEAD
 import swal from 'sweetalert';
 
-=======
->>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
 export default{
-  // created() {
-  //   if(this.$route.params.id == '' || this.$route.params.nome == ''){
-  //     alert("Usuario não logado");
-  //     this.$router.push("/login")
-  //   } else {
-  //     this.id = this.$route.params.id;
-  //     this.clienteNome = this.$route.params.nome;
-  //   }
-   
-  // },
   mounted(){
-  console.log(this.$route.params)
-  if(this.$route.params.id == '' || this.$route.params.nome == undefined
-  || this.$route.params.nome == '' || this.$route.params.nome == undefined){
-<<<<<<< HEAD
+    let usuario = this.dadosUsuario;
+    if(usuario.id == null){
       swal({
           title: "Usuario não logado",
           text: "Entre antes para acessar está pagina",
           icon: "error",
         });
-=======
-      alert("Usuario não logado");
->>>>>>> f647c41b7d3b912f5018d4e8d27686af9ec981ed
       this.$router.push("/login")
     } else {
-      this.id = this.$route.params.id;
-      this.clienteNome = this.$route.params.nome;
+      this.id = usuario.id;
+      this.clienteNome = usuario.nome;
+    }
+  },
+  computed: {
+    dadosUsuario(){
+      return this.$store.state.usuario;
     }
   },
   data() {
@@ -97,8 +84,11 @@ export default{
   },
   methods: {
     sair: function(){
-      this.id = undefined;
-      this.clienteNome = undefined;
+      let cliente = {
+        id: null,
+        nome: ""
+      }
+      this.$store.commit('ALTERAR_USUARIO', cliente)
       this.$router.push({name: "index"})
     },
     toggleSidebar () {
