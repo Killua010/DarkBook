@@ -133,7 +133,17 @@ export default{
               dadosAtuais.$router.push({name: "Cartao"})
         }).catch(function(e){
             console.log(e)
-            alert(e)
+            try{
+              swal({
+                  title: e.response.data,
+                  icon: "error"
+              });
+            } catch (e) {
+              swal({
+                  title: e,
+                  icon: "error"
+              });
+            }
         })
       
     },

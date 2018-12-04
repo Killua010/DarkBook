@@ -118,7 +118,13 @@ export default{
         numero : "",
         bairro : "",
         cep : "",
-        observacao : ""
+        observacao : "",
+        favorito : false
+      }
+    },
+    resetarEnderecos(){
+      for(let e of this.cliente.enderecosCobranca){
+        e.deletar = true;
       }
     },
     AtualizarCliente(){
@@ -140,8 +146,19 @@ export default{
               dadosAtuais.$router.push({name: "Endereço_Cobrança"})
               
           }).catch(function(e){
+              dadosAtuais.resetarEnderecos();
               console.log(e)
-              alert(e.response.data)
+              try{
+                swal({
+                    title: e.response.data,
+                    icon: "error"
+                });
+              } catch (e) {
+                swal({
+                    title: e,
+                    icon: "error"
+                });
+              }
           })
       }
     },

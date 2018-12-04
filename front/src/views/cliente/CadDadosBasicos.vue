@@ -82,7 +82,7 @@
                     <md-icon>fingerprint</md-icon>
                     <label>Senha...</label>
                     <md-input id="senha1" v-model="senha1" type="password"></md-input>
-                    <span class="md-error erros">A senha tem que ter mais que 6 caracteres</span>
+                    <span class="md-error erros">A senha tem que ter mais que 8 caracteres, letras maiusculas, minusculas  e caracteres especiais</span>
                 </md-field> 
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
@@ -140,6 +140,18 @@ import { eventBus } from '../../main';
     },
     props:['dados'],
     methods:{
+        validarSenha: function(senha){
+            if(senha.length < 8)
+                return false;
+            if(!senha.match(/[a-z]+/))
+                return false;
+            if(!senha.match(/[A-Z]+/))
+                return false;
+            if(!senha.match(/[^0-9A-Za-z]+/)){
+                return false;
+            }
+            return true;
+        },
         VerificaData: function (cData) {
             var now = new Date	
             var data = cData; 	
@@ -236,12 +248,12 @@ import { eventBus } from '../../main';
                 erro = true;
             } 
             
-            if(this.senha1.trim().length <= 6){
+            if(!this.validarSenha(this.senha1.trim())){
                 this.corErroInput("senha1")
                 erro = true;
             }
 
-            if(this.senha2.trim().length < 5
+            if(this.senha2.trim().length < 8
                 || this.senha2 != this.senha1){
                 this.corErroInput("senha2")
                 erro = true;

@@ -126,7 +126,17 @@ export default{
             dadosAtuais.$router.push({name: "Endereço_Entrega"})
         }).catch(function(e){
             console.log(e)
-            alert(e.response.data)
+            try{
+              swal({
+                  title: e.response.data,
+                  icon: "error"
+              });
+            } catch (e) {
+              swal({
+                  title: e,
+                  icon: "error"
+              });
+            }
         })  
     },
     novoEndereco(){
