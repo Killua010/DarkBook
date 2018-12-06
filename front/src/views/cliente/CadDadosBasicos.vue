@@ -6,7 +6,7 @@
                 <md-field class="md-form-group">
                     <md-icon>face</md-icon>
                     <label>Primeiro Nome...</label>
-                    <md-input id="primeiroNome" v-model="primeiroNome"></md-input>
+                    <md-input id="primeiroNome" v-model="nome"></md-input>
                     <span class="md-error erros">O nome necessida ter no minimo 3 caracteres</span>
                 </md-field>
             </div>
@@ -82,7 +82,7 @@
                     <md-icon>fingerprint</md-icon>
                     <label>Senha...</label>
                     <md-input id="senha1" v-model="senha1" type="password"></md-input>
-                    <span class="md-error erros">A senha tem que ter mais que 6 caracteres</span>
+                    <span class="md-error erros">A senha tem que ter mais que 8 caracteres, letras maiusculas, minusculas  e caracteres especiais</span>
                 </md-field> 
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
@@ -103,7 +103,7 @@ import { eventBus } from '../../main';
 
   export default {
       data: () => ({
-        primeiroNome : "",
+        nome : "",
         sobrenome : "",
         email : "",
         genero : "",
@@ -125,7 +125,7 @@ import { eventBus } from '../../main';
         })
 
         if(this.dados != null){
-            this.primeiroNome = this.dados.dadosPessoais.nome
+            this.nome = this.dados.dadosPessoais.nome
             this.sobrenome = this.dados.dadosPessoais.sobrenome
             this.email = this.dados.dadosPessoais.email
             this.genero = this.dados.dadosPessoais.genero
@@ -140,6 +140,18 @@ import { eventBus } from '../../main';
     },
     props:['dados'],
     methods:{
+        validarSenha: function(senha){
+            if(senha.length < 8)
+                return false;
+            if(!senha.match(/[a-z]+/))
+                return false;
+            if(!senha.match(/[A-Z]+/))
+                return false;
+            if(!senha.match(/[^0-9A-Za-z]+/)){
+                return false;
+            }
+            return true;
+        },
         VerificaData: function (cData) {
             var now = new Date	
             var data = cData; 	
@@ -196,7 +208,7 @@ import { eventBus } from '../../main';
 
             var regData = /[0-3][0-9]\/[0-1][0-9]\/[1-2]([0]|[9])([0-1]|[9])[0-9]/
             
-            if(undefined === this.primeiroNome || this.primeiroNome.trim().length < 3){
+            if(undefined === this.nome || this.nome.trim().length < 3){
                 this.corErroInput("primeiroNome")
                 erro = true;
             }
@@ -236,19 +248,19 @@ import { eventBus } from '../../main';
                 erro = true;
             } 
             
-            if(this.senha1.trim().length <= 6){
+            if(!this.validarSenha(this.senha1.trim())){
                 this.corErroInput("senha1")
                 erro = true;
             }
 
-            if(this.senha2.trim().length < 5
+            if(this.senha2.trim().length < 8
                 || this.senha2 != this.senha1){
                 this.corErroInput("senha2")
                 erro = true;
             }
 
             if(erro === false){
-                this.dados.dadosPessoais.primeiroNome = this.primeiroNome
+                this.dados.dadosPessoais.nome = this.nome
                 this.dados.dadosPessoais.sobrenome = this.sobrenome
                 this.dados.dadosPessoais.email = this.email
                 this.dados.dadosPessoais.genero = this.genero
@@ -259,7 +271,7 @@ import { eventBus } from '../../main';
                 this.dados.dadosPessoais.telefone = this.telefone.replace(/[^\d]+/g,'').substring(2)
                 this.dados.dadosPessoais.senha = this.senha2;
                 eventBus.$emit('page', 1);
-                eventBus.$emit('dadosValidoCliente', true);
+                this.$emit('dados-valido-cliente',true);
             } 
 
         },

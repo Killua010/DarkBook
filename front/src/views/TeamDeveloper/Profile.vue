@@ -2,7 +2,7 @@
   <div class="wrapper">
     <parallax class="section page-header header-filter" :style="headerStyle"></parallax>
     <div class="main main-raised">
-      <div class="section profile-content">
+      <div class="section profile-content mb-50">
         <div class="container">
           <div class="md-layout">
             <div class="md-layout-item md-size-50 mx-auto">
@@ -13,6 +13,7 @@
                 <div class="name">
                   <h3 class="title">Daniel Dias de Souza</h3>
                   <h6>Web Desingner</h6>
+                  <md-button href="https://github.com/Killua010/ES3" target="_blank" class="md-just-icon md-simple md-github"><i class="fab fa-github"></i></md-button>
                   <md-button href="https://www.linkedin.com/in/daniel-dias-112a07127/" target="_blank" class="md-just-icon md-simple md-linkedin"><i class="fab fa-linkedin"></i></md-button>
                   <md-button href="https://twitter.com/Daniel160598?lang=pt-br" target="_blank" class="md-just-icon md-simple md-twitter"><i class="fab fa-twitter"></i></md-button>
                   <md-button href="https://www.facebook.com/daniel.dias.5249349" target="_blank" class="md-just-icon md-simple md-facebook"><i class="fab fa-facebook"></i></md-button>
@@ -90,6 +91,11 @@ export default {
 <style lang="scss" scoped>
 .section {
   padding: 0;
+}
+
+.mb-50{
+  padding-bottom: 25px;
+  margin-bottom: 50px;
 }
 
 .profile-tabs /deep/ {

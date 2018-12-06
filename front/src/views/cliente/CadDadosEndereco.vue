@@ -98,6 +98,10 @@
                     <span class="md-error erros">O complemento necessida ter no minimo 5 caracteres</span>
                 </md-field> 
             </div>
+            <div class="md-layout-item md-size-50 md-xsmall-size-100">
+                <md-icon class="icon-endereco">favorite_border</md-icon>
+                <md-checkbox v-model="favorito">Endereço favorito?</md-checkbox>
+            </div>
         </div>
     </div>
 </template>
@@ -124,24 +128,43 @@ export default {
         mapPais: [],
         mapEstados: [],
         indexPais : null,
-        indexEstado : null
+        indexEstado : null,
+        favorito : null
      }),
      filters: {
         firstUpperCase(str){
             return str.toLowerCase().replace(/(?:^)\S/g, function(a) { return a.toUpperCase(); });
         }
     },
+    computed: {
+        preencherDados(){
+            this.tiposLogradouro = this.$store.state.tipoLogradouros.tipos;
+            this.tiposResidencia = this.$store.state.tipoResidencia.tipos 
+
+            this.paises = this.$store.state.paises.paises;
+            for(let i = 0; i < this.paises.length; i++){
+                this.mapPais[this.paises[i].pais] = i;
+                for(let j = 0; j < this.paises[i].estados.length; j++){
+                    this.mapEstados[this.paises[i].estados[j].sigla] = j;
+                }
+            }
+
+            if(this.dados.enderecosCobranca.pais != ""){
+                this.indexPais = this.mapPais[this.dados.enderecosCobranca.pais];
+                this.estados = this.paises[this.indexPais].estados;
+                this.indexEstado = this.mapEstados[this.dados.enderecosCobranca.estado];
+                this.cidades = this.estados[this.indexEstado].cidades;
+            }
+        }
+    },
     created(){
+        this.preencherDados;
         var dadosAtuais = this;
         eventBus.$on('validarDadosEnderecoCobranca', function(e){
             if(e === true){
                 dadosAtuais.validar()
             }
         });
-
-        this.buscarTipoLogradouro();
-        this.buscarTipoResidencia();
-        this.buscarPaises();
         
         if(this.dados != null){
             this.tipoResidencia = this.dados.enderecosCobranca.tipoResidencia;
@@ -152,64 +175,13 @@ export default {
             this.nomeComposto = this.dados.enderecosCobranca.nomeComposto;
             this.favorito = this.dados.enderecosCobranca.favorito;
             this.cep = this.dados.enderecosCobranca.cep;
+            this.favorito = this.dados.enderecosCobranca.favorito;
         }
 
         
     },
     props:['dados'],
     methods:{
-        buscarTipoLogradouro(){
-            var dadosAtuais = this;
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:8082/DarkBook/tipoLogradouro?operacao=CONSULTAR",
-                async: false
-            }).done(function(msg){
-                dadosAtuais.tiposLogradouro = msg
-             }).fail(function(jqXHR, textStatus, msg){
-                  console.log(msg);
-             })
-        },
-        buscarTipoResidencia(){
-            var dadosAtuais = this;
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:8082/DarkBook/tipoResidencia?operacao=CONSULTAR",
-                async: false
-            }).done(function(msg){
-                dadosAtuais.tiposResidencia = msg
-             }).fail(function(jqXHR, textStatus, msg){
-                  console.log(msg);
-             })
-        },
-        buscarPaises(){
-            var dadosAtuais = this;
-            axios.post(`http://localhost:8082/DarkBook/paises?operacao=CONSULTAR`, 
-            this.cliente, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                }
-            }).then(function(e){
-                dadosAtuais.paises = e.data
-                for(let i = 0; i < dadosAtuais.paises.length; i++){
-                    dadosAtuais.mapPais[dadosAtuais.paises[i].pais] = i;
-                    for(let j = 0; j < dadosAtuais.paises[i].estados.length; j++){
-                        dadosAtuais.mapEstados[dadosAtuais.paises[i].estados[j].sigla] = j;
-                    }
-                }
-
-                if(dadosAtuais.dados.enderecosCobranca.pais != ""){
-                    dadosAtuais.indexPais = dadosAtuais.mapPais[dadosAtuais.dados.enderecosCobranca.pais];
-                    dadosAtuais.estados = dadosAtuais.paises[dadosAtuais.indexPais].estados;
-                    dadosAtuais.indexEstado = dadosAtuais.mapEstados[dadosAtuais.dados.enderecosCobranca.estado];
-                    dadosAtuais.cidades = dadosAtuais.estados[dadosAtuais.indexEstado].cidades;
-                }
-
-            })
-            .catch(e => {
-                console.log(e)
-            })
-        },
         validar(){
             var erro = false;
 
@@ -236,8 +208,6 @@ export default {
                 this.corErroInput("logradouro");
                 erro = true;
             }
-
-            console.log(this.dados.enderecosCobranca.cidade)
 
             if(this.dados.enderecosCobranca.cidade == ""){
                 this.corErroSelect("cidade");
@@ -280,6 +250,7 @@ export default {
                 this.dados.enderecosCobranca.favorito = this.favorito;
                 this.dados.enderecosCobranca.cep = this.cep;
                 eventBus.$emit('page', 3);
+                this.$emit('dados-valido-cliente',true);
             }
 
         },

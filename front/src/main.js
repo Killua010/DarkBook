@@ -6,6 +6,7 @@ import MaterialKit from "./mk/plugins/material-kit";
 import MaterialKitDashboard from "./mk_admin/plugins/material-kit-dashboard";
 import JQuery from "jquery";
 import TheMask from 'vue-the-mask';
+import store from "./store/store";
 
 global.JQuery = JQuery;
 global.$ = JQuery;
@@ -30,6 +31,7 @@ Vue.mixin({
 });
 
 new Vue({
+  store,
   router,
   render: h => h(App)
 }).$mount("#app");
