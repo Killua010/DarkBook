@@ -23,6 +23,7 @@ import br.com.darkbook.strategy.IStrategy;
 import br.com.darkbook.strategy.StValidarCPF;
 import br.com.darkbook.strategy.StValidarDadosObrigatorios;
 import br.com.darkbook.strategy.StValidarExistenciaCliente;
+import br.com.darkbook.strategy.StValidarMinimoEndereco;
 import br.com.darkbook.strategy.StValidarSenha;
 import br.com.darkbook.util.Resultado;
 
@@ -44,6 +45,7 @@ public class Fachada implements IFachada {
 		StValidarExistenciaCliente stValidarExistenciaCliente = new StValidarExistenciaCliente();
 		StValidarSenha stValidarSenha = new StValidarSenha();
 		StComplementarDataCadastro stComplementarDataCadastro = new StComplementarDataCadastro();
+		StValidarMinimoEndereco stValidarMinimoEndereco = new StValidarMinimoEndereco();
 		
 		clienteSalvarStrategy.add(stValidarDadosObrigatorios);
 		clienteSalvarStrategy.add(stValidarCPF);
@@ -56,7 +58,7 @@ public class Fachada implements IFachada {
 		clienteAlterarStrategy.add(stValidarDadosObrigatorios);
 		clienteAlterarStrategy.add(stValidarCPF);
 		clienteAlterarStrategy.add(stValidarSenha);
-		
+		clienteAlterarStrategy.add(stValidarMinimoEndereco);		
 		strategysCliente.put("ALTERAR", clienteAlterarStrategy);
 		
 		mapStrategy.put(Cliente.class.getName(), strategysCliente);
@@ -126,6 +128,7 @@ public class Fachada implements IFachada {
 		for(IStrategy str : strategys) {
 			String mensagem = str.processar(entidade);
 			if(mensagem != null) {
+				System.out.println(mensagem);
 				resultado.getMensagens().append(mensagem);
 			}
 		}

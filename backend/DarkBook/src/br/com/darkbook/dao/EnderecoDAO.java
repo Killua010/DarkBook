@@ -136,56 +136,7 @@ public class EnderecoDAO extends AbstrDAO{
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-//		PreparedStatement comandosSQL = null;
-//		String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
-//      			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
-//      			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-//      			+ "tpr_id = end_tpr_id;";
-//		
-//		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecos);
-//  		comandosSQL.setLong(1, c.getId());
-//  		
-//  		resultados = comandosSQL.executeQuery();
-//      	while(resultados.next()) {
-//      		Endereco enderecoCobranca;
-//      		if(null != resultados.getString("end_nome_composto")) {
-//      			enderecoCobranca = new EnderecoEntrega();
-//      			((EnderecoEntrega) enderecoCobranca).setNomeComposto(resultados.getString("end_nome_composto"));
-//      			((EnderecoEntrega) enderecoCobranca).setFavorito(resultados.getBoolean("end_favorido"));
-//      		} else {
-//      			enderecoCobranca = new Endereco();
-//      		}
-//      		
-//      		enderecoCobranca.setBairro(resultados.getString("end_bairro"));
-//      		enderecoCobranca.setCep(resultados.getString("end_cep"));
-//      		enderecoCobranca.setCidade(new Cidade());
-//      		enderecoCobranca.getCidade().setEstado(new Estado());
-//      		enderecoCobranca.getCidade().getEstado().setPais(new Pais());
-//      		enderecoCobranca.getCidade().getEstado().getPais().setPais(resultados.getString("pai_pais"));
-//      		enderecoCobranca.getCidade().getEstado().setEstado(resultados.getString("est_sigla"));
-//      		enderecoCobranca.getCidade().setCidade(resultados.getString("cid_nome"));
-//      		enderecoCobranca.setLogradouro(resultados.getString("end_logradouro"));
-//      		enderecoCobranca.setNumero(resultados.getInt("end_numero"));
-//      		enderecoCobranca.setObservacao(resultados.getString("end_observacao"));
-//      		
-//      		TipoLogradouro tpl = new TipoLogradouro();
-//      		tpl.setNome(resultados.getString("tpl_nome"));
-//      		tpl.setId(resultados.getLong("tpl_id"));
-//      		
-//      		TipoResidencia tpr = new TipoResidencia();
-//      		tpr.setNome(resultados.getString("tpr_nome"));
-//      		tpr.setId(resultados.getLong("tpr_id"));
-//      		
-//      		enderecoCobranca.setTipoLogradouro(tpl);
-//      		enderecoCobranca.setTipoResidencia(tpr);
-//
-//      		if(null != resultados.getString("end_nome_composto")) {
-//      			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) enderecoCobranca);
-//      		} else {
-//      			((Cliente) c).getEnderecoCobrancas().add(enderecoCobranca);
-//      		}
-//      	} // ./enderecos
-		return null;
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 	@Override

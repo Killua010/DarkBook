@@ -68,8 +68,7 @@ public class CartaoDAO extends AbstrDAO{
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 	@Override

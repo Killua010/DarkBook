@@ -30,6 +30,8 @@ public class AlterarCliente implements IHelper {
 	
 	@Override
 	public void setEntidade(Resultado resultado, HttpServletResponse response) {
+		response.setContentType("application/json");
+	    response.setCharacterEncoding("UTF-8");
 		try {
 			if(resultado.getMensagens().length() != 0) {
 	    		response.setStatus(400); // Erro 400 (Bad Request): parametros errados ou inexistentes
@@ -40,6 +42,8 @@ public class AlterarCliente implements IHelper {
 	    	}
 		}catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			resultado.getMensagens().setLength(0);
 		}
 	}
 
@@ -121,7 +125,7 @@ public class AlterarCliente implements IHelper {
 	      		enderecoCobranca.setTipoLogradouro(tpl);
 				enderecoCobranca.setTipoResidencia(tpr);
 				enderecoCobranca.setCidade(cidade);
-				
+				System.out.println(enderecoCobranca.isStatus());
 				cliente.getEnderecoCobrancas().add(enderecoCobranca);
 			}
 			

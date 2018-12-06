@@ -138,7 +138,6 @@ public class ClienteDAO extends AbstrDAO{
               		
               		enderecoCobranca.setTipoLogradouro(tpl);
               		enderecoCobranca.setTipoResidencia(tpr);
-              		System.out.println(resultados.getString("end_nome_composto"));
               		if(null != resultados.getString("end_nome_composto")) {
               			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) enderecoCobranca);
               		} else {
@@ -356,7 +355,6 @@ public class ClienteDAO extends AbstrDAO{
 	        comandosSQL.setString(10, cliente.getUsuario().getSenha());
 	        comandosSQL.setLong(11, cliente.getId());
 	        comandosSQL.execute();//
-	        
 	        // endereco cobrança
 	        for(Endereco end : cliente.getEnderecoCobrancas()) {
 	        	if(false == end.isStatus()) {

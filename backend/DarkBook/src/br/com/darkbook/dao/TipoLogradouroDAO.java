@@ -22,8 +22,7 @@ public class TipoLogradouroDAO implements IDAO {
 
 	@Override
 	public void salvar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 	@Override
@@ -51,14 +50,12 @@ public class TipoLogradouroDAO implements IDAO {
 
 	@Override
 	public void alterar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 	@Override
 	public void excluir(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 }
