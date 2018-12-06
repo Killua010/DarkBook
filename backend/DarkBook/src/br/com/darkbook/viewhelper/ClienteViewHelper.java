@@ -21,6 +21,7 @@ import br.com.darkbook.util.Resultado;
 import br.com.darkbook.viewhelper.helper.IHelper;
 import br.com.darkbook.viewhelper.helper.cliente.AlterarCliente;
 import br.com.darkbook.viewhelper.helper.cliente.ConsultarCliente;
+import br.com.darkbook.viewhelper.helper.cliente.DeletarCliente;
 import br.com.darkbook.viewhelper.helper.cliente.SalvarCliente;
 
 public class ClienteViewHelper implements IViewHelper {
@@ -32,6 +33,7 @@ public class ClienteViewHelper implements IViewHelper {
 	public ClienteViewHelper() {
 		helperView = new HashMap<String, IHelper>();
 		helperView.put("CONSULTAR", new ConsultarCliente());
+		helperView.put("EXCLUIR", new DeletarCliente());
 		helperView.put("SALVAR", new SalvarCliente());
 		helperView.put("ALTERAR", new AlterarCliente());
 	}

@@ -28,11 +28,13 @@ import br.com.darkbook.dominio.Usuario;
 import br.com.darkbook.entidade.EntidadeDominio;
 
 
-public class ClienteDAO implements IDAO{
-	 // a conexão com o banco de dados
-    private Connection conexao;
+public class ClienteDAO extends AbstrDAO{
     
-    public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+    public ClienteDAO() {
+		super("cliente", "cli");
+	}
+
+	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
     	Cliente cli = (Cliente) entidade;
     	List<EntidadeDominio> cliList = new ArrayList<>();
     	ResultSet resultados;
@@ -42,22 +44,23 @@ public class ClienteDAO implements IDAO{
     	
     	try {
     		this.conexao = (Connection) Conexao.getConexao();
-    		if(null != cli.getCpf()) { // buscar por cpf
-	    		tabelaCliente = "SELECT * FROM cliente WHERE cli_cpf = ?";
+    		if(null != cli.getCpf() && null != cli.getUsuario().getContato().getEmail()) { // buscar por cpf ou email
+	    		tabelaCliente = "SELECT * FROM cliente JOIN contato WHERE cli_cpf = ? OR con_email = ? AND cli_status = true";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    		preparo.setString(1, cli.getCpf());
+	    		preparo.setString(2, cli.getCpf());
     		} else if(null != cli.getUsuario().getSenha() &&
 	    			null != cli.getUsuario().getContato().getEmail()) {
-	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ? AND cli_con_id = con_id";
+	    		tabelaCliente = "SELECT * FROM cliente JOIN contato ON cli_senha = ? AND con_email = ? AND cli_con_id = con_id AND cli_status = true";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    		preparo.setString(1, cli.getUsuario().getSenha());
 	    		preparo.setString(2, cli.getUsuario().getContato().getEmail());
     		} else if(null == cli.getCpf() && null == cli.getId()) {// buscar todos
-	          	tabelaCliente = "SELECT * FROM cliente";
+	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_status = true";
 	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	    	} else { // buscar por id 
 	    		
-	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ?";
+	          	tabelaCliente = "SELECT * FROM cliente WHERE cli_id = ? AND cli_status = true";
 	          	preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
 	          	preparo.setLong(1, cli.getId());
 	          	
@@ -66,12 +69,12 @@ public class ClienteDAO implements IDAO{
     		String tabelaEnderecos = "SELECT * FROM cliente_endereco JOIN endereco ON end_id = cle_end_id AND cle_cli_id = ? "
           			+ "JOIN cidade ON cid_id = end_cid_id JOIN estado ON cid_est_id = est_id JOIN pais ON "
           			+ "est_pai_id = pai_id JOIN tipo_logradouro ON tpl_id = end_tpl_id JOIN tipo_residencia ON "
-          			+ "tpr_id = end_tpr_id;";
+          			+ "tpr_id = end_tpr_id WHERE end_status = true;";
           	
           	String tabelaContato = "SELECT * FROM contato JOIN tipo_telefone ON tpt_id = con_tpt_id AND con_id = ?;";
           	
           	String tabelaCartoes = "SELECT * FROM cartao_credito JOIN bandeira ON cat_ban_id = ban_id JOIN cliente_cartao_credito "
-          			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ?;";
+          			+ "ON ccc_cat_id = cat_id AND ccc_cli_id = ? WHERE cat_status = true;";
           	
     		resultados = preparo.executeQuery();
 
@@ -107,12 +110,13 @@ public class ClienteDAO implements IDAO{
               		if(null != resultados.getString("end_nome_composto")) {
               			enderecoCobranca = new EnderecoEntrega();
               			((EnderecoEntrega) enderecoCobranca).setNomeComposto(resultados.getString("end_nome_composto"));
-              			((EnderecoEntrega) enderecoCobranca).setFavorito(resultados.getBoolean("end_favorido"));
               		} else {
               			enderecoCobranca = new Endereco();
               		}
               		
+              		enderecoCobranca.setFavorito(resultados.getBoolean("end_favorido"));
               		enderecoCobranca.setBairro(resultados.getString("end_bairro"));
+              		enderecoCobranca.setId(resultados.getLong("end_id"));
               		enderecoCobranca.setCep(resultados.getString("end_cep"));
               		enderecoCobranca.setCidade(new Cidade());
               		enderecoCobranca.getCidade().setEstado(new Estado());
@@ -134,7 +138,6 @@ public class ClienteDAO implements IDAO{
               		
               		enderecoCobranca.setTipoLogradouro(tpl);
               		enderecoCobranca.setTipoResidencia(tpr);
-   
               		if(null != resultados.getString("end_nome_composto")) {
               			((Cliente) c).getEnderecoEntregas().add((EnderecoEntrega) enderecoCobranca);
               		} else {
@@ -172,6 +175,7 @@ public class ClienteDAO implements IDAO{
               		cart.setCodSeguranca(resultados.getString("cat_codigo_seguranca"));
               		cart.setNomeImpresso(resultados.getString("cat_nome_impresso"));
               		cart.setNumero(resultados.getString("cat_numero"));
+              		cart.setId(resultados.getLong("cat_id"));
               		cart.setPreferencial(resultados.getBoolean("cat_preferencial"));
               		((Cliente) c).getCartoes().add(cart);
               	}// ./cartoes
@@ -211,8 +215,9 @@ public class ClienteDAO implements IDAO{
             			+ "cli_cpf,"
             			+ "cli_genero,"
             			+ "cli_senha,"
-            			+ "cli_con_id)" 
-            		+ " values (?,?,?,?,?,?,?);";
+            			+ "cli_con_id,"
+            			+ "cli_status)" 
+            		+ " values (?,?,?,?,?,?,?,?);";
             
             // Ligação (Endeços - Cliente)
             String tabelaEnderecoCliente = ""
@@ -243,6 +248,7 @@ public class ClienteDAO implements IDAO{
             comandosSQL.setString(5, cliente.getUsuario().getGenero().toString());
             comandosSQL.setString(6, cliente.getUsuario().getSenha());
             comandosSQL.setLong(7, cliente.getUsuario().getContato().getId());
+            comandosSQL.setBoolean(8, true);
             comandosSQL.execute();//
             
             ultimoID = conexao.prepareStatement(ComandoUltimoID).executeQuery();
@@ -293,109 +299,111 @@ public class ClienteDAO implements IDAO{
         }
     }
 
-@Override
-public void alterar(EntidadeDominio entidade) {
-	PreparedStatement comandosSQL = null;
-    Cliente cliente = (Cliente) entidade;
-    
-    IDAO enderecoDAO = new EnderecoDAO();
-    IDAO cartaoDAO = new CartaoDAO();
-    
-    try {
-    	this.conexao = (Connection) Conexao.getConexao();
-
-    	String tabelaCliente = "UPDATE cliente "
-    			+ " join contato ON"
-    			+ " contato.con_id = cliente.cli_con_id"
-    			+ " SET"
-    			+ " cliente.cli_nome = ?,"
-    			+ " cliente.cli_sobrenome = ?,"
-    			+ " contato.con_email = ?,"
-    			+ " cliente.cli_genero = ?,"
-    			+ " cliente.cli_cpf = ?,"
-    			+ " cliente.cli_dataNascimento = ?,"
-    			+ " contato.con_tpt_id = (SELECT tpt_id FROM tipo_telefone WHERE tpt_tipo = ?),"
-    			+ " contato.con_ddd = ?,"
-    			+ " contato.con_numero = ?,"
-    			+ " cliente.cli_senha = ?"
-    			+ " WHERE cliente.cli_id = ?";
-    	
-    	 // Ligação (Endeços - Cliente)
-        String tabelaEnderecoCliente = ""
-        		+ "INSERT INTO cliente_endereco("
-        			+ "cle_cli_id,"
-        			+ "cle_end_id)"
-        		+ "VALUES( ?, ?)";
-        
-        // Ligação (Cliente - Cartao)
-        String tabelaClienteCartao = ""
-        		+ "INSERT INTO cliente_cartao_credito ("
-        			+ "ccc_cli_id, "
-        			+ "ccc_cat_id) "
-        		+ "VALUES "
-        			+ "(?, ?);";
-    	
-    	
-		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
-        comandosSQL.setString(1,cliente.getUsuario().getNome());
-        comandosSQL.setString(2,cliente.getUsuario().getSobrenome());
-        comandosSQL.setString(3,cliente.getUsuario().getContato().getEmail());
-        comandosSQL.setString(4, cliente.getUsuario().getGenero().toString());
-        comandosSQL.setString(5, cliente.getCpf());
-        comandosSQL.setDate(6, Date.valueOf(cliente.getUsuario().getDataNascimento()));
-        comandosSQL.setString(7, cliente.getUsuario().getContato().getTipoTelefone().toString());
-        comandosSQL.setString(8, cliente.getUsuario().getContato().getDdd());
-        comandosSQL.setString(9, cliente.getUsuario().getContato().getNumero());
-        comandosSQL.setString(10, cliente.getUsuario().getSenha());
-        comandosSQL.setLong(11, cliente.getId());
-        comandosSQL.execute();//
-        
-        // endereco cobrança
-        for(Endereco end : cliente.getEnderecoCobrancas()) {
-        	if(null != end.getId()) {
-        		enderecoDAO.alterar(end);
-        	} else {
-	        	enderecoDAO.salvar(end);
-	        	
-	    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
-	    		comandosSQL.setLong(1, cliente.getId());
-	    		comandosSQL.setLong(2, end.getId());
-	    		comandosSQL.execute();
-        	}
-        }
-        
-        // endereco entrega
-        for(EnderecoEntrega end : cliente.getEnderecoEntregas()) {
-        	
-        	if(null != end.getId()) {
-        		enderecoDAO.alterar(end);
-        	} else {
-	        	enderecoDAO.salvar(end);
-	        	
-	    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
-	    		comandosSQL.setLong(1, cliente.getId());
-	    		comandosSQL.setLong(2, end.getId());
-	    		comandosSQL.execute();
-        	}
-        }
-        
-        // cartao
-        for(CartaoCredito car : cliente.getCartoes()) {
-        	
-        	if(null != car.getId()) {
-        		cartaoDAO.alterar(car);
-        	} else {
-	        	cartaoDAO.salvar(car);
-	        	
-	            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteCartao);
-	            comandosSQL.setLong(1, cliente.getId());
-	        	comandosSQL.setLong(2, car.getId());
-	        	comandosSQL.execute();
-        	}
-        }
-        
-        
-    	} catch (SQLException e) {
+	@Override
+	public void alterar(EntidadeDominio entidade) {
+		PreparedStatement comandosSQL = null;
+	    Cliente cliente = (Cliente) entidade;
+	    
+	    IDAO enderecoDAO = new EnderecoDAO();
+	    IDAO cartaoDAO = new CartaoDAO();
+	    
+	    try {
+	    	this.conexao = (Connection) Conexao.getConexao();
+	
+	    	String tabelaCliente = "UPDATE cliente "
+	    			+ " join contato ON"
+	    			+ " contato.con_id = cliente.cli_con_id"
+	    			+ " SET"
+	    			+ " cliente.cli_nome = ?,"
+	    			+ " cliente.cli_sobrenome = ?,"
+	    			+ " contato.con_email = ?,"
+	    			+ " cliente.cli_genero = ?,"
+	    			+ " cliente.cli_cpf = ?,"
+	    			+ " cliente.cli_dataNascimento = ?,"
+	    			+ " contato.con_tpt_id = (SELECT tpt_id FROM tipo_telefone WHERE tpt_tipo = ?),"
+	    			+ " contato.con_ddd = ?,"
+	    			+ " contato.con_numero = ?,"
+	    			+ " cliente.cli_senha = ?"
+	    			+ " WHERE cliente.cli_id = ?";
+	    	
+	    	 // Ligação (Endeços - Cliente)
+	        String tabelaEnderecoCliente = ""
+	        		+ "INSERT INTO cliente_endereco("
+	        			+ "cle_cli_id,"
+	        			+ "cle_end_id)"
+	        		+ "VALUES( ?, ?)";
+	        
+	        // Ligação (Cliente - Cartao)
+	        String tabelaClienteCartao = ""
+	        		+ "INSERT INTO cliente_cartao_credito ("
+	        			+ "ccc_cli_id, "
+	        			+ "ccc_cat_id) "
+	        		+ "VALUES "
+	        			+ "(?, ?);";
+	    	
+	    	
+			comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
+	        comandosSQL.setString(1,cliente.getUsuario().getNome());
+	        comandosSQL.setString(2,cliente.getUsuario().getSobrenome());
+	        comandosSQL.setString(3,cliente.getUsuario().getContato().getEmail());
+	        comandosSQL.setString(4, cliente.getUsuario().getGenero().toString());
+	        comandosSQL.setString(5, cliente.getCpf());
+	        comandosSQL.setDate(6, Date.valueOf(cliente.getUsuario().getDataNascimento()));
+	        comandosSQL.setString(7, cliente.getUsuario().getContato().getTipoTelefone().toString());
+	        comandosSQL.setString(8, cliente.getUsuario().getContato().getDdd());
+	        comandosSQL.setString(9, cliente.getUsuario().getContato().getNumero());
+	        comandosSQL.setString(10, cliente.getUsuario().getSenha());
+	        comandosSQL.setLong(11, cliente.getId());
+	        comandosSQL.execute();//
+	        // endereco cobrança
+	        for(Endereco end : cliente.getEnderecoCobrancas()) {
+	        	if(false == end.isStatus()) {
+	        		enderecoDAO.excluir(end);
+	        	} else if(null != end.getId()) {
+	        		enderecoDAO.alterar(end);
+	        	} else {
+		        	enderecoDAO.salvar(end);
+		        	
+		    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+		    		comandosSQL.setLong(1, cliente.getId());
+		    		comandosSQL.setLong(2, end.getId());
+		    		comandosSQL.execute();
+	        	}
+	        }
+	        // endereco entrega
+	        for(EnderecoEntrega end : cliente.getEnderecoEntregas()) {
+	        	if(false == end.isStatus()) {
+	        		enderecoDAO.excluir(end);
+	        	} else if(null != end.getId()) {
+	        		enderecoDAO.alterar(end);
+	        	} else {
+		        	enderecoDAO.salvar(end);
+		        	
+		    		comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaEnderecoCliente);
+		    		comandosSQL.setLong(1, cliente.getId());
+		    		comandosSQL.setLong(2, end.getId());
+		    		comandosSQL.execute();
+	        	}
+	        }
+	        
+	        // cartao
+	        for(CartaoCredito car : cliente.getCartoes()) {
+	        	if(false == car.isStatus()) {
+	        		cartaoDAO.excluir(car);;
+	        	}else if(null != car.getId()) {
+	        		cartaoDAO.alterar(car);
+	        	} else {
+		        	cartaoDAO.salvar(car);
+		        	
+		            comandosSQL = (PreparedStatement) this.conexao.prepareStatement(tabelaClienteCartao);
+		            comandosSQL.setLong(1, cliente.getId());
+		        	comandosSQL.setLong(2, car.getId());
+		        	comandosSQL.execute();
+	        	}
+	        }
+	        
+	        
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
@@ -407,12 +415,6 @@ public void alterar(EntidadeDominio entidade) {
 			}
 		}
 	
-}
+	}
 
-@Override
-public void excluir(EntidadeDominio entidade) {
-	// TODO Auto-generated method stub
-	
-}
-   
 }

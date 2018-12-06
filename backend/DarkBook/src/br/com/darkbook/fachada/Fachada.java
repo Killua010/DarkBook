@@ -23,6 +23,7 @@ import br.com.darkbook.strategy.IStrategy;
 import br.com.darkbook.strategy.StValidarCPF;
 import br.com.darkbook.strategy.StValidarDadosObrigatorios;
 import br.com.darkbook.strategy.StValidarExistenciaCliente;
+import br.com.darkbook.strategy.StValidarMinimoEndereco;
 import br.com.darkbook.strategy.StValidarSenha;
 import br.com.darkbook.util.Resultado;
 
@@ -44,6 +45,7 @@ public class Fachada implements IFachada {
 		StValidarExistenciaCliente stValidarExistenciaCliente = new StValidarExistenciaCliente();
 		StValidarSenha stValidarSenha = new StValidarSenha();
 		StComplementarDataCadastro stComplementarDataCadastro = new StComplementarDataCadastro();
+		StValidarMinimoEndereco stValidarMinimoEndereco = new StValidarMinimoEndereco();
 		
 		clienteSalvarStrategy.add(stValidarDadosObrigatorios);
 		clienteSalvarStrategy.add(stValidarCPF);
@@ -56,7 +58,7 @@ public class Fachada implements IFachada {
 		clienteAlterarStrategy.add(stValidarDadosObrigatorios);
 		clienteAlterarStrategy.add(stValidarCPF);
 		clienteAlterarStrategy.add(stValidarSenha);
-		
+		clienteAlterarStrategy.add(stValidarMinimoEndereco);		
 		strategysCliente.put("ALTERAR", clienteAlterarStrategy);
 		
 		mapStrategy.put(Cliente.class.getName(), strategysCliente);
@@ -102,7 +104,6 @@ public class Fachada implements IFachada {
 	@Override
 	public Resultado alterar(EntidadeDominio entidade) {
 		resultado = new Resultado();
-		System.out.println(mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
 		executarStrategys(entidade, mapStrategy.get(entidade.getClass().getName()).get("ALTERAR"));
 		
     	if(resultado.getMensagens().length() == 0) {
@@ -117,15 +118,17 @@ public class Fachada implements IFachada {
 
 	@Override
 	public Resultado excluir(EntidadeDominio entidade) {
-		return null;
-		// TODO Auto-generated method stub
-
+		IDAO dao = mapDao.get(entidade.getClass().getName());
+		dao.excluir(entidade);
+		
+		return new Resultado();
 	}
 	
 	private List<IStrategy> executarStrategys(EntidadeDominio entidade, List<IStrategy> strategys) {
 		for(IStrategy str : strategys) {
 			String mensagem = str.processar(entidade);
 			if(mensagem != null) {
+				System.out.println(mensagem);
 				resultado.getMensagens().append(mensagem);
 			}
 		}

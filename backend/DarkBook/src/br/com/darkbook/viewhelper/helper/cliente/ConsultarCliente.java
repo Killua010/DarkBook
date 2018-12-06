@@ -50,12 +50,26 @@ public class ConsultarCliente implements IHelper {
 
 	@Override
 	public void setEntidade(Resultado resultado, HttpServletResponse response) {
+		response.setContentType("application/json");
+	    response.setCharacterEncoding("UTF-8");
+	    
+	    
 		if(null == resultado.getEntidades()) {
 			try {
+				response.setStatus(400); // Erro 400 (Bad Request): parametros errados ou inexistentes
+	    		response.setHeader("Erros", "Sem resultados");	// adiciona no header as mensagens de erros
 				response.getWriter().write("Sem resultados");
 				return;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(resultado.getEntidades().size() != 1) {
+			try {
+				response.setStatus(500); 
+	    		response.setHeader("Erros", "Mais de um resultado");	// adiciona no header as mensagens de erros
+				response.getWriter().write("Mais de um resultado");
+				return;
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -111,6 +125,7 @@ public class ConsultarCliente implements IHelper {
     			enderecoJson.put("numero", enderecoCobranca.getNumero());
     			enderecoJson.put("bairro", enderecoCobranca.getBairro());
     			enderecoJson.put("cep", enderecoCobranca.getCep());
+    			enderecoJson.put("favorito", enderecoCobranca.isFavorito());
     			enderecoJson.put("observacao", enderecoCobranca.getObservacao());
     			enderecoJson.put("id", enderecoCobranca.getId());
     			enderecosCobranca.put(enderecoJson);
@@ -132,8 +147,6 @@ public class ConsultarCliente implements IHelper {
     		
     		clienteJson.put("cartoes", cartoes);
     		
-    		response.setContentType("application/json");
-    	    response.setCharacterEncoding("UTF-8");
     	    System.out.println(clienteJson.toString());
     	    try {
 				response.getWriter().write(clienteJson.toString());

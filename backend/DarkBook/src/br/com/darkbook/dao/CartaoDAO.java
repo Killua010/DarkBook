@@ -11,11 +11,10 @@ import br.com.darkbook.dao.conexao.Conexao;
 import br.com.darkbook.dominio.CartaoCredito;
 import br.com.darkbook.entidade.EntidadeDominio;
 
-public class CartaoDAO implements IDAO{
-	
-	private Connection conexao;
+public class CartaoDAO extends AbstrDAO{
 
 	public CartaoDAO() {
+		super("cartao_credito", "cat");
 		this.conexao = (Connection) Conexao.getConexao();
 	}
 
@@ -33,10 +32,12 @@ public class CartaoDAO implements IDAO{
         			+ "cat_nome_impresso, "
         			+ "cat_codigo_seguranca, "
         			+ "cat_preferencial,"
-        			+ "cat_ban_id)"
+        			+ "cat_ban_id, "
+        			+ "cat_status)"
         		+ "VALUES "
         			+ "(?, ?, ?, ?, "
-        			+ "(SELECT ban_id FROM bandeira WHERE ban_tipo = ?));";
+        			+ "(SELECT ban_id FROM bandeira WHERE ban_tipo = ?), "
+        			+ "?);";
 		
 		CartaoCredito car = (CartaoCredito) entidade;
 		
@@ -50,6 +51,7 @@ public class CartaoDAO implements IDAO{
 	    	comandosSQL.setString(3, car.getCodSeguranca());
 	    	comandosSQL.setBoolean(4, car.isPreferencial());
 	    	comandosSQL.setString(5, car.getBandeira().getNome());
+	    	comandosSQL.setBoolean(6, true);
 	    	
 	    	comandosSQL.execute();
 	    	
@@ -66,8 +68,7 @@ public class CartaoDAO implements IDAO{
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 	@Override
@@ -75,15 +76,15 @@ public class CartaoDAO implements IDAO{
 		PreparedStatement comandosSQL = null;
 		
 		// Tabela Cartão
-        String tabelaCartao = ""
-        		+ "UPDATE cartao_credito "
-        		+ "SET"
-        		+ "(cat_numero = ?,"
-        			+ "cat_nome_impresso = ?,"
-        			+ "cat_codigo_seguranca = ?,"
-        			+ "cat_preferencial = ?,"
-        			+ "cat_ban_id = (SELECT ban_id FROM bandeira WHERE ban_tipo = ?))"
-        			+ "WHERE cat_id = ?";
+        String tabelaCartao = "" +
+        		"UPDATE cartao_credito " + 
+        		"SET " + 
+        		"cat_numero = ?," + 
+        		"cat_nome_impresso = ?," + 
+        		"cat_codigo_seguranca = ?," + 
+        		"cat_preferencial = ?," + 
+        		"cat_ban_id = (SELECT ban_id FROM bandeira WHERE ban_tipo = ?)" + 
+        		"WHERE cat_id = ?;";
 		
 		CartaoCredito car = (CartaoCredito) entidade;
 		
@@ -103,11 +104,6 @@ public class CartaoDAO implements IDAO{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}		
-	}
-
-	@Override
-	public void excluir(EntidadeDominio entidade) {
-		throw new UnsupportedOperationException("Em desenvolvimento.");
 	}
 
 }

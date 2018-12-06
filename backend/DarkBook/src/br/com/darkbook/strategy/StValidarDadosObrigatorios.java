@@ -15,6 +15,7 @@ public class StValidarDadosObrigatorios extends AbstractStrategy {
 	 */
 	@Override
 	public String processar(EntidadeDominio entidade) {
+		mensagem.setLength(0);
 		Cliente cliente = (Cliente) entidade;
 		IStrategy strategy;
 		
