@@ -119,7 +119,8 @@ export default {
                 numero : "",
                 bairro : "",
                 cep : "",
-                observacao : ""
+                observacao : "",
+                favorito : false
             },
             cartoes : {
                 bandeira : "",

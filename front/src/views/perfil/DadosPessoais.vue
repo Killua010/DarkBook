@@ -144,6 +144,11 @@ export default{
                   title: e.data,
                   icon: "success"
                 });
+                let cliente = {
+                  id: null,
+                  nome: ""
+                }
+                dadosAtuais.$store.commit('ALTERAR_USUARIO', cliente)
                 dadosAtuais.$router.replace({name: "login"})
             }).catch(function(e){
                 console.log(e)
