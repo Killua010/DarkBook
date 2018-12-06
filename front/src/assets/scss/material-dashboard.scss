@@ -1,0 +1,47 @@
+
+
+/*!
+
+ =========================================================
+ * Material Dashboard - v1.0.1
+ =========================================================
+
+ * Product Page: http://www.creative-tim.com/product/material-dashboard
+ * Copyright 2017 Creative Tim (http://www.creative-tim.com)
+ * Licensed under MIT (https://github.com/creativetimofficial/material-dashboard/blob/master/LICENSE.md)
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+ */
+
+
+//variables and mixins
+@import "md/variables";
+@import "md/mixins";
+@import "md/shadows";
+
+//plugin css
+
+// Core CSS
+
+@import "md/sidebar-and-main-panel";
+
+@import "md/misc";
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Fancy Stuff
+
+@import "md/responsive";
