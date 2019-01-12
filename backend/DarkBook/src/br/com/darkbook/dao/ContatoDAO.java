@@ -16,11 +16,12 @@ public class ContatoDAO implements IDAO {
 	private Connection conexao;
 
 	public ContatoDAO() {
-		this.conexao = (Connection) Conexao.getConexao();
+		
 	}
 
 	@Override
 	public void salvar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		ResultSet ultimoID = null;
 		PreparedStatement comandosSQL = null;
 		
@@ -56,6 +57,8 @@ public class ContatoDAO implements IDAO {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			Conexao.fechar(conexao);
 		}
         	
 

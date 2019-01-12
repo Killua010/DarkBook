@@ -35,6 +35,7 @@ public class ClienteDAO extends AbstrDAO{
 	}
 
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
     	Cliente cli = (Cliente) entidade;
     	List<EntidadeDominio> cliList = new ArrayList<>();
     	ResultSet resultados;
@@ -43,7 +44,6 @@ public class ClienteDAO extends AbstrDAO{
     	String tabelaCliente;
     	
     	try {
-    		this.conexao = (Connection) Conexao.getConexao();
     		if(null != cli.getCpf() && null != cli.getUsuario().getContato().getEmail()) { // buscar por cpf ou email
 	    		tabelaCliente = "SELECT * FROM cliente JOIN contato WHERE cli_cpf = ? OR con_email = ? AND cli_status = true";
 	    		preparo = (PreparedStatement) this.conexao.prepareStatement(tabelaCliente);
@@ -196,6 +196,7 @@ public class ClienteDAO extends AbstrDAO{
     }
     
     public void salvar(EntidadeDominio entidade)  {
+    	this.conexao = (Connection) Conexao.getConexao();
     	IDAO enderecoDAO = new EnderecoDAO();
         IDAO contatoDAO = new ContatoDAO();
         IDAO cartaoDAO = new CartaoDAO();
@@ -205,7 +206,6 @@ public class ClienteDAO extends AbstrDAO{
         Cliente cliente = (Cliente) entidade;
         
         try {
-        	this.conexao = (Connection) Conexao.getConexao();
         	// Cliente
             String tabelaCliente = ""
             		+ "insert into cliente ("
@@ -290,9 +290,9 @@ public class ClienteDAO extends AbstrDAO{
         	e.printStackTrace();		// printa a pilha de erros
             throw new RuntimeException(e);	// lança uma exceção
         } finally {
+        	Conexao.fechar(conexao);
         	try {
 				comandosSQL.close();
-				Conexao.fechar(conexao);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

@@ -15,11 +15,11 @@ public class CartaoDAO extends AbstrDAO{
 
 	public CartaoDAO() {
 		super("cartao_credito", "cat");
-		this.conexao = (Connection) Conexao.getConexao();
 	}
 
 	@Override
 	public void salvar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		ResultSet ultimoID = null;
 		PreparedStatement comandosSQL = null;
 		
@@ -61,6 +61,8 @@ public class CartaoDAO extends AbstrDAO{
 	    	
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			Conexao.fechar(conexao);
 		}
         
 		
@@ -73,6 +75,7 @@ public class CartaoDAO extends AbstrDAO{
 
 	@Override
 	public void alterar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		PreparedStatement comandosSQL = null;
 		
 		// Tabela Cartão
@@ -103,7 +106,9 @@ public class CartaoDAO extends AbstrDAO{
 	    	comandosSQL.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}		
+		} finally {
+			Conexao.fechar(conexao);
+		}
 	}
 
 }

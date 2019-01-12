@@ -18,7 +18,6 @@ public class BandeiraCartaoDAO implements IDAO {
 
 	public BandeiraCartaoDAO() throws ClassNotFoundException, SQLException {
 		super();
-		this.conexao = (Connection) Conexao.getConexao();
 	}
 
 	@Override
@@ -28,6 +27,7 @@ public class BandeiraCartaoDAO implements IDAO {
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		List<EntidadeDominio> bandeiras = new ArrayList<>();
 		
 		ResultSet resultados;
@@ -45,6 +45,8 @@ public class BandeiraCartaoDAO implements IDAO {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 		
 		return bandeiras;

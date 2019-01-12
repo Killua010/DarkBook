@@ -22,11 +22,11 @@ public class EnderecoDAO extends AbstrDAO{
 
 	public EnderecoDAO() {
 		super("endereco", "end");
-		this.conexao = (Connection) Conexao.getConexao();
 	}
 
 	@Override
 	public void salvar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		ResultSet ultimoID = null;
 		PreparedStatement comandosSQL = null;
 		
@@ -77,6 +77,8 @@ public class EnderecoDAO extends AbstrDAO{
 		    	
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 		} else if(entidade.getClass().getName().equals(EnderecoEntrega.class.getName())) {
 			EnderecoEntrega end = (EnderecoEntrega) entidade;
@@ -123,6 +125,8 @@ public class EnderecoDAO extends AbstrDAO{
 	        		end.setId(ultimoID.getLong(1));
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 			
 		}

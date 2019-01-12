@@ -20,7 +20,6 @@ public class PaisDAO implements IDAO {
 
 	public PaisDAO() throws ClassNotFoundException, SQLException {
 		super();
-		this.conexao = (Connection) Conexao.getConexao();
 	}
 
 	@Override
@@ -30,6 +29,7 @@ public class PaisDAO implements IDAO {
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		List<EntidadeDominio> paises = new ArrayList<>();
 		ResultSet resultadosPais;
 		ResultSet resultadosEstado;
@@ -83,6 +83,8 @@ public class PaisDAO implements IDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			Conexao.fechar(conexao);
 		}
 		
 		

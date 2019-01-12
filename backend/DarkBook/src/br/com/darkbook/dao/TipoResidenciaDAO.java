@@ -17,7 +17,6 @@ public class TipoResidenciaDAO implements IDAO {
 
 	public TipoResidenciaDAO() throws ClassNotFoundException, SQLException {
 		super();
-		this.conexao = (Connection) Conexao.getConexao();
 	}
 
 	@Override
@@ -27,6 +26,7 @@ public class TipoResidenciaDAO implements IDAO {
 
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		List<EntidadeDominio> tiposResidencia = new ArrayList<>();
 		
 		ResultSet resultados;
@@ -44,6 +44,8 @@ public class TipoResidenciaDAO implements IDAO {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 		
 		return tiposResidencia;
