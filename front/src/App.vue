@@ -11,9 +11,20 @@
 </template>
 
 <script>
+import { blockUI } from "@/assets/block-ui/block-ui";
+//import { eventBus } from './main';
 export default {
   mounted(){
+    $.blockUI({
+      message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+    });
     this.buscarDadosSelect()
+    $.unblockUI();
   },
   methods: {
     mensagemErro(msg){
@@ -76,4 +87,5 @@ export default {
   }
 }
 </script>
+
 

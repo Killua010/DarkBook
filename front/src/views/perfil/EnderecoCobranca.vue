@@ -128,6 +128,14 @@ export default{
       }
     },
     AtualizarCliente(){
+      $.blockUI({
+          message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+      });
       this.modalCliente = false;
       var dadosAtuais = this;
       if(undefined != this.cliente && null != this.cliente){
@@ -137,6 +145,7 @@ export default{
                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               }
           }).then(function(e){
+            $.unblockUI();
               swal({
                 title: "Alterado com sucesso",
                 icon: "success"
@@ -146,8 +155,8 @@ export default{
               dadosAtuais.$router.push({name: "Endereço_Cobrança"})
               
           }).catch(function(e){
+             $.unblockUI();
               dadosAtuais.resetarEnderecos();
-              console.log(e)
               try{
                 swal({
                     title: e.response.data,

@@ -109,6 +109,14 @@ export default{
       eventBus.$emit('validarDadosEndereco', true);
     },
     AtualizarCliente(){
+      $.blockUI({
+          message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+        });
       this.modalCliente = false;
       var dadosAtuais = this;
       axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
@@ -117,6 +125,7 @@ export default{
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
           }
         }).then(function(e){
+          $.unblockUI();
             swal({
               title: "Alterado com sucesso",
               icon: "success"
@@ -125,7 +134,7 @@ export default{
             dadosAtuais.$router.push({name: "perfil"})
             dadosAtuais.$router.push({name: "Endereço_Entrega"})
         }).catch(function(e){
-            console.log(e)
+            $.unblockUI();
             try{
               swal({
                   title: e.response.data,

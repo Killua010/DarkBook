@@ -145,6 +145,7 @@ public class EnderecoDAO extends AbstrDAO{
 
 	@Override
 	public void alterar(EntidadeDominio entidade) {
+		this.conexao = (Connection) Conexao.getConexao();
 		PreparedStatement comandosSQL = null;
 		
 		if(entidade.getClass().getName().equals(Endereco.class.getName())) {
@@ -178,6 +179,8 @@ public class EnderecoDAO extends AbstrDAO{
 	        	comandosSQL.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 		} else if(entidade.getClass().getName().equals(EnderecoEntrega.class.getName())) {
 			EnderecoEntrega end = (EnderecoEntrega) entidade;
@@ -212,6 +215,8 @@ public class EnderecoDAO extends AbstrDAO{
 	        	comandosSQL.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				Conexao.fechar(conexao);
 			}
 		}
 		

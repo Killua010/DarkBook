@@ -161,6 +161,14 @@ export default{
       this.modalCliente = false;
     },
     AtualizarCliente(){
+      $.blockUI({
+          message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+       });
         this.modalCliente = false;
         let dadosAtuais = this;
         axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
@@ -169,12 +177,14 @@ export default{
                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               }
           }).then(function(e){
+            $.unblockUI();
             dadosAtuais.$router.push({name: "Dados_Pessoais"})
             swal({
               title: "Alterado com sucesso",
               icon: "success"
             });
           }).catch(function(e){
+              $.unblockUI();
               console.log(e)
               alert(e.response.data)
           })

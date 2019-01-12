@@ -43,6 +43,7 @@ import { LoginCard } from "@/mk/components";
 import axios from 'axios';
 import { eventBus } from '@/main';
 import DadosPessoais from '@/model/DadosPessoais.js';
+import { blockUI } from "@/assets/block-ui/block-ui";
 
 export default {
   components: {
@@ -72,6 +73,14 @@ export default {
   },
   methods:{
     login: function(){
+      $.blockUI({
+          message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+      });
       var dadosAtuais = this;
         axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
         this.cliente, {
@@ -79,6 +88,7 @@ export default {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
         }).then(function(e){
+          $.unblockUI();
           let cliente = {
             id: e.data.dadosPessoais.id,
             nome: e.data.dadosPessoais.nome
@@ -86,6 +96,7 @@ export default {
           dadosAtuais.$store.commit('ALTERAR_USUARIO', cliente)
           dadosAtuais.$router.push({name: "perfil"})
         }).catch(function(e){
+          $.unblockUI();
           try{
               swal({
                   title: "Erro " + e.response.status,

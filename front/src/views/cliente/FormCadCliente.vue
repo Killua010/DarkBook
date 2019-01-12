@@ -59,6 +59,7 @@ import  EnderecoCobranca  from "@/model/EnderecoCobranca.js"
 import  EnderecoEntrega  from "@/model/EnderecoEntrega.js"
 import  Cartao  from "@/model/Cartao.js"
 import swal from 'sweetalert';
+import { blockUI } from "@/assets/block-ui/block-ui";
 
 export default {
     created(){
@@ -137,7 +138,14 @@ export default {
     },
     methods:{
         enviar: function(){
-            console.log(this.cliente)
+             $.blockUI({
+                message: '<i class="fa fa-circle-notch fa-spin fa-5x"></i>' ,
+    			css: { 
+    				border: 'none',
+    				backgroundColor: 'transparent',
+    				color: '#f6f6f6'
+    			}
+            });
             var dadosAtuais = this;
             axios.post(`http://localhost:8082/DarkBook/cliente?operacao=SALVAR`, 
             this.cliente, {
@@ -145,13 +153,14 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 }
             }).then(function(e){
-                console.log(e.data)
+                $.unblockUI();
                 swal({
                     title: e.data,
                     icon: "success"
                 });
                 dadosAtuais.$router.push({ name:"login" })
             }).catch(function(e){
+                $.unblockUI();
                 try{
                     swal({
                         title: e.response.data,

@@ -50,6 +50,7 @@ import Footer from "@/views/Footer.vue";
 import { eventBus } from '../../main';
 import axios from 'axios';
 import swal from 'sweetalert';
+import { blockUI } from "@/assets/block-ui/block-ui";
 
 export default {
   data: () => ({
