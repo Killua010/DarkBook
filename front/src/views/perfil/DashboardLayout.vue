@@ -29,7 +29,7 @@
     <div class="main-panel">
       <top-navbar></top-navbar>
       
-      <dashboard-content @atualizar-cliente="validarUsuario">
+      <dashboard-content v-on:atualizarPagina="validarUsuario">
 
       </dashboard-content>
 
@@ -69,30 +69,62 @@ export default {
   created(){
     var dadosAtuais = this;
     let usuario = this.dadosUsuario;
+    
     if(usuario.id != null){
       this.cliente.dadosPessoais.id = usuario.id;
       this.cliente.dadosPessoais.primeiroNome = usuario.nome;
-      axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
-      this.cliente, {
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          }
-      }).then(function(e){
-        dadosAtuais.cliente.dadosPessoais = e.data.dadosPessoais
-        dadosAtuais.cliente.enderecosEntrega = e.data.enderecosEntrega
-        dadosAtuais.cliente.enderecosCobranca = e.data.enderecosCobranca
-        dadosAtuais.cliente.cartoes = e.data.cartoes
-        dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
-        dadosAtuais.$router.push({name: "Dados_Pessoais"})
-      }).catch(function(e){
-          alert(e)
+      $.ajax({
+            type: "POST",
+            url: "http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR",
+            data: this.cliente,
+            async: false
+        }).done(function(e){
+           dadosAtuais.cliente.dadosPessoais = e.dadosPessoais
+          dadosAtuais.cliente.enderecosEntrega = e.enderecosEntrega
+          dadosAtuais.cliente.enderecosCobranca = e.enderecosCobranca
+          dadosAtuais.cliente.cartoes = e.cartoes
+          dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
+          dadosAtuais.$router.push({name: "Dados_Pessoais"})
+        }).fail(function(jqXHR, textStatus, msg){
+          alert(msg)
           dadosAtuais.$router.push("/login")
-      })
+        });
     }
+
+
+
+    // if(usuario.id != null){
+    //   this.cliente.dadosPessoais.id = usuario.id;
+    //   this.cliente.dadosPessoais.primeiroNome = usuario.nome;
+    //   axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
+    //   this.cliente, {
+    //       headers: {
+    //           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    //       }
+    //   }).then(function(e){
+    //     dadosAtuais.cliente.dadosPessoais = e.data.dadosPessoais
+    //     dadosAtuais.cliente.enderecosEntrega = e.data.enderecosEntrega
+    //     dadosAtuais.cliente.enderecosCobranca = e.data.enderecosCobranca
+    //     dadosAtuais.cliente.cartoes = e.data.cartoes
+    //     dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
+    //     dadosAtuais.$router.push({name: "Dados_Pessoais"})
+    //   }).catch(function(e){
+    //       alert(e)
+    //       dadosAtuais.$router.push("/login")
+    //   })
+    // }
     
   },
   updated(){
-    this.validarUsuario();
+    // this.validarUsuario();
+  },
+  mounted(){
+      var dadosAtuais = this;
+      eventBus.$on('atualizarPagina', function(e){
+          if(e === true){
+              dadosAtuais.validarUsuario()
+          }
+      })
   },
   methods:{
     catalogoPath(){
@@ -103,23 +135,45 @@ export default {
       var dadosAtuais = this;
       let usuario = this.dadosUsuario;
       if(usuario.id != null){
-        this.cliente.dadosPessoais.id = usuario.id;
-        this.cliente.dadosPessoais.primeiroNome = usuario.nome;
-        axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
-        this.cliente, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            }
-        }).then(function(e){
-          dadosAtuais.cliente.dadosPessoais = e.data.dadosPessoais
-          dadosAtuais.cliente.enderecosEntrega = e.data.enderecosEntrega
-          dadosAtuais.cliente.enderecosCobranca = e.data.enderecosCobranca
-          dadosAtuais.cliente.cartoes = e.data.cartoes
-          dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
-        }).catch(function(e){
-            alert(e)
-            this.$router.push("/login")
-        })
+         this.cliente.dadosPessoais.id = usuario.id;
+          this.cliente.dadosPessoais.primeiroNome = usuario.nome;
+          $.ajax({
+                type: "POST",
+                url: "http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR",
+                data: this.cliente,
+                async: false
+            }).done(function(e){
+              dadosAtuais.cliente.dadosPessoais = e.dadosPessoais
+              dadosAtuais.cliente.enderecosEntrega = e.enderecosEntrega
+              dadosAtuais.cliente.enderecosCobranca = e.enderecosCobranca
+              dadosAtuais.cliente.cartoes = e.cartoes
+              dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
+              dadosAtuais.$router.push({name: "Dados_Pessoais"})
+            }).fail(function(jqXHR, textStatus, msg){
+              alert(msg)
+              this.$router.push("/login")
+            });
+
+
+
+
+        // this.cliente.dadosPessoais.id = usuario.id;
+        // this.cliente.dadosPessoais.primeiroNome = usuario.nome;
+        // axios.post(`http://localhost:8082/DarkBook/cliente?operacao=CONSULTAR`, 
+        // this.cliente, {
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        //     }
+        // }).then(function(e){
+        //   dadosAtuais.cliente.dadosPessoais = e.data.dadosPessoais
+        //   dadosAtuais.cliente.enderecosEntrega = e.data.enderecosEntrega
+        //   dadosAtuais.cliente.enderecosCobranca = e.data.enderecosCobranca
+        //   dadosAtuais.cliente.cartoes = e.data.cartoes
+        //   dadosAtuais.$store.commit('ALTERAR_CLIENTE', dadosAtuais.cliente)
+        // }).catch(function(e){
+        //     alert(e)
+        //     this.$router.push("/login")
+        // })
       }
     }
   },

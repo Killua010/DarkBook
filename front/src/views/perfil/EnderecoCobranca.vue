@@ -138,6 +138,7 @@ export default{
       });
       this.modalCliente = false;
       var dadosAtuais = this;
+      this.modalEnderecoCobranca = false;
       if(undefined != this.cliente && null != this.cliente){
         axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
           this.cliente, {
@@ -151,8 +152,9 @@ export default{
                 icon: "success"
               });
               dadosAtuais.novoEndereco();
-              dadosAtuais.$router.push({name: "perfil"})
-              dadosAtuais.$router.push({name: "Endereço_Cobrança"})
+              eventBus.$emit('atualizarPagina', true);
+              // dadosAtuais.$router.push({name: "perfil"})
+              // dadosAtuais.$router.push({name: "Endereço_Cobrança"})
               
           }).catch(function(e){
              $.unblockUI();

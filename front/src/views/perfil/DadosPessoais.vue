@@ -183,6 +183,7 @@ export default{
               title: "Alterado com sucesso",
               icon: "success"
             });
+            eventBus.$emit('atualizarPagina', true);
           }).catch(function(e){
               $.unblockUI();
               console.log(e)

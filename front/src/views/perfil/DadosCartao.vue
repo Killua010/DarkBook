@@ -126,6 +126,7 @@ export default{
     			}
       });
       var dadosAtuais = this;
+      this.modalCartao = false;
         axios.post(`http://localhost:8082/DarkBook/cliente?operacao=ALTERAR`, 
         this.cliente, {
             headers: {
@@ -138,8 +139,9 @@ export default{
                 icon: "success"
               });
               dadosAtuais.novoCartao();
-              dadosAtuais.$router.push({name: "perfil"})
-              dadosAtuais.$router.push({name: "Cartao"})
+              eventBus.$emit('atualizarPagina', true);
+              // dadosAtuais.$router.push({name: "perfil"})
+              // dadosAtuais.$router.push({name: "Cartao"})
         }).catch(function(e){
             $.unblockUI();
             try{
