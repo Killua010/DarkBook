@@ -1,6 +1,6 @@
 # DarkBook
-software de vendas online de uma livraria
-
+<h3>software de vendas online de uma livraria</h3>
+<a href="https://thedarkbook-c57e8.firebaseapp.com/#/">URL da aplicação</a>
 <h2>Projeto vue</h2>
 <h4>Rodar o Projeto: </h4>
 <ul>
@@ -21,17 +21,22 @@ software de vendas online de uma livraria
     <ul>
       <li><a href="https://www.oracle.com/technetwork/java/javaee/overview/index.html">Java EE</a></li>
       <li><a href="http://tomcat.apache.org/">Apache Tomcat</a>.</li>
-      <li><a href="https://www.mysql.com/">MySQL</a></li>
     </ul>
     <h3>Tutoriais:</h3>
     <ul>
       <li><em><a href="https://www.caelum.com.br/apostila-java-web/o-que-e-java-ee/#exerccios-preparando-o-tomcat">Tutorial configurando apache no eclipse</a></em></li>
     </ul>
-    <h3>Rodar o projeto:</h3>
+    <h3>Rodar o projeto no eclipse:</h3>
     <ul>
-      <li>Vá na aba Window > Show View > Other > Server</li>
-      <li>Ira aparecer uma aba chamada <em>Servers</em> </li>
-      <li>Clique com o botão direito do mouse em cima do Tomcat > e clique em <em>Start</em></li>
+      <li>Vá na aba File > import > Maven > Existing Maven Project > Selecione o caminho da aplicação "backend/DarkBook" </li>
+      <li>Clique no projeto com o botão direito do mouse > Maven > Update Project > Selecione Force Update of Snapshot/Releases </li>
+      <li>Clique no projeto > vá para a aba Run > Run As > Run on Server > selecione o seu servidor de aplicação > Adicione o projeto ao seu servidor</li>
+      <li>PS: A aplicação VUE utiliza a porta 8082 para fazer as requisições ao servidor</li>
+      <ul>
+        <li>Para alterar a porta do servidor apache Tomcat:</li>
+        <li>Vá na aba Window > Show View > Other > Server</li>
+        <li>Na nova aba Server > clique duplo no servidor Tomcat > no canto direito na aba Ports > clique duplo na Port Number do HTTP e troque para 8082</li>
+      </ul>
     </ul>
   </li>
 </ul>
